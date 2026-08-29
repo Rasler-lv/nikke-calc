@@ -111,9 +111,15 @@ class CharacterCustomizationTest(unittest.TestCase):
             sources += list((character.get("애장품") or {}).get("단계별") or [])
             for source in sources:
                 template = source.get("template", "")
-                for code in ("Fire Code", "수냉", "풍압", "", "Iron Code"):
-                    if f"{code} 코드 적에게 우월 코드 대미지 적용" in template:
-                        expected[name] = code
+                if "우월 코드 대미지 적용" not in template:
+                    continue
+                code = ""
+                for candidate in ("Fire Code", "수냉", "풍압", "Iron Code"):
+                    if f"{candidate} 코드 적에게 우월 코드 대미지 적용" in template:
+                        code = candidate
+                        break
+                expected[name] = code
+
         actual = {
             name: effect["target_code"]
             for name, effects in parsed.items()

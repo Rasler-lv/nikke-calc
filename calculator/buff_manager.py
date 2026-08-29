@@ -1877,11 +1877,12 @@ class BuffManager:
         (`scenarios/센티.md §해석 선언`).
 
         대상 코드는 `note` 원문이 아니라 `target_code` 필드에서 읽는다.
+        빈 문자열은 코드 미지정/와일드카드 의미이므로, 적 코드도 빈 문자열이면
+        허용해야 한다.
         """
-        if not enemy_code:
-            return False
+        enemy = str(enemy_code or "")
         return any(
-            ab.effect.get("target_code") == enemy_code
+            str(ab.effect.get("target_code") or "") == enemy
             and name in (ab.target_chars or [])
             for ab in self._by_stat("element_code_override")
         )
