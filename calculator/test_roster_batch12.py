@@ -13,7 +13,7 @@ class Batch12(unittest.TestCase):
     def test_registered(self):
         skills = data()
         self.assertTrue(all(n in skills for n in B))
-        self.assertEqual(len([n for n in skills if not n.startswith('test_')]), 199)
+        self.assertEqual(len([n for n in skills if not n.startswith('test_')]), 198)
 
     def test_lily_and_aigis_contracts(self):
         skills = data()
