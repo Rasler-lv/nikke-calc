@@ -1,2 +1,2 @@
-"""calculator 패키지"""
+"""calculator Bundle"""
 _PARSED_SKILLS_CACHE: dict = {}
