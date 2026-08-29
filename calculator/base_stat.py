@@ -1,35 +1,35 @@
 """
-Phase 2: Base stat calculator
+Phase 2: 기본 스탯 계산기
 
-Formula:
-  (level_stat + (level_stat×0.02+20) × breakthrough + affinity_stat + console_stat)
-  × (1 + 0.02×core_enhancement)
-  + equipment_stat + cube_stat + collection_stat
+공식:
+  (레벨스탯 + (레벨스탯×0.02+20) × 돌파수 + 호감도스탯 + 콘솔스탯)
+  × (1 + 0.02×코강수)
+  + 장비스탯 + 큐브스탯 + 소장품스탯
 
-Character instance structure:
+캐릭터 인스턴스 구조:
   {
-    "name": "Rapi",
+    "name": "라피",
     "level": 200,
     "breakthrough": 3,          # 0~3
-    "core_enhancement": 7,      # 0~7 (unlocked after breakthrough 3)
+    "core_enhancement": 7,      # 0~7 (돌파 3 이후 해금)
     "affinity": 30,             # 1~40
     "equipment": {
-      # If `tier` is omitted = overload gear (upgrade 0~5). Normal gear uses tier: "T1"~"T9" (no upgrades)
-      # tier + corp = T9 corporate gear — has upgrade 0~5 and if corp matches character corp it gets +30% (§_equip_stat)
-      # Unequipped is tier: "None" — different from upgrade 0 (that also grants flat stats)
-      "Head": { "level": 5, "skills": [{"id": "atk_pct", "lv": 10}, ...] },
-      "Body": { "level": 5, "skills": [...] },
-      "Arm":   { "tier": "T9", "corp": "Tetra", "level": 3, "skills": [...] },
-      "Leg": { "tier": "T9", "skills": [...] }
+      # tier 생략 = 오버로드 장비(강화 0~5). 일반 장비는 tier: "T1"~"T9" (강화 없음)
+      # tier + corp = T9 기업 장비 — 강화 0~5가 붙고 캐릭터 기업과 같으면 +30% (§_equip_stat)
+      # 미장착은 tier: "없음" — 강화0과 다르다(그쪽도 플랫 스탯이 붙는다)
+      "머리": { "level": 5, "skills": [{"id": "atk_pct", "lv": 10}, ...] },
+      "몸통": { "level": 5, "skills": [...] },
+      "팔":   { "tier": "T9", "corp": "테트라", "level": 3, "skills": [...] },
+      "다리": { "tier": "T9", "skills": [...] }
     },
-    "cube": { "name": "Resilience Cube", "level": 5 },
-    # class_level·company_level can be a number (same across classes/companies) or a dict by class/company.
-    # In-game recycled labs have 3 classes and 5 companies separately, so using dicts is more realistic.
+    "cube": { "name": "렐릭 베어 큐브", "level": 5 },
+    # class_level·company_level은 숫자(전 역할군·전 기업 동일) 또는 역할군/기업별 dict.
+    # 인게임 재활용 연구실은 역할군 3개·기업 5개가 따로 크므로 dict 쪽이 실제에 가깝다.
     "console": { "common_level": 10, "class_level": 10, "company_level": 10 },
-    #   or "console": { "common_level": 250,
-    #                     "class_level":   {"Attacker": 138, "Defender": 138, "Supporter": 138},
-    #                     "company_level": {"Elysion": 139, ..., "Abnormal": 110} }
-    "collection_stage": "SR15"   # "R0"~"SR15" or "None" (unequipped)
+    #   또는 "console": { "common_level": 250,
+    #                     "class_level":   {"화력형": 138, "방어형": 138, "지원형": 138},
+    #                     "company_level": {"엘리시온": 139, ..., "어브노말": 110} }
+    "collection_stage": "SR15"   # "R0"~"SR15" 또는 "없음"(미장착)
   }
 """
 import json
@@ -44,7 +44,7 @@ def _load(path):
         return json.load(f)
 
 
-# ── Tables (loaded once on module import) ──────────────────────────────────
+# ── 테이블 (모듈 임포트 시 1회 로드) ─────────────────────────────────────
 _NIKKE       = _load(os.path.join(_DATA_DIR, "parsed_nikke.json"))
 _LEVEL_STATS = _load(os.path.join(_TABLE_DIR, "level_stats.json"))
 _AFFINITY    = _load(os.path.join(_TABLE_DIR, "affinity.json"))
@@ -53,13 +53,13 @@ _EQUIP_STATS = _load(os.path.join(_TABLE_DIR, "equipment_stats.json"))
 _CUBE        = _load(os.path.join(_TABLE_DIR, "cube.json"))
 _COLLECTION  = _load(os.path.join(_TABLE_DIR, "collection.json"))
 
-# Representation for unequipped. The equipment `tier` and `collection_stage` share this.
-# **Must be distinguished from corporate upgrade 0 / R0** — those are the "lowest equipped state" and
-# grant flat stats. Empty slots are common in real accounts.
-NO_ITEM = "None"
+# 미장착 표현. 장비 `tier`와 `collection_stage`가 공유한다.
+# **기업 강화0·R0과 구분해야 한다** — 그쪽은 "가장 낮은 장착 상태"라 플랫 스탯이 붙는다
+# (기업 머리 강화0 = 방어형 기준 +4010 atk). 실제 계정 스펙에는 빈 슬롯이 흔하다.
+NO_ITEM = "없음"
 
 
-# ── Internal utilities ───────────────────────────────────────────────────[...]
+# ── 내부 유틸 ─────────────────────────────────────────────────────────────
 
 def _zero():
     return {"atk": 0.0, "def": 0.0, "hp": 0.0}
@@ -75,24 +75,24 @@ def _scale(s, k):
     return {"atk": s["atk"] * k, "def": s["def"] * k, "hp": s["hp"] * k}
 
 
-# The level stat table uses 20-level "bands". Within a band the per-level increase is linear,
-# and at band boundaries (level ≡ 1 mod 20) there is a larger jump. The ratio between band
-# starting values is the same across class/weapon/stat (e.g. 881→901 all share 1.069251).
+# 레벨 스탯표는 20레벨이 한 «밴드»다. 밴드 안에서는 레벨당 증가분이 일정하고,
+# 밴드가 바뀌는 자리(레벨 ≡ 1 mod 20)에서 한 번 크게 뛴다. 밴드 시작값의 비율은
+# 클래스·무기·스탯과 **무관하게 같다**(레벨 881→901에서 셋 다 1.069251).
 #
-# The table covers up to level 1000 but the game goes beyond that. If we clamp at 1000,
-# high-level players would see >15% attack drops (out-of-sync). Instead, levels above the table
-# are connected using the measured ratios in `level_beyond.json`, and beyond measured data
-# we extrapolate the tail using that ratio behavior.
+# 표는 1000레벨까지인데 인게임은 이미 그 위다. 1000으로 눌러 버리면 싱크로가 높은
+# 사람의 공격력이 15% 넘게 깎여 «누가 더 세나»가 뒤집힌다. 그래서 표 밖은
+# `level_beyond.json`의 **실측 비율**로 잇고, 실측이 닿지 않는 위쪽만 그 비율로 맞춘
+# 꼬리로 연장한다.
 _BEYOND = _load(os.path.join(_TABLE_DIR, "level_beyond.json"))
 BAND = int(_BEYOND["band"])
 _BAND_RATIOS = {int(k): float(v) for k, v in _BEYOND["ratios"].items()}
-# The share of the band increase that is spread evenly across levels; the remainder is the
-# jump at the band boundary. Like ratios, the share slowly decreases with level.
+# 밴드 상승분 중 «고르게 오르는 몫»의 비중. 나머지는 밴드 경계에서 한 번에 뛴다.
+# 비율과 마찬가지로 레벨이 오를수록 천천히 준다(0.221 → 0.168).
 _BAND_SHARES = {int(k): float(v) for k, v in _BEYOND["shares"].items()}
 
 
 def _power_fit(series: dict) -> tuple:
-    """Fit ln(y) = intercept + slope*ln(x) — used to create the tail beyond measured data."""
+    """`ln(y) = i + s·ln(b)`를 맞춘다 — 실측이 끝난 뒤를 잇는 꼬리."""
     import math
     points = [(math.log(b), math.log(y)) for b, y in sorted(series.items()) if y > 0]
     n = len(points)
@@ -114,23 +114,23 @@ def _tail(fit: tuple, band: int) -> float:
 
 
 def band_ratio(band: int) -> float:
-    """Return the multiplicative ratio for one band. Use measured if available, otherwise use the extrapolated tail."""
+    """밴드 하나의 상승 비율. 실측이 있으면 실측, 없으면 그 실측으로 맞춘 꼬리."""
     if band in _BAND_RATIOS:
         return _BAND_RATIOS[band]
     return 1 + _tail(_RATIO_TAIL, band)
 
 
 def band_share(band: int) -> float:
-    """Return the share of a band's increase that is spread evenly across the band."""
+    """밴드 안에서 고르게 오르는 몫의 비중."""
     if band in _BAND_SHARES:
         return _BAND_SHARES[band]
     return _tail(_SHARE_TAIL, band)
 
 
 def _beyond_table(table: dict, keys: list, level: int) -> dict:
-    """Extend the top of the table. Mimic the band shape (even increase inside band + one jump at boundary)."""
+    """표 끝 위쪽을 잇는다. 밴드 모양(고르게 오르다 한 번 뛴다)까지 그대로 흉내 낸다."""
     top = int(keys[-1])
-    start_level = top - (top - 1) % BAND          # start level of the table's last band (e.g. 1000 -> 981)
+    start_level = top - (top - 1) % BAND          # 표 마지막 밴드의 시작 레벨 (1000이면 981)
     value = {k: float(v) for k, v in table[str(start_level)].items()}
     band = (start_level - 1) // BAND
     while True:
@@ -149,9 +149,9 @@ def _beyond_table(table: dict, keys: list, level: int) -> dict:
 
 
 def _level_stat(cls: str, weapon: str, level: int) -> dict:
-    """Lookup level stats in level_stats.json. If the level has no exact key, linearly interpolate between adjacent keys.
+    """level_stats.json 조회. 키 없는 레벨은 인접 두 키로 선형 보간.
 
-    Levels above the table (1000) are connected by `_beyond_table()` — these are estimates.
+    표 끝(1000)을 넘는 레벨은 `_beyond_table()`이 잇는다 — **추정치다**.
     """
     table = _LEVEL_STATS[f"{cls}_{weapon}"]
     key = str(level)
@@ -177,32 +177,32 @@ def _level_stat(cls: str, weapon: str, level: int) -> dict:
             }
 
 
-# Multipliers for T9 corporate gear. The in-game formula is `base × (1 + 0.3×corp_match + 0.1×upgrade_level)`
-# and the two terms are added, not multiplied (see blablalink frontend `getEquipAttr`).
-# Overload gear has no manufacturer and cannot get corp match bonus; its upgrade bonus is already
-# baked into `equipment_stats.json` under the "기업" table, so we don't use these constants for overload gear.
+# T9 기업 장비의 배수. 인게임 식은 `기본값 × (1 + 0.3×기업일치 + 0.1×강화단계)`이고
+# 두 항은 **곱이 아니라 합**이다 (blablalink 프론트 `getEquipAttr`).
+# 오버로드 장비는 제조사가 없어 일치 보너스를 못 받고, 강화분은 `equipment_stats.json`의
+# `기업` 표(인게임 관측)에 이미 들어 있으므로 이 상수를 쓰지 않는다.
 CORP_MATCH_BONUS = 0.3
 GEAR_LEVEL_BONUS = 0.1
 
 
 def _equip_stat(cls: str, part: str, part_data: dict, corp: str | None = None) -> dict:
-    """Flat stat for a single equipment part. If `tier` is missing it's overload gear (use `level` upgrade stage).
+    """부위 하나의 플랫 스탯. `tier` 없으면 오버로드 장비(강화 `level` 단계)다.
 
-    Three branches:
-      `tier` missing      overload — look up the "기업" table by `level` (observed)
-      `tier` + `corp`     T9 corporate — use the standard table for the tier and then apply the multiplier
-                         `corp` is the equipment manufacturer; if it equals the character corp, add +30% match
-      `tier` only         normal T1~T9 — no upgrades, ignore `level`
-    `tier: "None"` means unequipped — returns zero.
+    갈래 셋:
+      `tier` 없음      오버로드 — `기업` 표를 `level`로 조회한다 (관측값)
+      `tier` + `corp`  T9 기업 — 같은 등급의 일반 표를 기본값으로 쓰고 위 식을 곱한다.
+                       `corp`(장비 제조사)가 캐릭터 기업 `corp` 인자와 같아야 +30%가 붙는다
+      `tier`만         일반 T1~T9 — 강화가 없으므로 `level`을 보지 않는다
+    `tier: "없음"`은 미장착 — 0이다.
 
-    The game rounds each part before summing, so we round per-part here as well.
+    인게임은 부위마다 반올림한 뒤 합치므로 여기서도 부위 단위로 반올림한다.
     """
     tier = part_data.get("tier")
     if tier == NO_ITEM:
         return _zero()
-    if tier in (None, "Manufacturer"):
-        return _EQUIP_STATS["Manufacturer"][cls][part][str(part_data["level"])]
-    base = _EQUIP_STATS["Normal"][tier][cls][part]
+    if tier in (None, "기업"):
+        return _EQUIP_STATS["기업"][cls][part][str(part_data["level"])]
+    base = _EQUIP_STATS["일반"][tier][cls][part]
     gear_corp = part_data.get("corp")
     if not gear_corp:
         return base
@@ -213,48 +213,48 @@ def _equip_stat(cls: str, part: str, part_data: dict, corp: str | None = None) -
 
 
 def console_level(console: dict, key: str, bucket: str, name: str) -> int:
-    """Select a single console level. If the value is a dict, pick using `bucket` (class or company).
+    """콘솔 레벨 하나를 뽑는다. 값이 dict면 `bucket`(역할군 또는 기업)으로 고른다.
 
-    Recycled labs in-game can have separate levels for 3 classes and 5 companies. A single number
-    means the same level for all buckets; if a dict is used it must include every bucket — missing
-    entries would quietly cause 0 which is unintended.
+    인게임 재활용 연구실은 역할군 3개·기업 5개가 **따로** 큰다. 숫자 하나로 적으면
+    전부 같다는 뜻이고, 실제로 갈렸으면 dict로 적어 소속별로 맞춘다 — 뒤처진 연구실
+    소속 캐릭터가 조용히 과대평가되는 걸 막는 자리다.
     """
     val = console[key]
     if not isinstance(val, dict):
         return val
     if bucket not in val:
         raise KeyError(
-            f"[{name}] console.{key} is missing {bucket!r} (available keys: {sorted(val)}). "
-            f"If console levels are specified per-class/company, you must include all buckets — missing entries must not silently become 0.")
+            f"[{name}] console.{key}에 {bucket!r}이 없다 (있는 키: {sorted(val)}). "
+            f"역할군/기업별로 적었으면 전부 적어야 한다 — 빠진 소속이 조용히 0이 되면 안 된다.")
     return val[bucket]
 
 
 def collection_stat(stage: str) -> dict:
-    """Flat stat for collection (favorite) stage. `"None"` (unequipped) returns zero.
+    """소장품 단계의 플랫 스탯. `"없음"`(미장착)은 0.
 
-    SSR favorite items have identical flat stats and favorite skill levels to SR15, so they are
-    represented as `"SR15"` (CDN `favorite_{id}.json`: atk/hp/def arrays match SR15, `level1`=4).
+    SSR 애장품은 플랫 스탯·소장품 스킬 레벨이 SR15와 완전히 동일하므로 `"SR15"`로 적는다
+    (CDN `favorite_{id}.json`: atk·hp·def 배열이 단계와 무관하게 SR15 값, `level1`=4).
     """
     if stage == NO_ITEM:
         return _zero()
     entry = _COLLECTION["_stat_table"].get(stage)
     if entry is None:
         raise KeyError(
-            f"Unknown collection stage {stage!r} — must be 'R0'~'R15', 'SR0'~'SR15' or 'None' (unequipped)")
+            f"알 수 없는 소장품 단계 {stage!r} — 'R0'~'R15' · 'SR0'~'SR15' 또는 '없음'(미장착)")
     return {"atk": entry["atk"], "def": entry["def"], "hp": entry["hp"]}
 
 
 def _core_formula(lv_val: float, bt: int) -> float:
-    """Apply DealForm ② b formula to a single level stat value."""
+    """레벨스탯 단일 값에 DealForm ② b 공식 적용."""
     return lv_val + (lv_val * 0.02 + 20) * bt
 
 
-# ── Main calculation function ─────────────────────────────────────────────
+# ── 메인 계산 함수 ────────────────────────────────────────────────────────
 
 def calc_base_stats(char: dict) -> dict:
     """
-    Convert a character instance into base ATK / DEF / HP.
-    Returns: {"atk": int, "def": int, "hp": int}
+    캐릭터 인스턴스 → 기본 ATK / DEF / HP 반환.
+    반환: {"atk": int, "def": int, "hp": int}
     """
     name       = char["name"]
     level      = char["level"]
@@ -266,53 +266,53 @@ def calc_base_stats(char: dict) -> dict:
     console    = char["console"]
     coll_stage = char["collection_stage"]
 
-    # Character metadata
+    # 캐릭터 메타
     meta   = _NIKKE[name]
     cls    = meta["class"]
     weapon = meta["weapon_type"]
 
-    # Level stats
+    # 레벨스탯
     lv_s = _level_stat(cls, weapon, level)
 
-    # Core formula (for atk/def/hp individually)
+    # 코어공식 (atk/def/hp 각각)
     core = {
         "atk": _core_formula(lv_s["atk"], bt),
         "def": _core_formula(lv_s["def"], bt),
         "hp":  _core_formula(lv_s["hp"],  bt),
     }
 
-    # Affinity stats
+    # 호감도 스탯
     aff_s = _AFFINITY[cls][str(affinity)]
 
-    # Console stats (common + class + company). Class/company may be given per-bucket.
+    # 콘솔 스탯 (공통 + 역할군 + 기업). 역할군·기업은 소속별로 레벨이 다를 수 있다.
     con_s = _zero()
     for con_type, level_key, bucket in (
-        ("Common",   "common_level",  ""),
-        ("Class", "class_level",   cls),
-        ("Manufacturer",   "company_level", meta["manufacturer"]),
+        ("공통",   "common_level",  ""),
+        ("클래스", "class_level",   cls),
+        ("기업",   "company_level", meta["manufacturer"]),
     ):
         per = _CONSOLE[con_type]["per_level"]
         con_s = _add(con_s, _scale(per, console_level(console, level_key, bucket, name)))
 
-    # Sum before core enhancement → apply core enhancement multiplier
+    # 코강 적용 전 합계 → 코강 반영
     pre_scaled = _scale(
         _add(_add(core, aff_s), con_s),
         1 + 0.02 * core_enh,
     )
 
-    # Flat equipment stats (sum of 4 parts)
+    # 장비 플랫 스탯 (4부위 합산)
     equip_s = _zero()
     for part, part_data in equip_inst.items():
         equip_s = _add(equip_s, _equip_stat(cls, part, part_data, meta["manufacturer"]))
 
-    # Cube flat stats. "None" means the cube is not equipped and grants no stats.
-    # (Some combos like Miranda intentionally have negative cube synergy so unequipping is a valid choice.)
-    cube_s = _zero() if cube_inst.get("name") == "None" else _CUBE["_stats"][str(cube_inst["level"])]
+    # 큐브 플랫 스탯. 「없음」은 큐브를 아예 안 낀 상태라 스탯도 붙지 않는다
+    # (미란다처럼 큐브 효과가 오히려 손해인 조합을 재려고 둔 선택지다).
+    cube_s = _zero() if cube_inst.get("name") == "없음" else _CUBE["_stats"][str(cube_inst["level"])]
 
-    # Collection flat stats
+    # 소장품 플랫 스탯
     coll_s = collection_stat(coll_stage)
 
-    # Final sum
+    # 최종 합산
     total = _add(_add(_add(pre_scaled, equip_s), cube_s), coll_s)
     return {"atk": round(total["atk"]),
             "def": round(total["def"]),
@@ -321,33 +321,33 @@ def calc_base_stats(char: dict) -> dict:
 
 def hp_to_atk(hp: float, ratio: float) -> float:
     """
-    Convert HP → ATK. Matches skill text 'N% of max HP as attack'.
-    ratio: fraction (5% → 0.05)
+    HP → ATK 전환. 스킬 텍스트 '최대 HP의 N%를 공격력으로' 대응.
+    ratio: 소수 (5% → 0.05)
     """
     return hp * ratio
 
 
-# ── Quick test ───────────────────────────────────────────────────────────
+# ── 빠른 테스트 ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import sys
     sys.stdout.reconfigure(encoding="utf-8")
 
     sample = {
-        "name": "Rapi",
+        "name": "라피",
         "level": 200,
         "breakthrough": 0,
         "core_enhancement": 0,
         "affinity": 1,
         "equipment": {
-            "Head": {"level": 0, "skills": []},
-            "Body": {"level": 0, "skills": []},
-            "Arm":   {"level": 0, "skills": []},
-            "Leg": {"level": 0, "skills": []},
+            "머리": {"level": 0, "skills": []},
+            "몸통": {"level": 0, "skills": []},
+            "팔":   {"level": 0, "skills": []},
+            "다리": {"level": 0, "skills": []},
         },
-        "cube": {"name": "Resilience Cube", "level": 1},
+        "cube": {"name": "렐릭 베어 큐브", "level": 1},
         "console": {"common_level": 0, "class_level": 0, "company_level": 0},
         "collection_stage": "R0",
     }
 
     result = calc_base_stats(sample)
-    print("Rapi lv200 bt0 minimum:", result)
+    print("라피 lv200 bt0 최소 조건:", result)
