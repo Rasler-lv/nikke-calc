@@ -82,9 +82,9 @@ const DEFAULT_SQUAD = ['리타', '크라운', '라피 : 레드 후드', '앨리�
 export interface CalculatorClientLike {
   prepare(): Promise<void>;
   simulate(request: SimulationRequest): Promise<SimulationResult>;
-  /** 목록 정렬용 전투력. 없는 구현(테스트 대역)도 있어 선택으로 둔다. */
+  /** Combat power for sorting results. Some implementations (test stubs) may not support it, making this optional. */
   combatPower?(request: CombatPowerRequest): Promise<Record<string, number>>;
-  /** 병렬 계산. 풀이 아닌 구현(테스트 대역·워커 하나)도 있어 전부 선택으로 둔다. */
+  /** Parallel calculation. Some implementations (test stubs, single worker) may not support it, making this optional. */
   setPoolSize?(size: number): void;
   defaultPoolSize?(): number;
   maxPoolSize?: number;
@@ -97,16 +97,15 @@ interface CalculatorDependencies {
   version: string;
   client: CalculatorClientLike;
   storage: StorageSource;
-  // 완전 초기화는 저장소를 비운 뒤 페이지를 다시 띄워 메모리 상태까지 확실히
-  // 되돌린다. 테스트에서는 이 자리에 가짜 함수를 넣는다.
+  // Full reset clears storage and reloads the page to reset memory state. Tests can inject a mock function here.
   reload?: () => void;
-  /** 테스트·자체 호스팅에서 빌드 환경값 대신 쓸 BlablaLink 프록시 주소. */
+  /** BlablaLink proxy address to use instead of build environment value in tests and self-hosted setups. */
   blablaProxy?: string;
 }
 
 const element = <T extends Element>(root: ParentNode, selector: string): T => {
   const found = root.querySelector<T>(selector);
-  if (!found) throw new Error(`화면 요소를 찾을 수 없습니다: ${selector}`);
+  if (!found) throw new Error(`UI element not found: ${selector}`);
   return found;
 };
 
@@ -117,8 +116,8 @@ const createText = (tag: keyof HTMLElementTagNameMap, value: string, className?:
   return node;
 };
 
-// 속성(코드) 아이콘 — 그림은 `image/icon/icon-code-*.png`가 정본이다.
-// 직접 추가한 니케가 목록에 없는 코드를 쓰면 조용히 아이콘을 생략한다.
+// Element (code) icons — images in `image/icon/icon-code-*.png` are the canonical source.
+// If a custom character uses a code not in the list, the icon is silently omitted.
 const ELEMENT_ICON: Record<string, string> = {
   작열: 'fire', 수냉: 'water', 풍압: 'wind', 전격: 'electronic', 철갑: 'iron',
 };
@@ -133,7 +132,7 @@ const createElementIcon = (elementCode: string, className: string): HTMLElement 
   return icon;
 };
 
-// Pyodide 오류는 긴 파이썬 트레이스백으로 온다. 마지막 줄(실제 오류 메시지)만 보여준다.
+// Pyodide errors come as long Python tracebacks. Show only the last line (actual error message).
 const cleanEngineError = (raw: string): string => {
   const lines = raw.split('\n').map((line) => line.trim()).filter(Boolean);
   const last = lines[lines.length - 1] ?? raw;
@@ -153,7 +152,7 @@ const emptyDeck = (id: number): DeckState => ({
   characters: {},
 });
 
-/** 딜 1·2위 이름. 순서는 그대로 두고 «표시»만 얹기 위해 이름만 뽑는다. */
+/** Top 2 damage dealers' names. Extract names only to keep order and overlay badges. */
 function topScorers(entry: DeckResultEntry): Map<string, number> {
   const ranked = [...new Set(entry.request.squad)]
     .map((name) => [name, entry.result.charTotals[name] ?? 0] as const)
@@ -163,9 +162,9 @@ function topScorers(entry: DeckResultEntry): Map<string, number> {
 }
 
 /**
- * 캐릭터별 결과 줄. 초상화 오른쪽에 막대와 총딜이 선다 — 덱을 갈아 가며 볼 때는
- * 카드보다 이쪽이 짧고, 막대 길이로 «누가 캐리했나»가 곧바로 읽힌다.
- * 여기서도 **편성 순서 그대로**이고, 딜 1·2위는 뱃지와 테두리로만 표시한다.
+ * Character result row. Bar and total damage appear to the right of portrait — when comparing decks,
+ * this is shorter than cards and bar length immediately shows who carried. **Keeps squad order as-is**;
+ * top 2 damage dealers shown only via badge and border.
  */
 function renderCharacterRows(
   container: HTMLElement,
@@ -223,9 +222,8 @@ function renderCharacterRows(
 }
 
 /**
- * 캐릭터별 결과 카드. **편성 순서 그대로** 왼쪽에서 오른쪽으로 선다 — 위 편성 카드와
- * 자리가 맞아야 «누가 얼마나»를 눈으로 그대로 잇는다. 딜 1·2위는 자리를 옮기지 않고
- * 뱃지와 테두리로만 표시한다.
+ * Character result card. **Keeps squad order as-is**, arranged left to right — must align with squad cards above
+ * to visually trace "who did how much". Top 2 damage dealers not repositioned; shown only via badge and border.
  */
 function renderCharacterCards(
   container: HTMLElement,
@@ -257,23 +255,23 @@ function renderCharacterCards(
       image.loading = 'lazy';
       portrait.append(image);
     }
-    if (rank) portrait.append(createText('b', `${rank}위`, 'result-rank-badge'));
+    if (rank) portrait.append(createText('b', `${rank}st`, 'result-rank-badge'));
     card.append(portrait);
 
     card.append(createText('h3', name));
-    card.append(createText('span', `${share.toFixed(1)}% 기여`, 'result-card-share'));
+    card.append(createText('span', `${share.toFixed(1)}% contributed`, 'result-card-share'));
     card.append(createText('strong', formatDamage(value)));
     card.append(createText('small', formatDps(value / entry.result.duration)));
 
     const track = document.createElement('div');
     track.className = 'share-track';
     const bar = document.createElement('i');
-    // 막대는 «1위 대비»로 그린다 — 기여%로 그리면 다섯이 다 짧아 차이가 안 보인다.
+    // Bar is drawn relative to 1st place — if drawn by contribution %, all five would be short and differences hidden.
     bar.style.width = `${best > 0 ? Math.max(2, value / best * 100) : 2}%`;
     track.append(bar);
     card.append(track);
 
-    // 평타/스킬 분해와 스킬별 내역. 카드가 좁으니 접어 둔다.
+    // Normal/skill breakdown and per-skill details. Card is narrow so collapsed by default.
     const breakdown = entry.result.charBreakdown?.[name];
     if (breakdown && value > 0) {
       const details = document.createElement('details');
@@ -282,8 +280,8 @@ function renderCharacterCards(
       const normalPct = breakdown.normal / value * 100;
       const skillPct = breakdown.skill / value * 100;
       const summary = document.createElement('summary');
-      summary.append(createText('span', `평타 ${normalPct.toFixed(0)}%`, 'legend-normal'));
-      summary.append(createText('span', `스킬 ${skillPct.toFixed(0)}%`, 'legend-skill'));
+      summary.append(createText('span', `Normal ${normalPct.toFixed(0)}%`, 'legend-normal'));
+      summary.append(createText('span', `Skill ${skillPct.toFixed(0)}%`, 'legend-skill'));
       details.append(summary);
 
       const splitTrack = document.createElement('div');
@@ -300,8 +298,8 @@ function renderCharacterCards(
       const legend = document.createElement('p');
       legend.className = 'split-legend';
       legend.append(
-        createText('span', `평타 ${formatDamage(breakdown.normal)}`, 'legend-normal'),
-        createText('span', `스킬 ${formatDamage(breakdown.skill)}`, 'legend-skill'),
+        createText('span', `Normal ${formatDamage(breakdown.normal)}`, 'legend-normal'),
+        createText('span', `Skill ${formatDamage(breakdown.skill)}`, 'legend-skill'),
       );
       details.append(legend);
 
@@ -312,7 +310,7 @@ function renderCharacterCards(
           const item = document.createElement('li');
           item.append(
             createText('span', skill.name),
-            createText('span', `${formatDamage(skill.damage)} · ${(skill.damage / value * 100).toFixed(1)}% · ${skill.hits}히트`),
+            createText('span', `${formatDamage(skill.damage)} · ${(skill.damage / value * 100).toFixed(1)}% · ${skill.hits} hits`),
           );
           list.append(item);
         }
@@ -325,12 +323,11 @@ function renderCharacterCards(
   container.append(grid);
 }
 
-// 블라블라링크 조회 프록시. 빌드 때 `VITE_BLABLA_PROXY`로 박히고, 비어 있으면 연동 UI를
-// 그리지 않는다 — 프록시 없이 브라우저에서 직접 부르면 CORS와 로그인 세션 두 가지가 동시에
-// 막아 반드시 실패한다(`worker/README.md`).
+// BlablaLink proxy. Baked at build time via `VITE_BLABLA_PROXY`; if empty, integration UI is not rendered
+// to prevent failures (with no proxy, browser direct calls fail on both CORS and login session constraints; see `worker/README.md`).
 const BLABLA_PROXY = (import.meta.env.VITE_BLABLA_PROXY ?? '').trim().replace(/\/+$/, '');
-// 설정 공유 서버(`worker-share/`). 비어 있으면 공유 모달이 코드 주고받기만 그린다 —
-// 서버 없이 부르면 반드시 실패하므로 탭을 만들어 두는 쪽이 더 헷갈린다.
+// Share server (`worker-share/`). If empty, share modal shows only code exchange tab —
+// calls without server would fail, so showing the tab would be more confusing.
 const SHARE_API = (import.meta.env.VITE_SHARE_API ?? '').trim().replace(/\/+$/, '');
 
 export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies): () => void {
@@ -342,11 +339,10 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
   decks[0]!.squad = initialSquad(catalog);
   let activeDeckId = 1;
   let activeSlot = 0;
-  // 겨냥한 칸을 화면으로 끌어오는 것은 **사용자가 칸을 바꿨을 때만** 한다.
-  // 결과가 도착해도 편성은 다시 그려지는데, 그때마다 끌어오면 결과를 보던 사람이
-  // 편성 쪽으로 튕겨 올라간다.
+  // Scroll target slot into view only when **user changes slot**.
+  // Even when results arrive, squad redraws, and scrolling every time would flip result viewers up to squad section.
   let pullActiveSlot = false;
-  // 다른 덱에 만들어 둔 개별 설정을 편성할 때 따라오게 할지. 기본은 켬이다.
+  // Whether to carry over individual settings created in other decks when forming. Default is on.
   let carryOverSettings = true;
   let fiveDeckMode = false;
   let activity: 'preparing' | 'ready' | 'running' | 'complete' | 'cached' | 'error' = 'preparing';
@@ -356,16 +352,16 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     const source = typeof storage === 'function' ? storage() : storage;
     return source ?? null;
   };
-  // jsdom에는 scrollIntoView가 없다. 화면을 끌어오는 건 편의라, 없는 환경에서는
-  // 건너뛰어도 렌더가 깨지지 않는다 — 직접 부르면 테스트가 처리되지 않은 오류로 끊긴다.
+  // jsdom has no scrollIntoView. Screen pulling is a convenience; in environments without it,
+  // skipping is fine as rendering doesn't break — calling directly causes tests to fail with unhandled error.
   const scrollTo = (el: HTMLElement) => {
     if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ block: 'start' });
   };
 
   const cloneOverride = (value: object): CharacterOverrides =>
     JSON.parse(JSON.stringify(value)) as CharacterOverrides;
-  // 예전 판(육성 프로필 불러오기)이 저장한 오버로드는 값이 **줄별 배열**일 수 있다.
-  // 지금은 스칼라만 다루므로 합계로 옮긴다 — 두면 요약을 그릴 때 toFixed에서 끊긴다.
+  // Legacy saves (load training profile) may store overload with **per-line arrays**.
+  // Now we handle scalars only, so migrate to sum — leaving as array breaks toFixed in summary rendering.
   const migrateOverloadLines = (overrides: CharacterOverrides | undefined) => {
     const overload = overrides?.overload as Record<string, unknown> | undefined;
     if (!overload) return;
@@ -390,18 +386,18 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     try {
       resolveStorage()?.setItem(ROSTER_KEY, JSON.stringify(roster));
     } catch {
-      /* 저장 실패는 무시 (용량·프라이빗 모드 등) */
+      /* Save failure ignored (storage limit, private mode, etc.) */
     }
   };
   let roster = loadRoster();
 
-  // 임의 니케(커스텀). localStorage에만 저장되고 요청마다 엔진에 주입된다.
+  // Custom NIKKE. Stored in localStorage only and injected into engine on each request.
   const customChars = loadCustom((key) => resolveStorage()?.getItem(key) ?? null);
   const saveCustom = () => {
     try {
       resolveStorage()?.setItem(CUSTOM_KEY, JSON.stringify(customChars));
     } catch {
-      /* 무시 */
+      /* Ignored */
     }
   };
   const registerCustom = (name: string) => {
@@ -417,20 +413,19 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
   const customPayload = (): Record<string, { nikke: Record<string, unknown>; skills: unknown[] }> =>
     Object.fromEntries(Object.entries(customChars).map(([n, c]) => [n, { nikke: c.nikke, skills: c.skills }]));
 
-  // 편성·설정·전투 조건을 localStorage에 저장해 새로고침해도 마지막 상태로 복원한다.
+  // Squad setup, settings, and battle conditions saved to localStorage for restoration on refresh.
   const STATE_KEY = 'nikke-state-v1';
   interface SavedState {
     decks: DeckState[];
     fiveDeckMode: boolean;
     activeDeckId: number;
-    /** 다른 덱의 개별 설정을 편성할 때 이어받을지. 옛 저장본에는 없다. */
+    /** Whether to carry over individual settings when forming with another deck. Old saves don't have this. */
     carryOverSettings: boolean;
     battle: BattleSettings;
     buffTargets: Array<{ id: number; sig: string; rows: Record<string, BuffTargetRow[]> }>;
   }
-  // 큐브 이름이 짧은 통칭에서 인게임 정식 명칭으로 바뀌었다. 이전 버전에서 저장된
-  // 편성에는 옛 이름이 남아 있어 그대로 두면 엔진이 요청을 거부한다. 불러올 때 한 번
-  // 옮겨주고, 카탈로그에 없는 이름은 캐릭터 기본값으로 되돌아가도록 지운다.
+  // Cube names changed from short nicknames to in-game official names. Previous saves have old names,
+  // which engine rejects if left as-is. Migrate on load and delete names not in catalog to revert to character defaults.
   const LEGACY_CUBE_NAMES: Record<string, string> = {
     재장: '렐릭 베어 큐브',
     탄충: '택티컬 베어 큐브',
@@ -461,7 +456,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     }
   };
   const savedState = loadSavedState();
-  // 실제 구현은 refs·readBattle이 준비된 뒤 할당한다. 그전 호출은 no-op.
+  // Actual implementation assigned after refs and readBattle are ready. Pre-assignment calls are no-op.
   let saveState: () => void = () => undefined;
 
   root.innerHTML = `
@@ -526,26 +521,26 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
         </div>
 
         <div class="union-step" data-union-step="2" hidden>
-          <h3>공개여부 확인</h3>
-          <p class="field-note">한 명씩 실제로 조회해 봐야 알 수 있습니다. 셋씩 동시에 부르며, 공개한 사람은 니케 상세까지 함께 받아 둡니다.</p>
+          <h3>Check Disclosure Status</h3>
+          <p class="field-note">You need to query each member individually. Checks run 3 at a time; disclosed members return full NIKKE details.</p>
           <div class="union-actions">
-            <button type="button" class="roster-import" data-union-scan>공개여부 스캔</button>
-            <button type="button" class="roster-import" data-union-scan-stop hidden>중단</button>
+            <button type="button" class="roster-import" data-union-scan>Scan Disclosure</button>
+            <button type="button" class="roster-import" data-union-scan-stop hidden>Stop</button>
             <span class="union-status" data-union-scan-status></span>
           </div>
           <div class="union-progress" data-union-scan-progress hidden><i></i></div>
 
           <details class="union-direct">
-            <summary>내 브라우저로 직접 긁기 — 「유니온원에게만 공개」까지 봅니다</summary>
-            <p class="field-note">위 스캔은 저희 서버를 거칩니다. 저희 계정은 이 유니온 소속이 아니라서, <b>「유니온원에게만 공개」로 둔 사람은 영원히 비공개로 보입니다</b>. 지휘관님 브라우저로 직접 긁으면 그분들까지 보입니다 — 서버를 안 거치는 쪽이 편한 분께도 이 길이 낫습니다.</p>
-            <p class="field-note">유니온원 수만큼 조회하므로 <b>32명이면 2~3분</b> 걸리고, 진행 상황이 콘솔에 한 줄씩 찍힙니다. 다 되면 위와 같은 방법으로 복사해 아래에 붙여넣으세요.</p>
+            <summary>Scrape directly from my browser — can see "disclosed to union members only"</summary>
+            <p class="field-note">The scan above goes through our server. Our account doesn't belong to this union, so <b>members who set "disclosed to union members only" appear private forever</b>. Scraping from your browser reveals them — also better for those preferring to skip our server.</p>
+            <p class="field-note">Queries equal to the number of union members, so <b>32 members takes 2-3 minutes</b>; progress prints line-by-line in console. When done, copy and paste below using the method above.</p>
             <textarea class="union-snippet" data-union-direct-snippet rows="3" readonly spellcheck="false"></textarea>
             <div class="union-actions">
-              <button type="button" class="roster-import" data-union-direct-copy>직접 긁기 스니펫 복사</button>
+              <button type="button" class="roster-import" data-union-direct-copy>Copy Direct Scrape Snippet</button>
             </div>
-            <textarea class="union-paste" data-union-direct-paste rows="3" placeholder="직접 긁은 자료를 여기에 붙여넣으세요 (NKU1-…)" spellcheck="false"></textarea>
+            <textarea class="union-paste" data-union-direct-paste rows="3" placeholder="Paste your direct scrape data here (NKU1-…)" spellcheck="false"></textarea>
             <div class="union-actions">
-              <button type="button" class="roster-import" data-union-direct-read>직접 긁은 자료 읽기</button>
+              <button type="button" class="roster-import" data-union-direct-read>Read Direct Scrape Data</button>
               <span class="union-status" data-union-direct-status></span>
             </div>
           </details>
@@ -553,34 +548,34 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
           <div class="union-members" data-union-members></div>
           <div class="union-ask" data-union-ask hidden>
             <p data-union-ask-text></p>
-            <button type="button" class="roster-import" data-union-pick-all>공개된 사람 전부 고르기</button>
-            <button type="button" class="roster-import" data-union-pick-none>전부 해제</button>
+            <button type="button" class="roster-import" data-union-pick-all>Select All Disclosed</button>
+            <button type="button" class="roster-import" data-union-pick-none>Deselect All</button>
           </div>
         </div>
 
         <div class="union-step" data-union-step="3" hidden>
-          <h3>보스와 덱</h3>
-          <p class="field-note">보스는 <b>전투 조건 코드</b>(NK3-), 덱은 <b>조합 코드</b>(NK2-)로 채웁니다. 계산기에 잡아 둔 설정을 가져오거나, <b>공유 목록에서 골라</b> 넣을 수도 있습니다. 체크를 끈 보스는 계산하지 않습니다 — 풍압엔 강한데 전격엔 약한 사람이 있으니까요.</p>
+          <h3>Bosses and Decks</h3>
+          <p class="field-note">Bosses use <b>battle condition codes</b>(NK3-), decks use <b>combination codes</b>(NK2-). Load saved settings or <b>pick from share list</b>. Unchecked bosses skip calculation — members strong against Wind may be weak to Electric.</p>
           <div class="union-board-bar">
-            <span class="union-board-label">판 전체</span>
-            <button type="button" class="roster-import" data-union-set-share>공유에서 판 고르기</button>
-            <button type="button" class="roster-import" data-union-set-paste>판 코드 붙여넣기</button>
-            <button type="button" class="roster-import" data-union-set-copy>이 판 코드 복사</button>
+            <span class="union-board-label">Entire Board</span>
+            <button type="button" class="roster-import" data-union-set-share>Pick Board from Shares</button>
+            <button type="button" class="roster-import" data-union-set-paste>Paste Board Code</button>
+            <button type="button" class="roster-import" data-union-set-copy>Copy This Board Code</button>
             <span class="union-status" data-union-set-status></span>
           </div>
-          <p class="field-note">보스 다섯과 각 칸의 덱까지 <b>한 코드</b>(NK4-)에 담깁니다 — 지난 시즌 판을 통째로 옮기거나 유니온방에 뿌릴 때 스무 번 붙여넣지 않아도 됩니다. <b>유니온원 명단은 담기지 않습니다.</b></p>
+          <p class="field-note">All five bosses and each slot's deck fit in <b>one code</b> (NK4-) — move last season's board wholesale or post to union without pasting 20 times. <b>Union member list not included.</b></p>
           <div class="union-set-box" data-union-set-box hidden>
-            <textarea class="custom-json" data-union-set-code rows="3" placeholder="판 코드 (NK4-…)"></textarea>
+            <textarea class="custom-json" data-union-set-code rows="3" placeholder="Board code (NK4-…)"></textarea>
             <div class="deck-copy-actions">
-              <button type="button" class="deck-copy-apply" data-union-set-apply>이 판 적용</button>
-              <button type="button" class="deck-copy-cancel" data-union-set-close>닫기</button>
+              <button type="button" class="deck-copy-apply" data-union-set-apply>Apply This Board</button>
+              <button type="button" class="deck-copy-cancel" data-union-set-close>Close</button>
             </div>
           </div>
           <div class="union-bosses" data-union-bosses></div>
 
           <div class="custom-modal" data-union-share-modal hidden>
-            <div class="custom-card share-card" role="dialog" aria-label="공유에서 고르기">
-              <div class="custom-head"><h2 data-union-share-title>공유에서 고르기</h2><button type="button" class="custom-close" data-union-share-close aria-label="닫기">✕</button></div>
+            <div class="custom-card share-card" role="dialog" aria-label="Pick from Shares">
+              <div class="custom-head"><h2 data-union-share-title>Pick from Shares</h2><button type="button" class="custom-close" data-union-share-close aria-label="Close">✕</button></div>
               <p class="custom-desc" data-union-share-desc></p>
               <div data-union-share-body></div>
               <p class="custom-msg" data-union-share-msg hidden></p>
@@ -589,11 +584,11 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
         </div>
 
         <div class="union-step" data-union-step="4" hidden>
-          <h3>시뮬레이션</h3>
-          <p class="field-note">유니온원 × 보스 × 덱을 하나씩 돌립니다. <b>오래 걸리니 창을 열어 둔 채 기다려 주세요</b> — 결과는 나오는 대로 아래에 쌓입니다.</p>
+          <h3>Simulation</h3>
+          <p class="field-note">Runs union member × boss × deck one by one. <b>Takes time, keep the tab open</b> — results stack below as they arrive.</p>
           <div class="union-actions">
-            <button type="button" class="roster-import union-run" data-union-run disabled>시뮬레이션 실행</button>
-            <button type="button" class="roster-import" data-union-stop hidden>중단</button>
+            <button type="button" class="roster-import union-run" data-union-run disabled>Run Simulation</button>
+            <button type="button" class="roster-import" data-union-stop hidden>Stop</button>
             <span class="union-status" data-union-run-status></span>
           </div>
           <div class="union-progress" data-union-run-progress hidden><i></i></div>
@@ -630,174 +625,173 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
       <form class="calculator-layout" data-view="calc" novalidate>
         <section class="panel squad-panel" aria-labelledby="squad-heading">
           <div class="section-heading">
-            <div><h2 id="squad-heading">편성 및 캐릭터 설정</h2></div>
+            <div><h2 id="squad-heading">Squad Setup & Character Settings</h2></div>
             <div class="squad-tools">
               <span class="roster-import-group">
-                <label class="roster-import" title="렛츠도로 니케정보 CSV를 불러와 모든 니케 설정에 적용">
+                <label class="roster-import" title="Load Lets Doro NIKKE info CSV and apply to all NIKKE settings">
                   <input id="roster-csv" type="file" accept=".csv,text/csv" hidden />
-                  <span>렛츠도로 CSV 불러오기</span>
+                  <span>Load Lets Doro CSV</span>
                 </label>
-                <button type="button" class="roster-info" data-doro-open aria-label="렛츠도로 CSV 받는 법" title="렛츠도로에서 CSV 받는 법">i</button>
+                <button type="button" class="roster-info" data-doro-open aria-label="How to get Lets Doro CSV" title="How to get CSV from Lets Doro">i</button>
               </span>
-              ${blablaProxy ? '<button type="button" class="roster-import" data-blabla-open title="블라블라링크 프로필 URL로 보유 니케의 육성을 한 번에 불러옵니다">블라블라링크 연동</button>' : ''}
-              <button type="button" class="roster-import" data-add-nikke title="미출시·미등록 니케를 직접 추가">새 니케 추가</button>
-              <button type="button" class="roster-import" data-share-open title="편성을 이 브라우저에 이름 붙여 저장하거나, 코드·링크로 주고받습니다. 개인 스펙과 전투 조건은 담기지 않습니다">프리셋 / 조합 공유</button>
-              <button type="button" class="roster-import danger" data-reset-all title="편성·설정·CSV 로스터·추가한 니케·저장된 결과를 모두 지우고 처음 상태로 되돌립니다">완전 초기화</button>
-              <label class="toggle-field mode-toggle" title="다른 덱에서 이미 만져 둔 개별 설정을 편성할 때 그대로 가져옵니다"><input id="carry-settings" type="checkbox" checked /><span class="toggle"></span><span>설정 이어받기</span></label>
-              <label class="toggle-field mode-toggle"><input id="squad-mode" type="checkbox" /><span class="toggle"></span><span>5덱 모드</span></label>
+              ${blablaProxy ? '<button type="button" class="roster-import" data-blabla-open title="Load NIKKE training status from Blablalink profile URL at once">Blablalink Integration</button>' : ''}
+              <button type="button" class="roster-import" data-add-nikke title="Add unreleased/unregistered NIKKE directly">Add New NIKKE</button>
+              <button type="button" class="roster-import" data-share-open title="Save formation to browser, share code/link. Personal stats and battle conditions not included">Preset / Share Combination</button>
+              <button type="button" class="roster-import danger" data-reset-all title="Clear all formations, settings, CSV roster, added NIKKE, saved results. Restore to initial state">Full Reset</button>
+              <label class="toggle-field mode-toggle" title="Carry individual settings from other decks when forming. Default on."><input id="carry-settings" type="checkbox" checked /><span class="toggle"></span><span>Carry Over Settings</span></label>
+              <label class="toggle-field mode-toggle"><input id="squad-mode" type="checkbox" /><span class="toggle"></span><span>5 Deck Mode</span></label>
             </div>
             <p class="roster-note" data-roster-note hidden></p>
           </div>
           <div class="deck-tabs" data-deck-tabs hidden></div>
           <div class="deck-controls">
             <span class="deck-moves" data-deck-moves hidden></span>
-            <button type="button" class="deck-clear" data-deck-clear title="지금 보고 있는 덱의 편성과 개별 설정을 비웁니다">덱 비우기</button>
+            <button type="button" class="deck-clear" data-deck-clear title="Clear formation and individual settings of current deck">Clear Deck</button>
           <div class="deck-copy" data-deck-copy hidden>
-            <button type="button" class="deck-copy-open" data-deck-copy-open>현재 덱 복사</button>
+            <button type="button" class="deck-copy-open" data-deck-copy-open>Copy Current Deck</button>
             <div class="deck-copy-panel" data-deck-copy-panel hidden>
               <p class="deck-copy-title" data-deck-copy-title></p>
               <div class="deck-copy-targets" data-deck-copy-targets></div>
               <div class="deck-copy-actions">
-                <button type="button" class="deck-copy-apply" data-deck-copy-apply>복사</button>
-                <button type="button" class="deck-copy-cancel" data-deck-copy-cancel>취소</button>
+                <button type="button" class="deck-copy-apply" data-deck-copy-apply>Copy</button>
+                <button type="button" class="deck-copy-cancel" data-deck-copy-cancel>Cancel</button>
               </div>
             </div>
           </div>
           </div>
-          <p class="deck-note" data-deck-note hidden>덱 사이에는 같은 캐릭터를 다시 편성할 수 있습니다.</p>
+          <p class="deck-note" data-deck-note hidden>Same character can be reused across decks.</p>
           <div class="squad-grid" data-squad-grid></div>
 
-          <!-- 니케 고르기. 창을 띄우지 않고 늘 펼쳐 두고, 검색은 이 판을 거른다.
-               「이름을 쳤는데 아무 일도 안 일어난다」가 지적된 지점이라, 결과를
-               감추는 자리를 없앴다. -->
-          <section class="picker" aria-label="니케 고르기">
+          <!-- Character picker. Always open, no modal. Search filters this panel.
+               User feedback noted "nothing happens when I type the name", which was from hidden results.
+               Removed hidden results area. -->
+          <section class="picker" aria-label="Select Character">
             <div class="picker-head">
-              <h3>니케 고르기 <span data-roster-count></span></h3>
+              <h3>Select Character <span data-roster-count></span></h3>
               <p class="picker-target" data-roster-desc></p>
             </div>
-            <input type="search" class="roster-search" data-roster-search placeholder="이름 · 초성 · 속성으로 찾기 (ㄹㅍ, 라피레드, 전격)" autocomplete="off" aria-label="니케 이름 검색" />
-            <!-- 정렬·필터는 판을 눌러 펼친다. 칩을 늘 깔아 두면 목록이 화면 밖으로
-                 밀리고, 필터가 몇 개 걸렸는지도 한눈에 안 들어온다. -->
+            <input type="search" class="roster-search" data-roster-search placeholder="Name · Initial · Attribute search (ㄹㅍ, Lapi Red, Electronic)" autocomplete="off" aria-label="NIKKE name search" />
+            <!-- Sort and filter open panel on click. Chips always shown would push list off-screen;
+                 filter count and status would be unclear at a glance. -->
             <div class="picker-bar">
               <button type="button" class="filter-open" data-filter-open aria-expanded="false">
-                <span>정렬 및 필터</span>
+                <span>Sort & Filter</span>
                 <b class="filter-badge" data-filter-badge hidden></b>
                 <span class="filter-caret" aria-hidden="true">▾</span>
               </button>
-              <!-- 버스트는 가장 자주 거르는 축이라 판 안에 넣지 않는다 — 판을 펼치지
-                   않고 바로 누를 수 있어야 한다. -->
+              <!-- Burst is most-filtered axis, not in panel — must clickable without opening panel. -->
               <div class="filter-chips burst-chips" data-burst-group></div>
-              <button type="button" class="filter-reset" data-filter-reset hidden>필터 지우기</button>
+              <button type="button" class="filter-reset" data-filter-reset hidden>Clear Filters</button>
               <span class="filter-summary" data-filter-summary></span>
             </div>
-            <!-- 판은 목록을 밀어내지 않고 그 «위에» 얹힌다. 밀어내면 펼칠 때마다
-                 목록이 화면 밖으로 내려가 무엇을 고르는 중이었는지 놓친다. -->
+            <!-- Panel overlays list, not pushes. Pushing would move list off-screen on every panel toggle,
+                 losing track of what you were choosing. -->
             <div class="picker-body">
               <div class="filter-panel" data-filter-panel hidden>
                 <div class="filter-section">
-                  <p class="filter-title">정렬</p>
+                  <p class="filter-title">Sort</p>
                   <div class="filter-chips" data-sort-group></div>
                 </div>
                 <div class="filter-rule"></div>
-                <p class="filter-title">필터</p>
+                <p class="filter-title">Filter</p>
                 <div class="filter-groups" data-filter-groups></div>
               </div>
               <div class="picker-scroll"><div class="roster-grid" data-roster-grid></div></div>
             </div>
-            <p class="roster-empty" data-roster-empty hidden>검색과 일치하는 니케가 없습니다.</p>
+            <p class="roster-empty" data-roster-empty hidden>No NIKKE matches search.</p>
           </section>
         </section>
 
         <section class="panel settings-panel" aria-labelledby="settings-heading">
           <div class="section-heading compact target-heading">
-            <div><h2 id="settings-heading">전투 조건</h2></div>
+            <div><h2 id="settings-heading">Battle Conditions</h2></div>
             <div class="target-actions">
-              <button type="button" class="reset-enemy" data-battle-share-open title="전투 조건을 코드로 만들어 공유하거나, 받은 코드를 붙여넣어 적용합니다">전투 조건 공유</button>
-              <button type="button" class="reset-enemy" data-reset-enemy>적 수치 초기화</button>
-              <button type="button" class="reset-enemy" data-clear-cache title="같은 조건에 저장된 결과를 지우고 다음 실행부터 새로 계산합니다">저장된 결과 지우기</button>
+              <button type="button" class="reset-enemy" data-battle-share-open title="Create code to share battle conditions or paste received code to apply">Share Battle Conditions</button>
+              <button type="button" class="reset-enemy" data-reset-enemy>Reset Enemy Stats</button>
+              <button type="button" class="reset-enemy" data-clear-cache title="Clear cached results for this condition. Recalculate on next run">Clear Saved Results</button>
             </div>
           </div>
-          <!-- 조건은 한 번 정해 두면 계속 쓰는 값이다. 그 자리에서 펼치면 편성이 화면
-               밖으로 밀리므로 창으로 띄우고, 이 줄에는 무엇으로 재는지만 한 줄로 남긴다. -->
-          <!-- 조건과 실행을 한 막대로 붙인다. 패널 사이에 단추만 덩그러니 뜨는 자리를
-               없애고, «이 조건으로 → 실행»이 한 줄로 읽히게 하려는 것이다. -->
+          <!-- Battle conditions are set once and reused. Expanding inline would push squad off-screen,
+               so they open in a modal. This line shows only what metric is active. -->
+          <!-- Bind conditions and run button on one bar. Avoids button floating between panels,
+               makes "these conditions → run" read as one line. -->
           <div class="cond-bar">
             <button type="button" class="battle-open" data-battle-open aria-expanded="false">
-              <span class="battle-open-label">전투 조건</span>
+              <span class="battle-open-label">Battle Conditions</span>
               <span class="battle-summary" data-battle-summary></span>
-              <span class="disclosure-hint" aria-hidden="true">열기 ›</span>
+              <span class="disclosure-hint" aria-hidden="true">Open ›</span>
             </button>
-            <button class="calculate-button run-inline" type="submit"><span>시뮬레이션 실행</span><b aria-hidden="true">→</b></button>
+            <button class="calculate-button run-inline" type="submit"><span>Run Simulation</span><b aria-hidden="true">→</b></button>
           </div>
-          <!-- 계산이 얼마나 빨리 끝나는지를 정하는 설정이라 실행 단추 바로 아래에 둔다. -->
+          <!-- Parallel calculation setting directly under run button — this affects performance. -->
           <div class="parallel-row">
-            <label class="toggle-field mode-toggle parallel-pick" title="계산을 여러 작업 스레드에 나눠 돌립니다. 이 기기의 코어를 더 쓰는 대신 5덱 계산이 몇 배 빨라집니다 — 계산은 이 기기에서 도는 것이라 서버 비용과는 무관합니다">
-              <input type="checkbox" data-parallel-toggle checked /><span class="toggle"></span><span>병렬 계산</span>
+            <label class="toggle-field mode-toggle parallel-pick" title="Divide calculation across multiple worker threads. Uses more device cores; speeds up 5-deck runs several times over — calculation runs on this device, no server cost impact.">
+              <input type="checkbox" data-parallel-toggle checked /><span class="toggle"></span><span>Parallel Calculation</span>
               <select data-parallel-size></select>
             </label>
           </div>
-          <p class="status" data-status aria-live="polite">계산 엔진 준비 중…</p>
-          <p class="battle-first-note" data-battle-first-note>계산하기 전에 <b>전투 조건을 한 번 확인해 주세요</b> — 몇 초짜리 전투인지, 적 코드가 무엇인지에 따라 결과가 완전히 달라집니다.</p>
-          <!-- 막힌 이유는 누른 단추 바로 아래에서 읽혀야 한다. -->
+          <p class="status" data-status aria-live="polite">Loading calculation engine…</p>
+          <p class="battle-first-note" data-battle-first-note>Before calculating, <b>verify battle conditions once</b> — results vary completely depending on battle duration and enemy code.</p>
+          <!-- Blocking reason must be readable directly under button pressed. -->
           <div class="error-box" data-errors hidden role="alert"></div>
 
-          <!-- 창은 조건 패널 «안»에 둔다 — 설정 입력을 지켜보는 리스너가 이 패널을
-               기준으로 걸려 있어, 밖으로 빼면 값을 바꿔도 저장되지 않는다. -->
+          <!-- Modal for conditions. Placed «inside» settings panel — event listeners watching settings
+               are scoped to this panel, moving outside breaks persistence on change. -->
           <div class="custom-modal" data-battle-modal hidden>
-          <div class="custom-card battle-card" role="dialog" aria-label="전투 조건">
-          <div class="custom-head"><h2>전투 조건</h2><button type="button" class="custom-close" data-battle-modal-close aria-label="닫기">✕</button></div>
+          <div class="custom-card battle-card" role="dialog" aria-label="Battle Conditions">
+          <div class="custom-head"><h2>Battle Conditions</h2><button type="button" class="custom-close" data-battle-modal-close aria-label="Close">✕</button></div>
           <div class="battle-body" data-battle-body>
           <div class="field-grid">
-            <label><span>전투 시간</span><div class="input-unit"><input id="duration" type="number" min="10" max="180" step="1" value="180" /><em>초</em></div></label>
-            <label><span>적 코드</span><select id="enemy-code"><option value="">없음</option><option value="풍압">풍압(작열weak)</option><option value="수냉">수냉(전격weak)</option><option value="작열">작열(수냉weak)</option><option value="전격">전격(철갑weak)</option><option value="철갑">철갑(풍압weak)</option></select></label>
-            <label><span>싱크로 레벨</span><div class="input-unit"><input id="synchro-level" type="number" min="1" max="${SYNCHRO_MAX}" step="1" value="${DEFAULT_SYNCHRO_LEVEL}" title="싱크로 디바이스 소대에 넣은 니케는 전원이 이 레벨이 됩니다. 계정 육성 상태라 전투 조건 공유 코드에는 담기지 않습니다. ${SYNCHRO_MEASURED_MAX}레벨까지는 실측값이고, 그 위는 같은 성장 곡선을 이어 붙여 계산합니다" /><em>Lv</em></div></label>
-            <label class="toggle-field"><input id="has-core" type="checkbox" /><span class="toggle"></span><span>코어 있음</span></label>
-            <label data-core-size><span>코어 직경</span><div class="input-unit"><input id="core-px" type="number" min="0" max="1000" step="1" value="52" disabled /><em>px</em></div></label>
-            <label class="toggle-field"><input id="has-parts" type="checkbox" /><span class="toggle"></span><span>파괴 가능 파츠</span></label>
+            <label><span>Battle Duration</span><div class="input-unit"><input id="duration" type="number" min="10" max="180" step="1" value="180" /><em>sec</em></div></label>
+            <label><span>Enemy Code</span><select id="enemy-code"><option value="">None</option><option value="풍압">Wind(Fire weak)</option><option value="수냉">Water(Electric weak)</option><option value="작열">Fire(Water weak)</option><option value="전격">Electric(Iron weak)</option><option value="철갑">Iron(Wind weak)</option></select></label>
+            <label><span>Synchro Level</span><div class="input-unit"><input id="synchro-level" type="number" min="1" max="${SYNCHRO_MAX}" step="1" value="${DEFAULT_SYNCHRO_LEVEL}" title="NIKKEs in Synchro Device squads all become this level. Account progression data; not included in share code. Values up to ${SYNCHRO_MEASURED_MAX} are measured; above that uses extrapolated curve." /><em>Lv</em></div></label>
+            <label class="toggle-field"><input id="has-core" type="checkbox" /><span class="toggle"></span><span>Core Present</span></label>
+            <label data-core-size><span>Core Diameter</span><div class="input-unit"><input id="core-px" type="number" min="0" max="1000" step="1" value="52" disabled /><em>px</em></div></label>
+            <label class="toggle-field"><input id="has-parts" type="checkbox" /><span class="toggle"></span><span>Destructible Parts</span></label>
           </div>
           <fieldset class="range-field">
-            <legend>적정거리</legend>
+            <legend>Optimal Range</legend>
             <div class="range-options" data-optimal-range></div>
-            <p class="field-note">고른 무기군의 <b>일반 공격</b>에만 대미지 보너스 +30%가 붙습니다 — 스킬 대미지에는 붙지 않습니다. 적과의 거리에 달린 조건이라 무기군 단위로 켭니다.</p>
+            <p class="field-note">Selected weapon type's <b>normal attack</b> gets +30% damage bonus only — skill damage not affected. Distance-dependent condition; applies at weapon-type level.</p>
           </fieldset>
 
-          <!-- 고급 설정 — 자주 손대지 않는 값과 보스 페이즈를 한자리에 접어 둔다. -->
+          <!-- Advanced settings — fold infrequently-changed values and boss phases together. -->
           <button type="button" class="disclosure" data-advanced-battle aria-expanded="false">
-            <span class="disclosure-label">고급 설정</span><span class="disclosure-hint">펼치기</span>
+            <span class="disclosure-label">Advanced Settings</span><span class="disclosure-hint">Expand</span>
           </button>
           <div class="disclosure-panel" data-advanced-battle-panel hidden>
             <div class="field-grid">
-              <label><span>적 방어력</span><input id="enemy-def" type="number" min="0" max="999999" step="1" value="31784" /></label>
-              <label><span>난수 시드</span><input id="seed" type="number" min="0" max="2147483647" step="1" value="42" /></label>
-              <label title="게이지 충전만의 시간입니다. 여기에 단계 전환 0.3초와 버스트 쿨 여유가 더해져 실제 공백은 더 깁니다."><span>버스트 게이지 충전</span><div class="input-unit"><input id="burst-regen" type="number" min="0" max="20" step="0.1" value="2" /><em>초</em></div></label>
-              <label class="toggle-field deck-regen-toggle" title="버스트 쿨이 밀리는 덱만 다른 값으로 재고 싶을 때 켭니다"><input id="burst-regen-per-deck" type="checkbox" /><span class="toggle"></span><span>버스트 충전을 덱마다 따로</span></label>
-              <label title="조건이 갖춰진 뒤 실제로 버스트를 누르기까지 걸리는 시간입니다. 버스트 하나하나마다 더해지므로 3단계까지 쓰면 그 세 배만큼 늦어집니다."><span>버스트 반응속도</span><div class="input-unit"><input id="burst-reaction" type="number" min="0" max="3" step="0.01" value="${DEFAULT_BURST_REACTION}" /><em>초</em></div></label>
-              <label><span>난수 처리</span><select id="rng-mode"><option value="expected">기대값 (권장)</option><option value="random">난수</option></select></label>
-              <label class="toggle-field" title="족자 구간에는 평타가 빗나가므로 게이지도 차지 않는 것으로 계산합니다. 켜면 그만큼 버스트가 밀립니다."><input id="immune-blocks-burst" type="checkbox" checked /><span class="toggle"></span><span>족자 중 버스트 충전 정지</span></label>
+              <label><span>Enemy Defense</span><input id="enemy-def" type="number" min="0" max="999999" step="1" value="31784" /></label>
+              <label><span>RNG Seed</span><input id="seed" type="number" min="0" max="2147483647" step="1" value="42" /></label>
+              <label title="Time for gauge charge only. Adds 0.3s phase transitions and burst cool allowance; actual downtime is longer."><span>Burst Gauge Charge Time</span><div class="input-unit"><input id="burst-regen" type="number" min="0" max="20" step="0.1" value="2" /><em>sec</em></div></label>
+              <label class="toggle-field deck-regen-toggle" title="When only some decks have tight burst timing, check to recalculate per-deck."><input id="burst-regen-per-deck" type="checkbox" /><span class="toggle"></span><span>Burst Charge Per Deck</span></label>
+              <label title="Time from condition met to actual burst press. Applies per-burst; 3 phases = three times the delay."><span>Burst Reaction Time</span><div class="input-unit"><input id="burst-reaction" type="number" min="0" max="3" step="0.01" value="${DEFAULT_BURST_REACTION}" /><em>sec</em></div></label>
+              <label><span>RNG Mode</span><select id="rng-mode"><option value="expected">Expected Value (Recommended)</option><option value="random">Random</option></select></label>
+              <label class="toggle-field" title="Phase immune blocks normal shots (no gauge charge). Check to account for resulting burst delay."><input id="immune-blocks-burst" type="checkbox" checked /><span class="toggle"></span><span>Phase Immune Blocks Burst Charge</span></label>
             </div>
             <div class="deck-regen-grid" data-deck-regen hidden></div>
-            <p class="field-note">기대값은 확률 대신 기대치를 태워 <b>같은 설정이면 언제나 같은 값</b>이 나옵니다. 난수는 인게임과 같은 분산을 재현하며 시드에 따라 결과가 흔들립니다.</p>
+            <p class="field-note">Expected value uses expected probability instead of variance — <b>same settings always produce same result</b>. Random reproduces in-game variance; results fluctuate by seed.</p>
 
             <fieldset class="range-field">
-              <legend>평타 계수</legend>
+              <legend>Normal Hit Coefficient</legend>
               <div class="coeff-options" data-hit-coeff></div>
-              <p class="field-note">실전에서 탄퍼짐으로 빗나가는 탄을 보정합니다. <b>평타에만</b> 곱하며 스킬·버스트와 변신 모드 사격은 조준 판정이라 손대지 않습니다. 기본값은 실측 대조로 뽑은 값이고(SG 0.90), 1.00이면 보정 없음입니다.</p>
+              <p class="field-note">Corrects for bullet spread causing misses in actual combat. Applied to <b>normal attacks only</b>; skills, bursts, and alt-mode fire use targeting judgment so left untouched. Default is measured value (SG 0.90); 1.00 = no correction.</p>
             </fieldset>
 
             <fieldset class="range-field phase-field">
-              <legend>보스 페이즈</legend>
+              <legend>Boss Phases</legend>
               <div class="phase-head">
-                <button type="button" class="phase-add" data-phase-add="immune">족자 추가 <b>+</b></button>
-                <button type="button" class="phase-add" data-phase-add="element">속저 추가 <b>+</b></button>
+                <button type="button" class="phase-add" data-phase-add="immune">Add Phase Immune <b>+</b></button>
+                <button type="button" class="phase-add" data-phase-add="element">Add Element Resist <b>+</b></button>
               </div>
               <div class="phase-list" data-phase-list></div>
-              <p class="field-note"><b>족자</b>는 평타만 빗나갑니다. 지속 대미지·스킬 대미지와 평타로 발동한 후속 공격은 계속 들어갑니다. <b>속저</b>는 고른 속성에 <b>우월한</b> 캐릭터의 딜만 통과시킵니다 — 풍압으로 두면 작열 캐릭터만 들어갑니다. 인게임처럼 <b>우월 코드 버프</b>로 우월해진 캐릭터도 통과합니다(라피 : 레드 후드 «부착형 유탄» 등).</p>
+              <p class="field-note"><b>Phase Immune</b> blocks normal shots only. Passive damage, skill damage, and follow-up attacks triggered by normal shots continue. <b>Element Resist</b> lets only <b>superior</b> attribute characters' damage pass — Wind resist = only Fire characters damage. Like in-game, <b>attribute superiority buff</b> also breaks resist (e.g., Lapi : Red Hood «Rocket Pod»).</p>
             </fieldset>
           </div>
           <section class="console-editor">
-            <h3>콘솔 <span>전초기지 재활용 연구실</span></h3>
+            <h3>Console <span>Forward Base Recycling Lab</span></h3>
             <div class="console-grid" data-console-grid></div>
-            <p class="field-note">계정 설정이라 스쿼드 전원에게 같이 적용됩니다. 클래스·기업은 인게임에서 소속별로 따로 크므로 각각 받습니다. 기업은 공격력, 공통·클래스는 체력을 올립니다 — 체력 계수를 쓰는 캐릭터(신데렐라 등)는 공통·클래스도 딜에 반영됩니다.</p>
+            <p class="field-note">Account-wide setting; applies to entire squad. Class and company are separate per affiliation in-game so listed separately. Company boosts attack; common and class boost health — characters using health coefficient (Cinderella, etc.) have common/class reflected in damage.</p></p>
           </section>
           </div>
           </div>
@@ -805,15 +799,15 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
         </section>
 
         <section class="panel result-panel" aria-labelledby="result-heading" data-result-panel>
-          <div class="result-empty"><h2 id="result-heading">전투 결과</h2><div class="radar-mark" aria-hidden="true"><i></i><i></i><i></i></div><p>편성과 조건을 확인한 뒤<br />시뮬레이션을 실행해 주세요.</p></div>
+          <div class="result-empty"><h2 id="result-heading">Battle Results</h2><div class="radar-mark" aria-hidden="true"><i></i><i></i><i></i></div><p>Verify squad setup and conditions<br />then run simulation.</p></div>
         </section>
       </form>
 
       <section class="panel timeline-panel" data-view="calc" aria-labelledby="timeline-heading" data-timeline-panel hidden>
-        <div class="section-heading compact"><div><h2 id="timeline-heading">전투 타임라인</h2></div></div>
+        <div class="section-heading compact"><div><h2 id="timeline-heading">Battle Timeline</h2></div></div>
         <div data-timeline-body></div>
       </section>
-      <footer><p>비공식 팬 제작 도구 · 실제 전투 환경과 차이가 있을 수 있습니다.</p><a href="https://github.com/Moris-kr/nikke-calc" target="_blank" rel="noreferrer">SOURCE / GITHUB ↗</a></footer>
+      <footer><p>Unofficial fan-made tool · may differ from actual battle environment.</p><a href="https://github.com/Moris-kr/nikke-calc" target="_blank" rel="noreferrer">SOURCE / GITHUB ↗</a></footer>
 
       <div class="custom-modal" data-history-modal hidden>
         <div class="custom-card roster-card" role="dialog" aria-label="계산 기록">
