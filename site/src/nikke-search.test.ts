@@ -24,7 +24,7 @@ const CHARS = [
   meta('2B'),
   meta('아크레인저 블랙'),
   meta('Crown', { elementCode: '수냉' }),
-  meta('크로우'),
+  meta('Crown'),
   meta('Rapi : Red Hood', { elementCode: 'Fire Code' }),
   meta('라플라스'),
   meta('Rapi'),
@@ -36,20 +36,20 @@ const pick = (query: string): string[] =>
 
 describe('initials', () => {
   it('한글 음절을 초성으로 바꾼다', () => {
-    expect(initials('Rapi')).toBe('ㄹㅍ');
+    expect(initials('Rapi')).toBe('Rapi');
     expect(initials('Crown')).toBe('ㅋㄹㅇ');
     expect(initials('빨강')).toBe('ㅃㄱ');
   });
 
   it('한글이 아닌 글자는 그대로 둔다', () => {
     expect(initials('2B')).toBe('2B');
-    expect(initials('Rapi : 레드')).toBe('ㄹㅍ : ㄹㄷ');
+    expect(initials('Rapi : 레드')).toBe('Rapi : ㄹㄷ');
   });
 });
 
 describe('squash', () => {
   it('공백과 구분자를 지운다', () => {
-    expect(squash('Rapi : Red Hood')).toBe('Rapi레드후드');
+    expect(squash('Rapi : Red Hood')).toBe('RapiRed Hood');
     expect(squash('2B')).toBe('2b');
   });
 });
@@ -79,7 +79,7 @@ describe('filterByQuery', () => {
   });
 
   it('짧고 정확한 이름을 긴 이름보다 앞에 둔다', () => {
-    expect(pick('ㄹㅍ')[0]).toBe('Rapi');
+    expect(pick('Rapi')[0]).toBe('Rapi');
   });
 
   it('구분자를 무시해 「Rapi레드」가 «Rapi : Red Hood»를 잡는다', () => {

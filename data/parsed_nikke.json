@@ -785,7 +785,7 @@
     "charge_time": 1.0,
     "full_charge_mult": 250.0
   },
-  "크로우": {
+  "Crown": {
     "rarity": "SSR",
     "element_code": "Fire Code",
     "class": "방어형",

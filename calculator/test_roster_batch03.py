@@ -9,7 +9,7 @@ from context.spec import build_config, build_squad
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCH = [
-    "엠마 : 택티컬 업", "은화 : 택티컬 업", "크로우", "자칼", "바이퍼",
+    "엠마 : 택티컬 업", "은화 : 택티컬 업", "Crown", "자칼", "바이퍼",
     "E.H.", "앤 : 미라클 페어리", "메어리", "페퍼", "밀크",
 ]
 
@@ -63,7 +63,7 @@ class RosterBatch03Test(unittest.TestCase):
         self.assertEqual([10.0, 10.0, 10.0], environment_intervals)
 
     def test_crow_jackal_and_viper_contracts(self):
-        self.assertTrue(_find("크로우", stat="atk_pct", effect_name="킬링타임"))
+        self.assertTrue(_find("Crown", stat="atk_pct", effect_name="킬링타임"))
         self.assertTrue(_find("자칼", stat="received_dmg_split"))
         self.assertTrue(_find("바이퍼", stat="burst_reentry", favorite=3))
         dot = _find("바이퍼", stat="dot_damage", favorite=2)[0]
@@ -112,16 +112,16 @@ class RosterBatch03Test(unittest.TestCase):
         self.assertEqual(["every:20s"], milk["trigger"]["timing"])
         self.assertTrue(_find("밀크", stat="burst_cooldown", favorite=1))
 
-        manager = BuffManager(build_squad(["앤 : 미라클 페어리", "크로우", "Rapi"]), {"enemy": {}})
+        manager = BuffManager(build_squad(["앤 : 미라클 페어리", "Crown", "Rapi"]), {"enemy": {}})
         manager.notify("burst_cast", 1.0, "앤 : 미라클 페어리")
         self.assertGreater(manager.get_buffs("Rapi", "__enemy__", 1.0)["atk_pct"], 0)
-        self.assertEqual(manager.get_buffs("크로우", "__enemy__", 1.0)["atk_pct"], 0)
+        self.assertEqual(manager.get_buffs("Crown", "__enemy__", 1.0)["atk_pct"], 0)
 
     def test_all_ten_run_in_valid_squads(self):
         cases = [
             ("엠마 : 택티컬 업", ["엠마 : 택티컬 업", "Crown", "test_B3"]),
             ("은화 : 택티컬 업", ["리틀 머메이드", "은화 : 택티컬 업", "test_B3"]),
-            ("크로우", ["리틀 머메이드", "Crown", "크로우"]),
+            ("Crown", ["리틀 머메이드", "Crown", "Crown"]),
             ("자칼", ["자칼", "Crown", "test_B3"]),
             ("바이퍼", ["리틀 머메이드", "바이퍼", "test_B3"]),
             ("E.H.", ["리틀 머메이드", "Crown", "E.H."]),

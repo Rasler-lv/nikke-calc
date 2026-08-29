@@ -115,7 +115,7 @@ SQUADS: dict[str, dict] = {
         "config": {"no_burst_char": "D : 킬러 와이프", "first_burst_time": 3.0},
         "seed": 42,
     },
-    "레이드_레드후드퀀시": {
+    "레이드_Red Hood퀀시": {
         # 커버: 민트, 프리카, 퀀시 : 이스케이프 퀸, Red Hood
         # 팀에 고정 1버가 없어 Rapi : Red Hood가 1버로 전환된다. Rapi를 Red Hood보다
         # 앞에 둬야 첫 사이클을 Red Hood가 1·2·3단계 독식하지 않는다.

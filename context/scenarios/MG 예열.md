@@ -26,11 +26,11 @@ MG는 사격을 지속할수록 발사 속도가 `fire_rate_min`(1/s) → `fire_
 
 `[리틀 머메이드(SMG,B1), Crown(MG,B2), Rapi : Red Hood(MG,B3), 루드밀라 : 윈터 오너(MG,B3), 프리바티(AR,B3)]`
 
-세 MG = Crown·Rapi:레드후드·루드밀라:윈터오너. 풀버스트 중 재장전 속도 +100%로 즉시 재장전, 버스트 간에는 부분 버프로 ~0.65s 재장전.
+세 MG = Crown·Rapi:Red Hood·루드밀라:윈터오너. 풀버스트 중 재장전 속도 +100%로 즉시 재장전, 버스트 간에는 부분 버프로 ~0.65s 재장전.
 
 ## 체크리스트
 
-`context/test.py`(TARGET=Rapi:레드후드, 위 스쿼드)로 시뮬 후 MG 일반사격 시각의 inter-shot 간격으로 fire_rate 측정.
+`context/test.py`(TARGET=Rapi:Red Hood, 위 스쿼드)로 시뮬 후 MG 일반사격 시각의 inter-shot 간격으로 fire_rate 측정.
 
 - [x] **Cold start**: 게임 시작 첫 발사 fire_rate ≈ 1/s, 이후 상승. (예열 0에서 출발) — Crown 첫 간격 1.0s → 0.383 → 0.233 … 확인 (2026-08-04)
 - [x] **풀버스트 즉시 재장전 직후**: fire_rate ≈ 60/s 유지 (예열 보존 — 재장전으로 리셋 안 됨). — 지속 사격 구간 간격 분포 0.0167s(=1프레임, 60/s) 437회 / 0.0333s 9회로 확인
