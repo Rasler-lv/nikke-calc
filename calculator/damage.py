@@ -1,10 +1,10 @@
 """
-Phase 4: 단일 히트 대미지 계산기
+Phase 4: Single-Hit Damage Calculator
 
 DealForm:
-  대미지 = ① 계수 × ② 공방차이 × ③ 보너스 × ④ 차지 × ⑤ 유형별 버프 × ⑥ 적 받는 × ⑦ 우월 코드
+  Damage = ① Coefficient × ② ATK/DEF Difference × ③ Bonus × ④ Charge × ⑤ Type Buffs × ⑥ Damage Taken (Target) × ⑦ Elemental Superiority
 
-사용법:
+How to Use:
   result = calc_damage(base_atk, enemy_def, buffs, weapon, hit_type)
   # result = {"damage": int, "is_crit": bool, "crit_frac": float}
 
@@ -91,12 +91,12 @@ def default_hit_type(**overrides) -> dict:
 # ── DealForm 각 항목 ──────────────────────────────────────────────────────
 
 def _factor1(weapon: dict, buffs: dict, hit_type: dict) -> float:
-    """① 계수 × (1 + 일반 공격 대미지 배율 %▲)"""
+    """① Coefficient × (1 + Normal Attack Damage Multiplier %▲)"""
     coeff = hit_type["coeff"]
     if coeff is None:
         coeff = weapon["damage_coeff"]
 
-    # normal_atk_dmg_pct는 기본 무기 일반 공격에만 적용
+    # normal_atk_dmg_pct Applies exclusively to base weapon basic attacks
     if hit_type["is_normal_atk"]:
         normal_bonus = buffs.get("normal_atk_dmg_pct", 0.0) / 100.0
     else:
