@@ -1,15 +1,15 @@
 """
-Phase 3-C: 버프 관리자
+Phase 3-C: Buff Manager
 
-설계:
-  - 효과 등록(parsed_skills, 장비, 큐브, 소장품) → 통일된 effect 포맷
-  - notify(event, t, caster) → timing 매칭 시 ActiveBuff 생성/갱신
-  - tick(t) → 만료 버프 제거, every:Ns 스킬 쿨타임 추적
-  - get_buffs(caster, target, t) → condition 재평가 후 buffs 딕셔너리 반환
+Design:
+  - Effect Registration: Convert input effects (parsed skills, equipment, cubes, collectibles) into a unified Effect format.
+  - notify(event, t, caster) → Create or refresh an ActiveBuff when event timing matches.
+  - tick(t) → Remove expired buffs and track skill cooldowns (every:Ns).
+  - get_buffs(caster, target, t) → Re-evaluate conditions and return a dictionary of active buffs.
 
-버프 합산 규칙:
-  - 대부분 stat: 단순 합산
-  - crit_rate: 기본 15% + 버프 합연산, 100% 상한
+Buff Stacking & Calculation Rules:
+  - Most Stats: Simple additive stacking (sum of all buff values).
+  - crit_rate: (Critical Rate): Base value (15%) + additive sum of buffs, capped at a maximum of 100%.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ from calculator.base_stat import NO_ITEM
 _DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 _TABLE_DIR = os.path.join(_DATA_DIR, "base_stat_tables")
 
-# hp_pct 100% 도달 판정 허용 오차 (부동소수점 나눗셈 오차 흡수)
+# hp_pct 100% Tolerance for reaching 100% threshold (absorbing floating-point division errors)
 _HP_EPS = 1e-6
 
 
@@ -37,15 +37,15 @@ def _load(path: str) -> Any:
 
 
 def _get_skill_lv(char: dict, eff: dict) -> str:
-    """eff의 source(스킬1/2/3)에 맞는 스킬 레벨 반환. skill_levels 없으면 skill_level fallback."""
+    """Returns the skill level corresponding to the source (Skill 1/2/3) of the effect.. skill_levels If missing skill_level fallback."""
     levels = char.get("skill_levels")
     if levels:
         src = eff.get("source", "")
-        if src == "스킬1":
+        if src == "Skill1":
             return str(levels.get("1", 10))
-        if src == "스킬2":
+        if src == "Skill2":
             return str(levels.get("2", 10))
-        if src == "스킬3":
+        if src == "Skill3":
             return str(levels.get("3", 10))
     return str(char.get("skill_level", 10))
 
@@ -53,22 +53,14 @@ def _get_skill_lv(char: dict, eff: dict) -> str:
 _NIKKE = _load(os.path.join(_DATA_DIR, "parsed_nikke.json"))
 _PARSED_SKILLS = _load(os.path.join(_DATA_DIR, "parsed_skills.json"))
 
-FAVORITE_MAX_STAGE = 3          # 애장품 단계는 0(미보유)~3
+FAVORITE_MAX_STAGE = 3          # Favorite Item phase ranges from 0 (not owned) to 3.
 
 
 def char_effects(name: str, favorite_stage: int | None = None) -> list[dict]:
-    """캐릭터의 활성 스킬 효과 목록. 애장품 단계에 맞는 슬롯 조합을 고른다.
-
-    애장품은 단계마다 스킬 슬롯 **하나**를 통째로 갈아끼운다. 어느 단계가 어느 슬롯을
-    바꾸는지는 캐릭터마다 다르고(`parsed_nikke.json`의 `favorite_slots`), 그래서
-    `parsed_skills.json`에는 한 캐릭터의 슬롯마다 판본이 둘 있다 —
-    `favorite: N`이 붙은 항목은 **애장품 N단계 판본**, 안 붙은 항목은 **기본(비애장품) 판본**.
-
-    단계 S에서는 1~S단계가 교체한 슬롯은 애장품 판본을, 나머지 슬롯은 기본 판본을 쓴다.
-    애장품이 없는 캐릭터는 단계와 무관하게 파싱된 항목 전부를 그대로 쓴다.
-
-    필요한 판본이 아직 파싱돼 있지 않으면 **끊는다** — 그대로 두면 그 슬롯의 스킬이
-    통째로 빠진 채 조용히 낮은 딜이 나온다.
+    """List of active skill effects for the character. Selects the slot combination corresponding to the Favorite Item phase.
+    Favorite Items completely swap out a single Skill slot with each phase. Which phase replaces which slot varies by character (favorite_slots in parsed_nikke.json), so parsed_skills.json contains two versions for a single character's slot — entries tagged with favorite: N are the Favorite Item Phase N versions, while untagged entries are the base (non-Favorite Item) versions.
+    At Phase S, slots replaced by phases 1 through S use their respective Favorite Item versions, while the remaining slots use their base versions. Characters without a Favorite Item use all parsed entries as-is, regardless of phase.
+    If a required version hasn't been parsed yet, fail fast — leaving it as-is will quietly yield lower damage due to the slot's Skill being completely omitted.
     """
     effs = _PARSED_SKILLS.get(name, [])
     slots: list[int] = _NIKKE.get(name, {}).get("favorite_slots") or []
@@ -78,49 +70,49 @@ def char_effects(name: str, favorite_stage: int | None = None) -> list[dict]:
     stage = FAVORITE_MAX_STAGE if favorite_stage is None else int(favorite_stage)
     if not 0 <= stage <= FAVORITE_MAX_STAGE:
         raise ValueError(
-            f"[{name}] 애장품 단계는 0~{FAVORITE_MAX_STAGE}여야 한다 (favorite_stage={favorite_stage})"
+            f"[{name}] Favorite Item phase must be between 0 and {FAVORITE_MAX_STAGE} (favorite_stage={favorite_stage})"
         )
 
-    # 슬롯 → 그 슬롯에 실제로 쓸 판본. 애장품 판본이면 그 단계, 기본 판본이면 None.
+    # Slot → Actual version to use for that slot. If it's a Favorite Item version, its phase; if it's the base version, None.
     want: dict[int, int | None] = {
         slot: (i + 1 if i + 1 <= stage else None) for i, slot in enumerate(slots)
     }
     out = [eff for eff in effs
-           if eff.get("favorite") == want[int(eff["source"].removeprefix("스킬"))]]
+           if eff.get("favorite") == want[int(eff["source"].removeprefix("Skill"))]]
 
     missing = sorted(slot for slot in want
-                     if not any(eff["source"] == f"스킬{slot}"
+                     if not any(eff["source"] == f"Skill{slot}"
                                 and eff.get("favorite") == want[slot] for eff in effs))
     if missing:
-        kind = {slot: ("애장품 %d단계" % want[slot]) if want[slot] else "기본(비애장품)"
+        kind = {slot: (f"Favorite Item Phase {want[slot]}" if want[slot] else "Base (Non-Favorite Item)")
                 for slot in missing}
         raise ValueError(
-            f"[{name}] 애장품 {stage}단계로 돌리려면 필요한 스킬 판본이 "
-            f"data/parsed_skills.json에 없다: "
-            + ", ".join(f"스킬{slot}({k})" for slot, k in kind.items()) + "\n"
-            f"  이대로 두면 그 슬롯의 효과가 통째로 빠져 딜이 조용히 낮게 나온다.\n"
-            f"  ① 그 판본을 파싱한다 — char-add 단계 2 (`.agent/skills/char-add/PARSE.md`)\n"
-            f"  ② 파싱 전이라면 애장품 3단계(`favorite_stage: 3`)로만 돌린다"
+            f"[{name}] The Skill version required to run at Favorite Item Phase {stage} "
+            f"is missing from data/parsed_skills.json: "
+            + ", ".join(f"Skill{slot}({k})" for slot, k in kind.items()) + "\n"
+            f"  Leaving this as-is will completely omit that slot's effects, quietly resulting in lower damage output.\n"
+            f"  ① Parse that version — char-add step 2 (`.agent/skills/char-add/PARSE.md`)\n"
+            f"  ② If unparsed, run only at Favorite Item Phase 3 (`favorite_stage: 3`)"
         )
     return out
 _EQUIP_SKILLS = _load(os.path.join(_TABLE_DIR, "equipment_skills.json"))
 _CUBE = _load(os.path.join(_TABLE_DIR, "cube.json"))
 _COLLECTION = _load(os.path.join(_TABLE_DIR, "collection.json"))
 
-# ── 빈 buffs 딕셔너리 템플릿 ──────────────────────────────────────────────
+# ── Empty buffs Dictionary template ──────────────────────────────────────────────
 
 _BUFFS_ZERO: dict[str, Any] = {
     "atk_pct":          0.0,
     "atk_flat":         0.0,
     "def_ignore_pct":   0.0,
-    "crit_rate":        0.0,   # 아래 _CRIT_RATE_STATS 경로에서 별도 합산
-    "crit_rate_skill":  0.0,   # 같은 경로. 일반 공격 한정 크리율을 뺀 값 (스킬 딜용)
+    "crit_rate":        0.0,   # Following _CRIT_RATE_STATS Separately aggregated
+    "crit_rate_skill":  0.0,   # Same path. Value with normal attack-specific crit rate excluded (Skill Damage Calculation)
     "crit_dmg":         0.0,   # 아래 _CRIT_DMG_STATS 경로에서 별도 합산
-    "crit_dmg_skill":   0.0,   # 같은 경로. 일반 공격 한정 크리뎀을 뺀 값 (스킬 딜용)
+    "crit_dmg_skill":   0.0,   # Same path. Value with normal attack-specific crit rate excluded (Skill Damage Calculation)
     "core_dmg_pct":     0.0,
     "atk_dmg_pct":                  0.0,
     "burst_dmg_pct":                0.0,
-    "burst_dmg_aoe_pct":            0.0,   # 대상이 '적 전체'인 버스트 대미지에만 가산
+    "burst_dmg_aoe_pct":            0.0,   # Added only to Burst Damage targeting 'All Enemies'
     "pierce_dmg_pct":               0.0,
     "dot_dmg_pct":                  0.0,
     "armor_break_dmg_pct":          0.0,
@@ -137,11 +129,11 @@ _BUFFS_ZERO: dict[str, Any] = {
     "element_bonus_pct": 0.0,
     "is_element_match": False,
     "def_pct":          0.0,
-    "enemy_def_down_pct": 0.0,  # 적 방어력 감소(②). 적 대상 def_pct 버프 합(음수)
+    "enemy_def_down_pct": 0.0,  # Enemy DEF reduction (②). Sum of def_pct buffs on the enemy target (negative value)
     "charge_speed_pct": 0.0,
-    "charge_time_flat": 0.0,  # 차지 시간 절대 가감(초). 감소는 음수
+    "charge_time_flat": 0.0,  # Flat charge time modifier (seconds). Decreases are negative values
     "charge_time_fixed": False,
-    "persona_state": False,   # 페르소나 상태 마커. 수치 기여 없이 대상 판정에만 쓴다
+    "persona_state": False,   # Persona state marker. Used only for target determination without numerical contribution
     "charge_speed_buff_immune": False,
     "charge_speed_debuff_immune": False,
     "debuff_immune": False,
@@ -153,21 +145,21 @@ _BUFFS_ZERO: dict[str, Any] = {
     "accuracy_pct":     0.0,
     "normal_atk_dmg_pct": 0.0,
     "reload_speed_pct": 0.0,
-    "burst_cooldown":   0.0,  # 버스트 쿨타임 감소 (buff 상태로 지속)
-    "max_hp_pct":       0.0,  # 최대 체력 + 현재 체력 동반 증가
-    "max_hp_only_pct":  0.0,  # 최대 체력만 증가 (현재 체력 유지)
+    "burst_cooldown":   0.0,  # Burst Cooldown Reduction (maintained as a buff status)
+    "max_hp_pct":       0.0,  # Simultaneous increase of Max HP and Current HP
+    "max_hp_only_pct":  0.0,  # Increase Max HP only (Current HP maintained)
     "lifesteal_pct":    0.0,
     "def_caster_based_pct": 0.0,
     "taunt":            False,
     "pierce_enabled":   False,
-    "armor_break_enabled": False,  # 일반 공격을 방어력 무시 대미지로 치환
+    "armor_break_enabled": False,  # Converts Normal Attacks into Defense-Piercing Damage
     "attack_speed_pct": 0.0,
     "pellet_count":     0.0,
-    "pellet_count_fixed": 0.0,  # >0이면 펠릿 수를 이 값으로 고정 (절대값)
-    "fullburst_duration": 0.0,  # 풀버스트 타임 지속 시간 증감 (초)
-    "skill_cooldown_pct": 0.0,  # 스킬 쿨타임 % 감소 (음수 = 감소)
-    "charge_speed_overflow_conversion_pct": 0.0,  # charge_speed 100% 초과분 × N% → charge_dmg_pct 추가
-    "mg_warmup_speed_pct": 0.0,  # MG 예열 진행 속도 % (음수 = 감소). -100이면 warmup_shots 증가 정지
+    "pellet_count_fixed": 0.0,  # If > 0, fixes pellet count to this value (absolute value)
+    "fullburst_duration": 0.0,  # Full Burst Time duration adjustment (seconds)
+    "skill_cooldown_pct": 0.0,  # Skill 
+    "charge_speed_overflow_conversion_pct": 0.0,  # charge_speed 100% Overflow × N% → charge_dmg_pct Additional
+    "mg_warmup_speed_pct": 0.0,  # MG Ramp-up Speed % (Negative = Reduction). If -100, stop warmup_shots increase
 }
 
 # parsed_skills stat → buffs 딕셔너리 키 매핑
@@ -241,7 +233,7 @@ _STAT_TO_BUFF: dict[str, str] = {
 # 크리확률로 합산되는 stat 집합 (백분율 → 확률 환산 후 기본 15%와 합연산)
 _CRIT_RATE_STATS = {"crit_rate", "normal_atk_crit_rate"}
 # 원문이 `[일반 공격 크리티컬 확률 n% ▲]`인 것들(헬름 진두지휘·율리아 데크레센도 3).
-# 이 기여는 **스킬 딜의 크리 판정에 실리면 안 된다** — 그래서 합을 둘로 낸다.
+# 이 기여는 **Skill 딜의 크리 판정에 실리면 안 된다** — 그래서 합을 둘로 낸다.
 _NORMAL_ATK_ONLY_CRIT_RATE_STATS = {"normal_atk_crit_rate"}
 
 # 크리 대미지도 같은 구조다. 합연산 자체는 평범하지만 일반 공격 한정분을 빼야 해서
@@ -250,7 +242,7 @@ _CRIT_DMG_STATS = {"crit_dmg", "normal_atk_crit_dmg"}
 _NORMAL_ATK_ONLY_CRIT_DMG_STATS = {"normal_atk_crit_dmg"}
 
 # **소스별로 따로 반올림되는** buff_key. 인게임은 이 둘을 합산 후 한 번 반올림하지 않고,
-# 소스(장비 옵션 단계·큐브·소장품·스킬 버프 하나) 각각을 기본값에 곱해 눈금
+# 소스(장비 옵션 단계·큐브·소장품·Skill 버프 하나) 각각을 기본값에 곱해 눈금
 # (장탄 1발 / 차지 0.01초)에 맞춰 반올림한 뒤 그 결과를 더한다
 # (유저 인게임 확인, 2026-08-19 — GAMEPLAY.md §무기 메카닉).
 # 그래서 get_buffs는 합계 말고 **그룹별 기여 목록**(`buffs["_quant_parts"]`)도 함께 낸다.
@@ -264,7 +256,7 @@ def _quant_group_key(ab) -> tuple:
 
     장비 옵션은 **종류·레벨이 모두 같으면 부위가 달라도 한 그룹**이다(유저 확인) —
     그래서 장비 효과는 `_quant_group` 태그를 달고 오고 태그가 같으면 합쳐진다.
-    스킬 버프는 효과 하나가 한 그룹이라(같은 버프가 여러 번 걸리면 합산 후 1회 반올림)
+    Skill 버프는 효과 하나가 한 그룹이라(같은 버프가 여러 번 걸리면 합산 후 1회 반올림)
     효과 객체 id를 그대로 쓴다. 시전자를 함께 넣어 서로 다른 캐릭터가 건 같은 효과가
     한 그룹으로 섞이지 않게 한다.
     """
@@ -345,7 +337,7 @@ def _has_runtime_cond(conditions: list, expires: float) -> bool:
     """
     이 버프가 get_buffs 시점마다 조건을 재평가해야 하는지.
 
-    스킬 텍스트 문법상 조건은 **발동 시점 게이트**이고 `[N초 유지]`는 버프 자체의
+    Skill 텍스트 문법상 조건은 **발동 시점 게이트**이고 `[N초 유지]`는 버프 자체의
     지속시간이다 (예: "■ ... 시 소드 코인 상태라면 ... [10초 유지]" → 발동 순간
     소드 코인이면 그때부터 10초. 도중에 소드 코인이 풀려도 10초는 끝까지 간다).
     따라서 유한 duration 버프는 재평가 대상이 아니다.
@@ -488,7 +480,7 @@ class BuffManager:
         # 등록된 효과 목록: (effect, caster_name)
         self._effects: list[tuple[dict, str]] = []
 
-        # 캐릭터명 → 애장품 단계까지 반영한 스킬 효과 목록 (`char_effects()`)
+        # 캐릭터명 → 애장품 단계까지 반영한 Skill 효과 목록 (`char_effects()`)
         self._char_effects_cache: dict[str, list[dict]] = {}
 
         # 활성 버프 목록
@@ -590,7 +582,7 @@ class BuffManager:
     # ── 등록 ─────────────────────────────────────────────────────────────
 
     def char_effects(self, name: str) -> list[dict]:
-        """스쿼드 멤버의 활성 스킬 효과 목록 (그 캐릭터의 애장품 단계 기준).
+        """스쿼드 멤버의 활성 Skill 효과 목록 (그 캐릭터의 애장품 단계 기준).
 
         모듈 함수 `char_effects()`와 달리 단계를 캐릭터 dict에서 읽는다. 효과 목록을
         순서대로 되짚는 타임라인 쪽 코드도 `_PARSED_SKILLS` 대신 이걸 써야 한다 —
@@ -608,7 +600,7 @@ class BuffManager:
             # parsed_skills (애장품 단계에 맞는 슬롯 판본만)
             for eff in self.char_effects(name):
                 self._effects.append((eff, name))
-            # 장비 스킬 (부위별 개별 옵션)
+            # 장비 Skill (부위별 개별 옵션)
             for part_data in char["equipment"].values():
                 for sk in part_data.get("skills", []):
                     eff = self._make_equip_effect(sk["id"], sk["lv"])
@@ -621,12 +613,12 @@ class BuffManager:
                     if eff:
                         eff = {**eff, "name": "장비 옵션"}
                         self._effects.append((eff, name))
-            # 큐브 스킬 (공통 + 종류별)
+            # 큐브 Skill (공통 + 종류별)
             cube_name = char["cube"]["name"]
             cube_lv = char["cube"]["level"]
             for eff in self._make_cube_effects(cube_name, cube_lv):
                 self._effects.append((eff, name))
-            # 소장품 무기군 스킬
+            # 소장품 무기군 Skill
             for eff in self._make_collection_effects(char):
                 self._effects.append((eff, name))
             # 브라우저 고급 설정: 캐릭터 개인에게만 적용되는 영구 수치.
@@ -738,7 +730,7 @@ class BuffManager:
         """큐브 효과 목록.
 
         `공통`(우월 코드 공격 대미지)은 소장품의 `공통`과 마찬가지로 **어떤 큐브를 끼든
-        항상 붙는다** — 모든 큐브의 두 번째 스킬이 같기 때문이다. 큐브 이름으로 고른
+        항상 붙는다** — 모든 큐브의 두 번째 Skill이 같기 때문이다. 큐브 이름으로 고른
         효과는 그 위에 추가된다.
 
         `unsupported`가 달린 항목(계산기 미구현 stat·조건부 발동)은 등록하지 않는다.
@@ -749,7 +741,7 @@ class BuffManager:
         `type: instant` + 트리거 타이밍으로 오는 것도 있다. instant는 duration이 없다
         (`parsed_skills.json`의 instant와 같은 모양이어야 타임라인 핸들러가 받는다).
         """
-        # 큐브를 안 끼면 «공통»(우월 코드 대미지)도 붙지 않는다 — 그것도 큐브의 스킬이다.
+        # 큐브를 안 끼면 «공통»(우월 코드 대미지)도 붙지 않는다 — 그것도 큐브의 Skill이다.
         if cube_name == "없음":
             return []
         names = ["공통"]
@@ -821,7 +813,7 @@ class BuffManager:
 
     def _make_collection_effects(self, char: dict) -> list[dict]:
         stage = char["collection_stage"]
-        if stage == NO_ITEM:        # 미장착 — 플랫 스탯도 스킬도 없다
+        if stage == NO_ITEM:        # 미장착 — 플랫 스탯도 Skill도 없다
             return []
         entry = _COLLECTION["_stat_table"].get(stage)
         if entry is None:
@@ -834,7 +826,7 @@ class BuffManager:
         weapon = _NIKKE[char["name"]]["weapon_type"]
         effects = []
 
-        # common 스킬들
+        # common Skill들
         for skill_name, skill_data in _COLLECTION["common"].items():
             if rarity_prefix not in skill_data:
                 continue
@@ -854,7 +846,7 @@ class BuffManager:
                 "_source_tag": "collection",
             })
 
-        # 무기군 스킬
+        # 무기군 Skill
         weapon_data = _COLLECTION.get(weapon)
         if weapon_data and rarity_prefix in weapon_data:
             val = weapon_data[rarity_prefix][idx]
@@ -894,7 +886,7 @@ class BuffManager:
         """
         타임라인이 instant stat 핸들러를 등록한다.
         handler(eff, caster, t, val) 시그니처.
-        val: fixed_value 또는 현재 스킬 레벨 수치 (없으면 None).
+        val: fixed_value 또는 현재 Skill 레벨 수치 (없으면 None).
         """
         self._instant_handlers[stat] = handler
 
@@ -958,10 +950,10 @@ class BuffManager:
 
         # ── 내장 처리 ──────────────────────────────────────────────────────
 
-        # force_skill_use — `[스킬 N 강제 사용]`
+        # force_skill_use — `[Skill N 강제 사용]`
         #
         # `target_skill` 슬롯의 **활성 판본**(그 캐릭터의 애장품 단계 기준) 효과를 전부
-        # 즉시 1회 발동한다. 슬롯 단위인 이유는 원문이 효과가 아니라 스킬을 지목하기
+        # 즉시 1회 발동한다. 슬롯 단위인 이유는 원문이 효과가 아니라 Skill을 지목하기
         # 때문이고, 애장품 판본이 슬롯마다 갈리는 캐릭터에서는 "대상 슬롯 항목들의
         # timing에 battle_start를 얹는" 우회가 단계 조합과 어긋난다 (율리아 애장품 1단계
         # — 강제 사용은 슬롯2 판본에 적혀 있는데 대상 슬롯1은 아직 기본 판본).
@@ -1001,7 +993,7 @@ class BuffManager:
             }
             return
 
-        # skill_cooldown_reduce_pct — 스킬 재사용 시간 N% ▼ (즉시 1회)
+        # skill_cooldown_reduce_pct — Skill 재사용 시간 N% ▼ (즉시 1회)
         #
         # 대상 캐릭터가 시전자인 `every:Ns` 효과의 **남은 시간에만** (1 - N/100)을 곱한다.
         # `interval` 자체는 건드리지 않으므로 다음 주기는 원래 길이로 복귀한다 —
@@ -1274,7 +1266,7 @@ class BuffManager:
             return
 
         # named_buff_duration_extend: target_effect 이름의 활성 버프 _end_t += fixed_value
-        # "퍼포먼스"를 지정하면 "퍼포먼스", "퍼포먼스 2", "퍼포먼스 3" 등 동일 스킬 부속 버프 모두 연장
+        # "퍼포먼스"를 지정하면 "퍼포먼스", "퍼포먼스 2", "퍼포먼스 3" 등 동일 Skill 부속 버프 모두 연장
         if stat == "named_buff_duration_extend":
             target_name = eff.get("target_effect", "")
             if target_name and val is not None:
@@ -1512,7 +1504,7 @@ class BuffManager:
             n = self._apply_trigger_count_reduce(n, eff, caster, t)
             return count % n == 0
 
-        # hit_count:[스킬명]:N — named damage effect 명중 N회마다
+        # hit_count:[Skill명]:N — named damage effect 명중 N회마다
         if timing.startswith("hit_count:") and event.startswith("hit_count:") and event != "hit_count":
             parts = timing.split(":", 2)
             if len(parts) == 3 and f"hit_count:{parts[1]}" == event:
@@ -1524,7 +1516,7 @@ class BuffManager:
             return False
 
         # hit_count:N  (trigger_count_reduce 버프로 N 감소 가능)
-        # hit_count:{0} 형태면 trigger_values에서 현재 스킬 레벨 기준 N을 꺼냄
+        # hit_count:{0} 형태면 trigger_values에서 현재 Skill 레벨 기준 N을 꺼냄
         if timing.startswith("hit_count:") and event == "hit_count":
             raw = timing.split(":")[1]
             if raw.startswith("{") and raw.endswith("}"):
@@ -1680,7 +1672,7 @@ class BuffManager:
                 if self.state.get("burst_casted", {}).get(burst_check_char):
                     return False
             elif cond.startswith("prob:"):
-                # prob:{0} 형태면 trigger_values에서 현재 스킬 레벨 기준 확률을 꺼낸다
+                # prob:{0} 형태면 trigger_values에서 현재 Skill 레벨 기준 확률을 꺼낸다
                 # (timing의 hit_count:{0}과 같은 규약 — 토브 `급조 탄환` 기본 판본)
                 raw = cond.split(":", 1)[1]
                 if raw.startswith("{") and raw.endswith("}"):
@@ -1851,7 +1843,7 @@ class BuffManager:
                     return False
             elif cond == "core_hit":
                 # 코어 유무는 enemy["core_px"]가 정본 (>=1이면 코어 있음, 0이면 없음).
-                # 기본공격의 코어히트는 명중률·탄착군 확률이지만, 이 condition이 붙은 스킬은
+                # 기본공격의 코어히트는 명중률·탄착군 확률이지만, 이 condition이 붙은 Skill은
                 # "코어가 활성화된 적"을 대상으로 하는 확정 발동이다.
                 if float(self.state.get("enemy", {}).get("core_px", 0) or 0) < 1:
                     return False
@@ -2867,7 +2859,7 @@ class BuffManager:
         if val is None:
             return None
         if stat in _CRIT_RATE_STATS:
-            # key 자리에 「일반 공격 한정인가」를 싣는다 — 스킬 딜용 합에서 뺄 기여를 가린다
+            # key 자리에 「일반 공격 한정인가」를 싣는다 — Skill Damage Calculation 합에서 뺄 기여를 가린다
             return (_PLAN_CRIT, stat in _NORMAL_ATK_ONLY_CRIT_RATE_STATS, val / 100)
         if stat in _CRIT_DMG_STATS:
             return (_PLAN_CDMG, stat in _NORMAL_ATK_ONLY_CRIT_DMG_STATS, val)
@@ -3299,7 +3291,7 @@ class BuffManager:
         return None
 
     def _get_value(self, eff: dict, ab: ActiveBuff, query_caster: str | None = None, stack_override: int | None = None) -> float | None:
-        """효과 항목에서 현재 스킬 레벨 + 스택 기준 수치 반환. %값 그대로 반환."""
+        """효과 항목에서 현재 Skill 레벨 + 스택 기준 수치 반환. %값 그대로 반환."""
         if "fixed_value" in eff:
             base = float(eff["fixed_value"])
         elif "values" in eff:
@@ -3506,7 +3498,7 @@ class BuffManager:
         if target.startswith("allies_without_buff:"):
             buff_name = target.split(":", 1)[1]
             return [n for n in self.squad_names if not self._has_self_state(n, buff_name)]
-        # "직전에 버스트 스킬을 사용한 [무기] 아군 전체" — burst_casted ∩ 무기유형.
+        # "직전에 버스트 Skill을 사용한 [무기] 아군 전체" — burst_casted ∩ 무기유형.
         # burst_casted condition은 시전자 기준으로만 평가돼 대상 필터로 쓸 수 없어 target으로 둔다.
         if target.startswith("allies_burst_casted_weapon:"):
             wtype = target.split(":", 1)[1]
@@ -3544,7 +3536,7 @@ class BuffManager:
             burst_stages = self.state.get("burst_stages", {})
             return [n for n in self.squad_names
                     if n != caster and burst_stages.get(n) == "3" and self._has_persona_state(n)]
-        # "직전에 버스트 스킬을 사용한 기본 버스트 단계 Step 3 아군" — burst_casted ∩ B3.
+        # "직전에 버스트 Skill을 사용한 기본 버스트 단계 Step 3 아군" — burst_casted ∩ B3.
         # allies_burst_casted_weapon:과 같은 취지다 — burst_casted를 condition으로 두면
         # 시전자 기준으로만 평가돼 "누가 버스트를 썼나"를 대상 필터로 쓸 수 없다.
         if target == "allies_burst_casted_burst3":
@@ -3733,7 +3725,7 @@ class BuffManager:
         for name in self.squad_names:
             self.notify("battle_start", t, name)
         # 단일 보스 가정: 전투 시작 시 일반 적 등장과 타겟(보스) 출현이
-        # 같은 시점에 각각 한 번 발생한다. 두 문구는 스킬 원문에서 별개라
+        # 같은 시점에 각각 한 번 발생한다. 두 문구는 Skill 원문에서 별개라
         # 이벤트 이름을 합치지 않는다(D `기습`).
         for name in self.squad_names:
             self.notify("event:enemy_spawn", t, name)
