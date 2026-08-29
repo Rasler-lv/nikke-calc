@@ -466,61 +466,61 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
 
   root.innerHTML = `
     <div class="site-shell">
-      <p class="site-notice"><a href="https://gall.dcinside.com/mgallery/board/view/?id=gov&amp;no=6038781" target="_blank" rel="noreferrer">설명서 확인, 문의, 피드백, 착한말 등은 여기로 →</a></p>
+      <p class="site-notice"><a href="https://gall.dcinside.com/mgallery/board/view/?id=gov&amp;no=6038781" target="_blank" rel="noreferrer">Check the guide, ask questions, share feedback, or leave kind words here →</a></p>
       <header class="hero">
         <div class="hero-copy">
           <p class="eyebrow">BROWSER SIM <span>·</span> 60 FPS TIMELINE</p>
-          <h1><span>NIKKE</span> 스쿼드 계산기</h1>
-          <p class="hero-lede">캐릭터별 오버로드와 큐브, 전투 조건을 반영해 프레임 단위 예상 대미지를 계산합니다.</p>
-          <div class="trust-row" aria-label="서비스 특징"><span>${catalog.length}명 지원</span><span class="online-now" data-online hidden title="최근 1~2분 사이에 이 계산기를 연 사람 수입니다. 탭을 숨기면 세지 않습니다"><b class="online-dot" aria-hidden="true"></b><span data-online-text></span></span><button type="button" class="notice-open" data-notice-open title="지금까지 무엇이 바뀌었는지 봅니다">업데이트 내역</button><a class="credit-link" href="https://github.com/Jgaram/nikke-calc" target="_blank" rel="noreferrer noopener" title="이 계산기의 원본 저장소">원본 알고리즘 개발자에게 무한한 감사를</a></div>
+          <h1><span>NIKKE</span> Squad Calculator</h1>
+          <p class="hero-lede">Calculates expected damage in frame units by reflecting each character's overload, cubes, and combat conditions.</p>
+          <div class="trust-row" aria-label="Service features"><span>${catalog.length} characters supported</span><span class="online-now" data-online hidden title="The number of people who opened this calculator in the last 1-2 minutes. It does not count when the tab is hidden."><b class="online-dot" aria-hidden="true"></b><span data-online-text></span></span><button type="button" class="notice-open" data-notice-open title="See what has changed so far">Changelog</button><a class="credit-link" href="https://github.com/Jgaram/nikke-calc" target="_blank" rel="noreferrer noopener" title="Original repository for this calculator">Endless thanks to the original algorithm developer</a></div>
         </div>
         <div class="hero-orbit" aria-hidden="true"><span>01</span><strong>LOCAL<br />SIM</strong></div>
       </header>
 
-      <nav class="view-tabs" aria-label="화면 전환">
-        <button type="button" class="view-tab is-on" data-view-tab="calc" aria-pressed="true">계산기</button>
-        ${blablaProxy ? '<button type="button" class="view-tab" data-view-tab="union" aria-pressed="false">유니온 레이드<b class="tab-beta">BETA</b></button>' : ''}
-        <button type="button" class="view-tab" data-view-tab="enikk" aria-pressed="false">ENIKK 조합 가져오기</button>
-        <button type="button" class="view-tab" data-view-tab="links" aria-pressed="false">외부고리</button>
+      <nav class="view-tabs" aria-label="Switch views">
+        <button type="button" class="view-tab is-on" data-view-tab="calc" aria-pressed="true">Calculator</button>
+        ${blablaProxy ? '<button type="button" class="view-tab" data-view-tab="union" aria-pressed="false">Union Raid<b class="tab-beta">BETA</b></button>' : ''}
+        <button type="button" class="view-tab" data-view-tab="enikk" aria-pressed="false">Import ENIKK team</button>
+        <button type="button" class="view-tab" data-view-tab="links" aria-pressed="false">External links</button>
       </nav>
 
       <section class="panel links-panel" data-view="links" aria-labelledby="links-heading" hidden>
         <div class="section-heading">
-          <div><p class="step">LINKS</p><h2 id="links-heading">외부고리</h2></div>
+          <div><p class="step">LINKS</p><h2 id="links-heading">External links</h2></div>
         </div>
-        <p class="links-lede">니케를 굴리는 데 쓰는 <b>다른 사람들의 도구</b>입니다. 새 탭에서 열립니다.</p>
-        <p class="links-warn"><b>여기 적힌 곳은 우리가 운영하지 않습니다.</b> 계산기에 넣어 둔 값이나 계정 정보가 저쪽으로 넘어가지 않고, 저쪽 내용·주소가 바뀌어도 우리가 알지 못합니다.</p>
+        <p class="links-lede">These are <b>tools used by others</b> to play NIKKE. They will open in a new tab.</p>
+        <p class="links-warn"><b>We do not operate the places listed here.</b> Values or account information entered in the calculator do not get sent there, and we are not aware if their content or addresses change.</p>
         <div class="links-grid" data-links-grid></div>
       </section>
 
       ${blablaProxy ? `
       <section class="panel union-panel" data-view="union" aria-labelledby="union-heading" hidden>
         <div class="section-heading">
-          <div><p class="step">UNION</p><h2 id="union-heading">유니온 레이드 <b class="beta-tag">BETA</b></h2></div>
+          <div><p class="step">UNION</p><h2 id="union-heading">Union Raid <b class="beta-tag">BETA</b></h2></div>
         </div>
-        <div class="union-modes" role="group" aria-label="계산 대상">
-          <button type="button" class="union-mode is-on" data-union-mode="union" aria-pressed="true">유니온</button>
-          <button type="button" class="union-mode" data-union-mode="personal" aria-pressed="false">개인용</button>
+        <div class="union-modes" role="group" aria-label="Calculation target">
+          <button type="button" class="union-mode is-on" data-union-mode="union" aria-pressed="true">Union</button>
+          <button type="button" class="union-mode" data-union-mode="personal" aria-pressed="false">Personal</button>
         </div>
-        <p class="union-lede" data-union-lede-union>유니온원 <b>각자의 실제 스펙과 싱크로 레벨</b>로 같은 보스·같은 덱을 돌려, 누가 얼마나 기여할 수 있는지 견줍니다. 니케 목록을 공개한 사람만 계산할 수 있습니다.</p>
-        <p class="union-lede" data-union-lede-personal hidden><b>내 스펙만</b> 씁니다. 명단을 가져올 필요 없이, 보스마다 다른 전투 조건을 걸고 덱을 세 개까지 돌려 한눈에 견줍니다 — 계산기에 잡아 둔 싱크로·콘솔·니케 육성을 그대로 씁니다.</p>
+        <p class="union-lede" data-union-lede-union>Compares how much each person can contribute by running the same boss and deck with <b>each person's actual specs and synchro level</b>. Only those who have disclosed their NIKKE roster can calculate.</p>
+        <p class="union-lede" data-union-lede-personal hidden>Uses only <b>my specs</b>. You can set different combat conditions for each boss and run up to three decks at once to compare at a glance — uses the synchro, console, and NIKKE training saved in the calculator as is.</p>
 
         <div class="union-step" data-union-step="1">
-          <h3>유니온 명단 가져오기</h3>
-          <p class="field-note">유니온원 명단은 <b>지휘관님 로그인으로만</b> 열립니다(우리 서버로는 막혀 있습니다). 그래서 한 번만 직접 떠 오시면 됩니다 — 쿠키나 비밀번호는 저희가 만지지 않습니다.</p>
+          <h3>Importing Union Roster</h3>
+          <p class="field-note">The union roster opens only with <b>Commander login</b> (blocked from our server). So you only need to fetch it directly once — we do not handle cookies or passwords.</p>
           <ol class="union-guide">
-            <li>블라블라링크에 로그인한 채 <b>유니온 스퀘어</b>를 엽니다.</li>
-            <li><kbd>F12</kbd> → <b>Console</b> 탭에 아래 내용을 붙여넣고 <kbd>Enter</kbd>.</li>
-            <li>명단이 클립보드에 담깁니다. 아래 상자에 붙여넣으세요.</li>
-            <li>클립보드가 막혀 있으면 <b>페이지에 상자가 뜨고 내용이 전부 선택돼 있습니다</b> — <kbd>Ctrl</kbd>+<kbd>A</kbd> → <kbd>Ctrl</kbd>+<kbd>C</kbd>로 복사한 뒤 <b>✕</b>나 <kbd>Esc</kbd>, 또는 상자 바깥을 눌러 닫으면 됩니다.</li>
+            <li>Open <b>Union Square</b> while logged into Blablalink.</li>
+            <li>Paste the following into the <b>Console</b> tab after pressing <kbd>F12</kbd>, then press <kbd>Enter</kbd>.</li>
+            <li>The roster will be copied to the clipboard. Paste it into the box below.</li>
+            <li>If the clipboard is blocked, a box will appear on the page with the content selected — copy it using <kbd>Ctrl</kbd>+<kbd>A</kbd> → <kbd>Ctrl</kbd>+<kbd>C</kbd>, then close the box by clicking <b>✕</b> or <kbd>Esc</kbd>, or tapping outside the box.</li>
           </ol>
           <textarea class="union-snippet" data-union-snippet rows="3" readonly spellcheck="false"></textarea>
           <div class="union-actions">
-            <button type="button" class="roster-import" data-union-copy>스니펫 복사</button>
+            <button type="button" class="roster-import" data-union-copy>Copy Snippet</button>
           </div>
-          <textarea class="union-paste" data-union-paste rows="3" placeholder="여기에 명단을 붙여넣으세요" spellcheck="false"></textarea>
+          <textarea class="union-paste" data-union-paste rows="3" placeholder="Paste the roster here" spellcheck="false"></textarea>
           <div class="union-actions">
-            <button type="button" class="roster-import" data-union-read>명단 읽기</button>
+            <button type="button" class="roster-import" data-union-read>Read Roster</button>
             <span class="union-status" data-union-list-status></span>
           </div>
         </div>
@@ -603,24 +603,24 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
 
       <section class="panel enikk-panel" data-view="enikk" aria-labelledby="enikk-heading" hidden>
         <div class="section-heading">
-          <div><p class="step">ENIKK</p><h2 id="enikk-heading">ENIKK 조합 가져오기</h2></div>
+          <div><p class="step">ENIKK</p><h2 id="enikk-heading">Import ENIKK team</h2></div>
         </div>
-        <p class="enikk-lede">enikk.app 솔로레이드 랭킹에서 <b>그 사람이 실제로 쓴 5덱을 통째로</b> 가져옵니다. 최신 시즌 상위 <b>300명</b>(KR·JP·GLOBAL·NA·TW-HK·SEA 각 50명)이 대상이고, 누르면 우리 5덱에 그대로 깔립니다.</p>
-        <p class="enikk-warn" data-enikk-warn>불러오는 데 <b>5~10초쯤</b> 걸립니다 — enikk에서 300명분을 한 번에 받아오기 때문입니다. 받아온 뒤에는 이 브라우저에 저장해 두고 다시 받지 않습니다.</p>
+        <p class="enikk-lede">Imports <b>the actual top 5 decks</b> used by players from the enikk.app solo raid rankings. Targets the top <b>300 players</b> (50 each from KR·JP·GLOBAL·NA·TW-HK·SEA), and applies directly to our 5-deck setup when clicked.</p>
+        <p class="enikk-warn" data-enikk-warn>It takes <b>5-10 seconds</b> to import — this is because enikk sends data for 300 players at once. After importing, the data is saved in this browser and won't be fetched again.</p>
         <div class="enikk-actions">
-          <button type="button" class="roster-import" data-enikk-load>조합 가져오기</button>
-          <button type="button" class="roster-import" data-enikk-refresh hidden>다시 받기</button>
+          <button type="button" class="roster-import" data-enikk-load>Import team</button>
+          <button type="button" class="roster-import" data-enikk-refresh hidden>Refresh</button>
           <span class="enikk-status" data-enikk-status></span>
         </div>
         <div class="enikk-exclude">
-          <label class="enikk-exclude-label" for="enikk-exclude">제외할 니케</label>
+          <label class="enikk-exclude-label" for="enikk-exclude">Exclude NIKKE</label>
           <div class="enikk-exclude-row">
-            <input id="enikk-exclude" type="search" list="enikk-exclude-list" placeholder="안 가진 니케 이름을 넣으세요" autocomplete="off" data-enikk-exclude-input />
+            <input id="enikk-exclude" type="search" list="enikk-exclude-list" placeholder="Enter the names of NIKKE you don't own" autocomplete="off" data-enikk-exclude-input />
             <datalist id="enikk-exclude-list" data-enikk-exclude-options></datalist>
-            <button type="button" class="roster-import" data-enikk-exclude-add>추가</button>
+            <button type="button" class="roster-import" data-enikk-exclude-add>Add</button>
           </div>
           <div class="enikk-exclude-chips" data-enikk-exclude-chips></div>
-          <p class="field-note">넣은 니케가 낀 덱은 <b>가져오기에서 빠집니다</b>. 그 니케가 없어도 짤 수 있는 조합만 남기려는 것입니다.</p>
+          <p class="field-note">Decks containing excluded NIKKE will be <b>skipped during import</b>. This is to keep only the combinations that can be made without the excluded characters.</p>
         </div>
         <div class="enikk-summary" data-enikk-summary hidden></div>
         <div class="enikk-compare" data-enikk-compare hidden></div>
@@ -1335,7 +1335,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     try {
       resolveStorage()?.setItem(NOTICE_KEY, LATEST_NOTICE_ID);
     } catch {
-      /* 저장 실패는 무시 — 다음에 한 번 더 뜰 뿐이다 */
+      /* 저장 실패는 무시 — 다음에 한 번 더 뜬다 */
     }
   };
   element<HTMLButtonElement>(root, '[data-notice-open]').addEventListener('click', openNotice);
@@ -3987,7 +3987,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     const go = document.createElement('span');
     go.className = 'link-go';
     go.setAttribute('aria-hidden', 'true');
-    go.textContent = '새 탭에서 열기 ↗';
+    go.textContent = 'Open in new tab ↗';
 
     card.append(head, note, go);
     linksGrid.append(card);
