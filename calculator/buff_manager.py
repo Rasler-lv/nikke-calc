@@ -264,7 +264,7 @@ def _quant_group_key(ab) -> tuple:
 
     장비 옵션은 **종류·레벨이 모두 같으면 부위가 달라도 한 그룹**이다(유저 확인) —
     그래서 장비 효과는 `_quant_group` 태그를 달고 오고 태그가 같으면 합쳐진다.
-    스킬 버프는 효과 하나가 한 그룹이라(같은 버프가 여러 번 걸리면 합산 후 1회 반올림)
+    스킬 버프는 효과 하Naga 한 그룹이라(같은 버프가 여러 번 걸리면 합산 후 1회 반올림)
     효과 객체 id를 그대로 쓴다. 시전자를 함께 넣어 서로 다른 캐릭터가 건 같은 효과가
     한 그룹으로 섞이지 않게 한다.
     """
@@ -273,7 +273,7 @@ def _quant_group_key(ab) -> tuple:
 
 
 def _equip_option_groups(stat: str, val) -> list[float]:
-    """`equip_skills` 항목 하나 → **그룹별 합산 퍼센트** 목록. 그룹당 효과 하나가 된다.
+    """`equip_skills` 항목 하나 → **그룹별 합산 퍼센트** 목록. 그룹당 효과 하Naga 된다.
 
     스칼라는 그대로 한 그룹이다 — 오버로드 줄이 전부 같은 레벨이면 어차피 한 그룹으로
     합쳐지므로, 기본 스펙(레벨 10 2줄 = 129.64)은 이 표기 그대로 정확하다.
@@ -1740,7 +1740,7 @@ class BuffManager:
             elif cond == "squad_ally_exists":
                 # 소속 스쿼드(카운터스·이지스 등, parsed_nikke["squad"])가 같은 아군이
                 # 자신 외에 편성돼 있어야 True. 의상 버전도 원본과 같은 스쿼드일 수 있다
-                # (라피 : 레드 후드 = Counters). 스쿼드가 없는 더미 캐릭터는 False.
+                # (Rapi : Red Hood = Counters). 스쿼드가 없는 더미 캐릭터는 False.
                 my_squad = _NIKKE.get(caster, {}).get("squad")
                 if not my_squad or not any(
                     _NIKKE.get(n, {}).get("squad") == my_squad
@@ -2795,7 +2795,7 @@ class BuffManager:
         """이 버프의 기여가 `_active`가 그대로인 동안 절대 변하지 않는가.
 
         참이면 값을 한 번만 구해 `_build_plan`에 박아 둘 수 있다. **보수적으로 판정한다** —
-        애매하면 거짓을 돌려 매 조회 재평가시키는 쪽이 언제나 안전하다. 거짓 하나가
+        애매하면 거짓을 돌려 매 조회 재평가시키는 쪽이 언제나 안전하다. 거짓 하Naga
         늘어봐야 원래 하던 일을 그대로 할 뿐이고, 참을 잘못 주면 조용히 틀린다.
 
         각 조건이 막는 것:
@@ -3144,7 +3144,7 @@ class BuffManager:
                 buffs["charge_speed_pct"] = 0.0
                 parts_by_key["charge_speed_pct"] = []
 
-        # charge_speed 100% 초과분을 charge_dmg_pct로 환산 (레드 후드)
+        # charge_speed 100% 초과분을 charge_dmg_pct로 환산 (Red Hood)
         conv = buffs["charge_speed_overflow_conversion_pct"]
         if conv > 0.0:
             overflow = max(0.0, buffs["charge_speed_pct"] - 100.0)
@@ -3768,7 +3768,7 @@ if __name__ == "__main__":
 
     squad = [
         {
-            "name": "크라운",
+            "name": "Crown",
             "level": 200, "breakthrough": 3, "core_enhancement": 7,
             "affinity": 30, "skill_levels": {"1": 10, "2": 10, "3": 10},
             "equipment": {
@@ -3783,14 +3783,14 @@ if __name__ == "__main__":
         },
     ]
 
-    state = {"full_burst": False, "hp_pct": {"크라운": 100.0}, "hp": {"크라운": 0.0}, "base_stats": {}}
+    state = {"full_burst": False, "hp_pct": {"Crown": 100.0}, "hp": {"Crown": 0.0}, "base_stats": {}}
 
     bm = BuffManager(squad, state)
     bm.battle_start(0.0)
     bm.tick(0.0)
 
-    buffs = bm.get_buffs("크라운", "크라운", 0.0)
-    print("크라운 self 버프:")
+    buffs = bm.get_buffs("Crown", "Crown", 0.0)
+    print("Crown self 버프:")
     for k, v in buffs.items():
         if v:
             print(f"  {k}: {v}")

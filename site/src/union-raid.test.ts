@@ -10,7 +10,7 @@ import { encodeBattleCode, encodeShareCode } from './share-code';
 import type { BattleSettings, DeckState } from './types';
 
 const battle: BattleSettings = {
-  duration: 90, synchroLevel: 400, enemyDef: 31_784, enemyCode: '전격', coreEnabled: false,
+  duration: 90, synchroLevel: 400, enemyDef: 31_784, enemyCode: '', coreEnabled: false,
   corePx: 52, hasParts: false, seed: 42, optimalRangeWeapons: [], normalHitCoeff: {},
   immuneWindows: [], elementWindows: [], rngMode: 'expected', immuneBlocksBurst: false,
   console: { common_level: 0, class_level: {}, company_level: {} }, burstRegenTime: 1,
@@ -168,7 +168,7 @@ describe('보스·덱 칸', () => {
     const slot = readBossCode({ name: '', code, enabled: true, decks: [] });
     expect(slot.error).toBeUndefined();
     expect(slot.battle?.duration).toBe(90);
-    expect(slot.battle?.enemyCode).toBe('전격');
+    expect(slot.battle?.enemyCode).toBe('');
     expect(slot.battle?.console.common_level).toBe(0);
     expect(Object.keys(slot.battle!.console.class_level).sort())
       .toEqual(['방어형', '지원형', '화력형']);
@@ -181,10 +181,10 @@ describe('보스·덱 칸', () => {
   });
 
   it('조합 코드에서 니케 다섯을 뽑는다', () => {
-    const deck: DeckState = { id: 1, squad: ['리타', '라피', '', '', ''], characters: {} };
+    const deck: DeckState = { id: 1, squad: ['Liter', 'Rapi', '', '', ''], characters: {} };
     const code = encodeShareCode([deck], false);
-    const slot = readDeckCode({ code }, ['리타', '라피']);
-    expect(slot.squad?.slice(0, 2)).toEqual(['리타', '라피']);
+    const slot = readDeckCode({ code }, ['Liter', 'Rapi']);
+    expect(slot.squad?.slice(0, 2)).toEqual(['Liter', 'Rapi']);
     expect(slot.error).toBeUndefined();
   });
 });
@@ -192,7 +192,7 @@ describe('보스·덱 칸', () => {
 describe('돌릴 것 늘어놓기', () => {
   const bossWith = (over: Partial<BossSlot> = {}): BossSlot => ({
     name: '보스', code: 'x', enabled: true, battle,
-    decks: [{ code: 'a', squad: ['리타', '라피', '', '', ''] }], ...over,
+    decks: [{ code: 'a', squad: ['Liter', 'Rapi', '', '', ''] }], ...over,
   });
 
   it('체크 해제한 보스는 아예 돌리지 않는다', () => {
@@ -223,19 +223,19 @@ describe('돌릴 것 늘어놓기', () => {
 
 describe('유니온원 로스터로 덱 짜기', () => {
   it('안 가진 니케가 있으면 이름을 돌려준다 — 기본 스펙으로 채우지 않는다', () => {
-    const roster = { 리타: { growthStage: 3 } };
-    const { deck, missing } = deckForMember(['리타', '라피', '', '', ''], roster);
-    expect(missing).toEqual(['라피']);
-    expect(Object.keys(deck.characters)).toEqual(['리타']);
-    expect(deck.squad).toEqual(['리타', '라피', '', '', '']);
+    const roster = { Liter: { growthStage: 3 } };
+    const { deck, missing } = deckForMember(['Liter', 'Rapi', '', '', ''], roster);
+    expect(missing).toEqual(['Rapi']);
+    expect(Object.keys(deck.characters)).toEqual(['Liter']);
+    expect(deck.squad).toEqual(['Liter', 'Rapi', '', '', '']);
   });
 
   it('로스터 자체가 없으면(개인용·CSV 미입력) 기본 스펙으로 돌린다', () => {
     // 그때 빠진 이름은 «못 가졌다»가 아니라 «모른다»다. 전부 미보유로 막으면
     // 개인용 모드가 한 판도 못 돈다.
-    const { deck, missing } = deckForMember(['리타', '라피', '', '', ''], {}, true);
+    const { deck, missing } = deckForMember(['Liter', 'Rapi', '', '', ''], {}, true);
     expect(missing).toEqual([]);
-    expect(deck.squad).toEqual(['리타', '라피', '', '', '']);
+    expect(deck.squad).toEqual(['Liter', 'Rapi', '', '', '']);
     expect(Object.keys(deck.characters)).toEqual([]);
   });
 });
@@ -244,19 +244,19 @@ describe('결과 접기', () => {
   it('유니온원 → 보스 → 덱 순서로 접는다', () => {
     const job = (name: string, bossIndex: number, bossName: string, deckIndex: number) => ({
       member: member({ name, openid: name }), bossIndex, bossName, deckIndex,
-      squad: ['리타'], battle,
+      squad: ['Liter'], battle,
     });
     const results: JobResult[] = [
       { job: job('가', 1, '2보스', 1), damage: 20 },
       { job: job('가', 0, '1보스', 1), damage: 10 },
       { job: job('가', 0, '1보스', 0), damage: 30 },
-      { job: job('나', 0, '1보스', 0), missing: ['라피'] },
+      { job: job('나', 0, '1보스', 0), missing: ['Rapi'] },
     ];
     const reports = groupResults(results);
     expect(reports.map((report) => report.member.name)).toEqual(['가', '나']);
     expect(reports[0]!.bosses.map((boss) => boss.name)).toEqual(['1보스', '2보스']);
     expect(reports[0]!.bosses[0]!.rows.map((row) => row.damage)).toEqual([30, 10]);
-    expect(reports[1]!.bosses[0]!.rows[0]!.missing).toEqual(['라피']);
+    expect(reports[1]!.bosses[0]!.rows[0]!.missing).toEqual(['Rapi']);
   });
 });
 
@@ -276,23 +276,23 @@ describe('시간 안내', () => {
 });
 
 describe('유니온 판 코드 (NK4)', () => {
-  const NAMES = ['리타', '라피', '크라운', '앨리스'];
+  const NAMES = ['Liter', 'Rapi', 'Crown', 'Alice'];
   const deckCode = (squad: string[]): string =>
     encodeShareCode([{ id: 1, squad, characters: {} } as DeckState], false);
 
   const board = (): BossSlot[] => [
     {
-      name: '작열 글러트니', code: encodeBattleCode({ ...battle, enemyCode: '작열' }),
+      name: 'Fire Code 글러트니', code: encodeBattleCode({ ...battle, enemyCode: 'Fire Code' }),
       enabled: true,
       decks: [
-        { code: deckCode(['리타', '라피', '', '', '']) },
-        { code: deckCode(['크라운', '앨리스', '', '', '']) },
+        { code: deckCode(['Liter', 'Rapi', '', '', '']) },
+        { code: deckCode(['Crown', 'Alice', '', '', '']) },
         { code: '' },
       ],
     },
     {
-      name: '전격 기차', code: encodeBattleCode(battle), enabled: false,
-      decks: [{ code: deckCode(['앨리스', '', '', '', '']) }, { code: '' }, { code: '' }],
+      name: ' 기차', code: encodeBattleCode(battle), enabled: false,
+      decks: [{ code: deckCode(['Alice', '', '', '', '']) }, { code: '' }, { code: '' }],
     },
     ...Array.from({ length: 3 }, () => ({
       name: '', code: '', enabled: true,
@@ -304,16 +304,16 @@ describe('유니온 판 코드 (NK4)', () => {
     const back = readUnionCode(unionCodeOf(board()), NAMES);
 
     expect(back).toHaveLength(5);
-    expect(back[0]!.name).toBe('작열 글러트니');
+    expect(back[0]!.name).toBe('Fire Code 글러트니');
     expect(back[0]!.enabled).toBe(true);
-    expect(back[0]!.battle?.enemyCode).toBe('작열');
-    expect(back[0]!.decks[0]!.squad?.slice(0, 2)).toEqual(['리타', '라피']);
-    expect(back[0]!.decks[1]!.squad?.slice(0, 2)).toEqual(['크라운', '앨리스']);
+    expect(back[0]!.battle?.enemyCode).toBe('Fire Code');
+    expect(back[0]!.decks[0]!.squad?.slice(0, 2)).toEqual(['Liter', 'Rapi']);
+    expect(back[0]!.decks[1]!.squad?.slice(0, 2)).toEqual(['Crown', 'Alice']);
     expect(back[0]!.decks[2]!.squad).toBeUndefined();
 
-    expect(back[1]!.name).toBe('전격 기차');
+    expect(back[1]!.name).toBe(' 기차');
     expect(back[1]!.enabled).toBe(false);        // 꺼 둔 보스는 꺼진 채로 온다
-    expect(back[1]!.battle?.enemyCode).toBe('전격');
+    expect(back[1]!.battle?.enemyCode).toBe('');
   });
 
   it('빈 보스 칸은 꺼진 채로 온다 — 지난 판이 섞이지 않게', () => {
@@ -335,7 +335,7 @@ describe('유니온 판 코드 (NK4)', () => {
   it('덱 칸은 언제나 셋으로 채워 온다 — 코드에 하나만 들었어도', () => {
     const one = unionCodeOf([{
       name: '수냉 니힐', code: encodeBattleCode(battle), enabled: true,
-      decks: [{ code: deckCode(['리타', '', '', '', '']) }],
+      decks: [{ code: deckCode(['Liter', '', '', '', '']) }],
     }]);
     const back = readUnionCode(one, NAMES);
     expect(back[0]!.decks).toHaveLength(3);

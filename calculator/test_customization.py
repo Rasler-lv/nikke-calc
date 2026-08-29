@@ -26,7 +26,7 @@ class CharacterCustomizationTest(unittest.TestCase):
                     normalize_character_overrides({"weaponModeSwapAt": bad})
         with self.assertRaises(ValueError):
             normalize_character_overrides(
-                {"weaponModeSwapAt": 6}, character_name="리타"
+                {"weaponModeSwapAt": 6}, character_name="Liter"
             )
 
     def test_legacy_weapon_mode_swap_keeps_zero_second_eligibility(self):
@@ -111,7 +111,7 @@ class CharacterCustomizationTest(unittest.TestCase):
             sources += list((character.get("애장품") or {}).get("단계별") or [])
             for source in sources:
                 template = source.get("template", "")
-                for code in ("작열", "수냉", "풍압", "전격", "철갑"):
+                for code in ("Fire Code", "수냉", "풍압", "", "Iron Code"):
                     if f"{code} 코드 적에게 우월 코드 대미지 적용" in template:
                         expected[name] = code
         actual = {
@@ -130,12 +130,12 @@ class CharacterCustomizationTest(unittest.TestCase):
                 "max_ammo_pct": 0,
             }},
         })[0]
-        manager = BuffManager([sugar], {"enemy": {"code": "작열"}})
+        manager = BuffManager([sugar], {"enemy": {"code": "Fire Code"}})
         manager.notify("battle_start", 0, "슈가")
         start = manager.get_buffs("슈가", "__enemy__", 0)
         # 우월 코드 추가 부여는 버프 집계(get_buffs)가 아니라 전용 경로로 판정한다
         # — `BuffManager.element_override_match` → `CharState.element_match`.
-        self.assertTrue(manager.element_override_match("슈가", "작열"))
+        self.assertTrue(manager.element_override_match("슈가", "Fire Code"))
         self.assertFalse(manager.element_override_match("슈가", "수냉"))
         self.assertEqual(start["atk_dmg_pct"], 19.98)
 
@@ -152,26 +152,26 @@ class CharacterCustomizationTest(unittest.TestCase):
         self.assertAlmostEqual(burst["element_bonus_pct"], 119.12)
 
     def test_extra_element_advantage_is_structured_and_enemy_specific(self):
-        rapi = build_squad(["라피 : 레드 후드"])[0]
+        rapi = build_squad(["Rapi : Red Hood"])[0]
 
-        electric = BuffManager([rapi], {"enemy": {"code": "전격"}})
-        electric.notify("battle_start", 0, "라피 : 레드 후드")
-        self.assertTrue(electric.element_override_match("라피 : 레드 후드", "전격"))
+        electric = BuffManager([rapi], {"enemy": {"code": ""}})
+        electric.notify("battle_start", 0, "Rapi : Red Hood")
+        self.assertTrue(electric.element_override_match("Rapi : Red Hood", ""))
 
         water = BuffManager([rapi], {"enemy": {"code": "수냉"}})
-        water.notify("battle_start", 0, "라피 : 레드 후드")
-        self.assertFalse(water.element_override_match("라피 : 레드 후드", "수냉"))
+        water.notify("battle_start", 0, "Rapi : Red Hood")
+        self.assertFalse(water.element_override_match("Rapi : Red Hood", "수냉"))
 
     def test_growth_stage_is_normalized_for_the_engine(self):
         self.assertEqual(
             normalize_character_overrides(
-                {"growthStage": 6}, character_name="리타"
+                {"growthStage": 6}, character_name="Liter"
             ),
             {"breakthrough": 3, "core_enhancement": 3, "affinity": 30},
         )
         self.assertEqual(
             normalize_character_overrides(
-                {"growthStage": 3}, character_name="크라운"
+                {"growthStage": 3}, character_name="Crown"
             )["affinity"],
             40,
         )
@@ -179,12 +179,12 @@ class CharacterCustomizationTest(unittest.TestCase):
     def test_growth_stage_requires_character_context_and_legal_rarity_range(self):
         invalid = (
             (None, 3),
-            ("리타", None),
-            ("리타", True),
-            ("리타", 1.5),
-            ("리타", -1),
-            ("리타", 11),
-            ("라피", 3),
+            ("Liter", None),
+            ("Liter", True),
+            ("Liter", 1.5),
+            ("Liter", -1),
+            ("Liter", 11),
+            ("Rapi", 3),
             ("iDoll 플라워", 1),
         )
         for name, stage in invalid:
@@ -218,12 +218,12 @@ class CharacterCustomizationTest(unittest.TestCase):
     def test_released_skill_level_selects_the_parsed_effect_value(self):
         values = []
         for level in (1, 10):
-            squad = build_squad(["리타"], {
-                "리타": {"skill_levels": {"1": level, "2": 10, "3": 10}},
+            squad = build_squad(["Liter"], {
+                "Liter": {"skill_levels": {"1": level, "2": 10, "3": 10}},
             })
             manager = BuffManager(squad, {"enemy": {}})
-            manager.notify("burst_cast", 0, "리타")
-            values.append(manager.get_buffs("리타", "__enemy__", 0)["max_ammo_pct"])
+            manager.notify("burst_cast", 0, "Liter")
+            values.append(manager.get_buffs("Liter", "__enemy__", 0)["max_ammo_pct"])
 
         self.assertEqual(values, [7.05, 45.17])
 
@@ -334,49 +334,49 @@ class CharacterCustomizationTest(unittest.TestCase):
                     normalize_character_overrides({"burst": bad})
 
     def test_manual_damage_stat_applies_only_to_its_character(self):
-        squad = build_squad(["리타", "라피"], {
-            "리타": {"manual_stats": {"split_dmg_pct": 20}},
+        squad = build_squad(["Liter", "Rapi"], {
+            "Liter": {"manual_stats": {"split_dmg_pct": 20}},
         })
         manager = BuffManager(squad, {"enemy": {}})
-        manager.notify("battle_start", 0, "리타")
-        manager.notify("battle_start", 0, "라피")
+        manager.notify("battle_start", 0, "Liter")
+        manager.notify("battle_start", 0, "Rapi")
 
-        self.assertEqual(manager.get_buffs("리타", "__enemy__", 0)["split_dmg_pct"], 20)
-        self.assertEqual(manager.get_buffs("라피", "__enemy__", 0)["split_dmg_pct"], 0)
+        self.assertEqual(manager.get_buffs("Liter", "__enemy__", 0)["split_dmg_pct"], 20)
+        self.assertEqual(manager.get_buffs("Rapi", "__enemy__", 0)["split_dmg_pct"], 0)
 
     def test_personal_enemy_modifiers_do_not_leak_to_teammates(self):
-        squad = build_squad(["리타", "라피"], {
-            "리타": {"manual_stats": {
+        squad = build_squad(["Liter", "Rapi"], {
+            "Liter": {"manual_stats": {
                 "received_dmg_pct": 12,
                 "enemy_def_down_pct": 7,
             }},
         })
         manager = BuffManager(squad, {"enemy": {}})
-        manager.notify("battle_start", 0, "리타")
-        manager.notify("battle_start", 0, "라피")
+        manager.notify("battle_start", 0, "Liter")
+        manager.notify("battle_start", 0, "Rapi")
 
-        rita = manager.get_buffs("리타", "__enemy__", 0)
-        rapi = manager.get_buffs("라피", "__enemy__", 0)
+        rita = manager.get_buffs("Liter", "__enemy__", 0)
+        rapi = manager.get_buffs("Rapi", "__enemy__", 0)
         self.assertEqual(rita["received_dmg"], 12)
         self.assertEqual(rita["enemy_def_down_pct"], -7)
         self.assertEqual(rapi["received_dmg"], 0)
         self.assertEqual(rapi["enemy_def_down_pct"], 0)
 
     def test_part_cube_routes_its_value_to_part_damage(self):
-        squad = build_squad(["리타"], {
-            "리타": {"cube": {"name": "렐릭 디스트로이 큐브", "level": 15}},
+        squad = build_squad(["Liter"], {
+            "Liter": {"cube": {"name": "렐릭 디스트로이 큐브", "level": 15}},
         })
         manager = BuffManager(squad, {"enemy": {}})
-        manager.notify("battle_start", 0, "리타")
+        manager.notify("battle_start", 0, "Liter")
 
         self.assertEqual(
-            manager.get_buffs("리타", "__enemy__", 0)["part_dmg_pct"],
+            manager.get_buffs("Liter", "__enemy__", 0)["part_dmg_pct"],
             31.9,
         )
 
     def test_ammo_cube_triggers_every_tenth_hit_not_at_battle_start(self):
-        squad = build_squad(["리타"], {
-            "리타": {"cube": {"name": "택티컬 베어 큐브", "level": 15}},
+        squad = build_squad(["Liter"], {
+            "Liter": {"cube": {"name": "택티컬 베어 큐브", "level": 15}},
         })
         manager = BuffManager(squad, {"enemy": {}})
         events: list[tuple[str, float]] = []
@@ -385,17 +385,17 @@ class CharacterCustomizationTest(unittest.TestCase):
             lambda _eff, caster, _t, value: events.append((caster, value)),
         )
 
-        manager.notify("battle_start", 0, "리타")
+        manager.notify("battle_start", 0, "Liter")
         self.assertEqual(events, [])
         for hit in range(1, 10):
-            manager.notify("hit_count", hit / 10, "리타")
+            manager.notify("hit_count", hit / 10, "Liter")
         self.assertEqual(events, [])
-        manager.notify("hit_count", 1, "리타")
-        self.assertEqual(events, [("리타", 3.0)])
+        manager.notify("hit_count", 1, "Liter")
+        self.assertEqual(events, [("Liter", 3.0)])
 
     def test_manual_ammo_recovery_uses_the_same_tenth_hit_semantics(self):
-        squad = build_squad(["리타"], {
-            "리타": {"manual_stats": {"ammo_charge_flat": 8}},
+        squad = build_squad(["Liter"], {
+            "Liter": {"manual_stats": {"ammo_charge_flat": 8}},
         })
         manager = BuffManager(squad, {"enemy": {}})
         events: list[float] = []
@@ -404,9 +404,9 @@ class CharacterCustomizationTest(unittest.TestCase):
             lambda _eff, _caster, _t, value: events.append(value),
         )
 
-        manager.notify("battle_start", 0, "리타")
+        manager.notify("battle_start", 0, "Liter")
         for hit in range(10):
-            manager.notify("hit_count", hit / 10, "리타")
+            manager.notify("hit_count", hit / 10, "Liter")
         self.assertEqual(events, [8.0])
 
 
@@ -600,7 +600,7 @@ class CharacterCustomizationTest(unittest.TestCase):
 
         got = normalize_character_overrides(
             {"equipLevels": {"머리": 5, "몸통": "T9", "팔": "없음", "다리": 0}},
-            character_name="라피",
+            character_name="Rapi",
         )["equipment"]
         self.assertEqual(got, {
             "머리": {"level": 5}, "몸통": {"tier": "T9"},
@@ -610,7 +610,7 @@ class CharacterCustomizationTest(unittest.TestCase):
         for bad in ("T0", "T10", "T99", "기업", ""):
             with self.assertRaises(ValueError, msg=bad):
                 normalize_character_overrides(
-                    {"equipLevels": {"머리": bad}}, character_name="라피")
+                    {"equipLevels": {"머리": bad}}, character_name="Rapi")
 
     def test_unequipped_is_not_the_same_as_enhancement_zero(self):
         """미장착(0)과 기업 강화0(플랫 스탯 있음)은 다른 값이어야 한다."""
@@ -640,10 +640,10 @@ class CharacterCustomizationTest(unittest.TestCase):
             normalize_element_windows([{"from": 1, "to": 2, "code": "불"}])
 
     def test_immune_window_makes_only_normal_attacks_miss_and_element_window_gates_it(self):
-        """족자는 평타만 빗나가고, 속저는 우월 코드만 통과시킨다."""
+        """족자는 평타만 빗Naga고, 속저는 우월 코드만 통과시킨다."""
         from calculator.sim_result import _is_normal
 
-        deck = ["라피", "나유타", "리타", "크라운", "앨리스"]  # 라피·앨리스가 작열
+        deck = ["Rapi", "나유타", "Liter", "Crown", "Alice"]  # Rapi·Alice가 Fire Code
         squad = build_squad(deck)
         cfg = build_config(squad, {"duration": 60, "first_burst_time": 3.0})
         enemy = {"def": 31_784, "code": "", "core_px": 0, "has_parts": False}
@@ -661,13 +661,13 @@ class CharacterCustomizationTest(unittest.TestCase):
         self.assertFalse(any(_is_normal(h) for h in immune_hits))
         self.assertLess(immune.squad_total, plain.squad_total)
 
-        # 속저 구간에는 풍압에 우월한 작열만 남는다.
+        # 속저 구간에는 풍압에 우월한 Fire Code만 남는다.
         casters = {h.caster for h in gated.hits if 10 <= h.t < 30}
-        self.assertEqual(casters, {"라피", "앨리스"})
+        self.assertEqual(casters, {"Rapi", "Alice"})
 
     def test_immune_window_keeps_existing_damage_over_time(self):
         """족자가 시작돼도 이미 걸린 레이븐 `쇼크웨이브`의 틱은 계속 들어간다."""
-        squad = build_squad(["레이븐", "크라운", "test_B3"])
+        squad = build_squad(["레이븐", "Crown", "test_B3"])
         result = simulate(
             squad,
             config=build_config(squad, {
@@ -686,11 +686,11 @@ class CharacterCustomizationTest(unittest.TestCase):
         self.assertTrue(ticks, "족자 구간에서 지속 대미지가 사라졌다")
 
     def test_immune_window_keeps_attacks_triggered_by_a_normal_attack(self):
-        """평타는 빗나가도 헤비암즈의 `오토 파이어` 후속 공격은 적중한다."""
+        """평타는 빗Naga도 헤비암즈의 `오토 파이어` 후속 공격은 적중한다."""
         from calculator.sim_result import _is_normal
 
         name = "스노우 화이트 : 헤비암즈"
-        squad = build_squad(["리틀 머메이드", "크라운", name])
+        squad = build_squad(["리틀 머메이드", "Crown", name])
         result = simulate(
             squad,
             config=build_config(squad, {
@@ -712,29 +712,29 @@ class CharacterCustomizationTest(unittest.TestCase):
     def test_element_window_also_honors_override_buffs(self):
         """속저는 인게임처럼 **우월 코드 버프까지 인정한다** (유저 확인).
 
-        라피 : 레드 후드는 로스터가 작열이라 전격에는 우월하지 않지만,
-        `부착형 유탄`이 전격 적에게도 우월을 붙여 준다 — 그 버프로 통과해야 한다.
+        Rapi : Red Hood는 로스터가 Fire Code이라 에는 우월하지 않지만,
+        `부착형 유탄`이  적에게도 우월을 붙여 준다 — 그 버프로 통과해야 한다.
         """
-        deck = ["라피 : 레드 후드", "나유타", "리타", "크라운", "앨리스"]
+        deck = ["Rapi : Red Hood", "나유타", "Liter", "Crown", "Alice"]
         squad = build_squad(deck)
         result = simulate(
             squad, config=build_config(squad, {"duration": 60, "first_burst_time": 3.0}),
-            enemy={"def": 31_784, "code": "전격", "core_px": 0, "has_parts": False,
-                   "element_windows": [{"from": 10, "to": 40, "code": "전격"}]},
+            enemy={"def": 31_784, "code": "", "core_px": 0, "has_parts": False,
+                   "element_windows": [{"from": 10, "to": 40, "code": ""}]},
             seed=42)
 
         casters = {h.caster for h in result.hits if 10 <= h.t < 40}
-        # 철갑(리타·크라운)은 로스터 상성으로 통과한다.
-        self.assertIn("리타", casters)
-        self.assertIn("크라운", casters)
-        # 작열인데도 버프 덕에 통과한다 — 로스터 코드만 봤다면 빠졌을 캐릭터다.
-        self.assertIn("라피 : 레드 후드", casters)
-        # 풍압·작열은 전격에 우월하지 않고 버프도 없다.
+        # Iron Code(Liter·Crown)은 로스터 상성으로 통과한다.
+        self.assertIn("Liter", casters)
+        self.assertIn("Crown", casters)
+        # Fire Code인데도 버프 덕에 통과한다 — 로스터 코드만 봤다면 빠졌을 캐릭터다.
+        self.assertIn("Rapi : Red Hood", casters)
+        # 풍압·Fire Code은 에 우월하지 않고 버프도 없다.
         self.assertNotIn("나유타", casters)
-        self.assertNotIn("앨리스", casters)
+        self.assertNotIn("Alice", casters)
 
     def test_immune_window_can_also_stop_burst_charging(self):
-        """족자 중에는 평타가 빗나가니 게이지도 안 찬다 — 옵션이다."""
+        """족자 중에는 평타가 빗Naga니 게이지도 안 찬다 — 옵션이다."""
         from calculator.timeline import charge_end
 
         # 충전이 족자에 걸리면 그 구간만큼 밀린다.
@@ -743,7 +743,7 @@ class CharacterCustomizationTest(unittest.TestCase):
         self.assertEqual(charge_end(9.0, 2.0, [(10, 30)]), 31.0)     # 1초 채우고 멈춤
         self.assertEqual(charge_end(15.0, 2.0, [(10, 30)]), 32.0)    # 구간 안에서 시작
 
-        deck = ["라피", "나유타", "리타", "크라운", "앨리스"]
+        deck = ["Rapi", "나유타", "Liter", "Crown", "Alice"]
         squad = build_squad(deck)
         enemy = {"def": 31_784, "code": "", "core_px": 0, "has_parts": False,
                  "immune_windows": [[10, 40]]}

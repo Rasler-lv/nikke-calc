@@ -48,11 +48,11 @@ DEFAULT_ENEMY_DEF = 31784.0
 # ── 코드 상성 ─────────────────────────────────────────────────────────────
 
 _CODE_ADVANTAGE: dict[str, str] = {
-    "전격": "수냉",
-    "수냉": "작열",
-    "작열": "풍압",
-    "풍압": "철갑",
-    "철갑": "전격",
+    "": "수냉",
+    "수냉": "Fire Code",
+    "Fire Code": "풍압",
+    "풍압": "Iron Code",
+    "Iron Code": "",
 }
 
 def is_element_match(char_code: str, enemy_code: str) -> bool:
@@ -381,7 +381,7 @@ if __name__ == "__main__":
         "part_dmg_pct": 0.0, "burst_dmg_aoe_pct": 0.0,
     }
 
-    # 라피 AR 기본 스펙 (parsed_nikke.json 값 대신 임시값)
+    # Rapi AR 기본 스펙 (parsed_nikke.json 값 대신 임시값)
     weapon_ar = {
         "weapon_type": "AR",
         "damage_coeff": 13.65,

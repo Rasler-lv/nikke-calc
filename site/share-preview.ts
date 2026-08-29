@@ -6,8 +6,8 @@ import type { ShareItem, ShareServer } from './src/share-server';
 const items: ShareItem[] = [
   { id: 'a1', name: '솔로레이드 인디비리아 3페', auto: '90초 · 적 수냉 · 코어 60px · 난수', by: '모리스', at: '2026-08-23T00:00:00.000Z', up: 42, down: 3, code: 'NK3-aaa' },
   { id: 'a2', name: '유니온 레이드 표준 60초', auto: '60초 · 무속성 · 코어 없음 · 기대값', by: '', at: '2026-08-25T09:00:00.000Z', up: 18, down: 1, code: 'NK3-bbb' },
-  { id: 'a3', name: '심층전 12번 방', auto: '150초 · 적 작열 · 코어 52px · 족자 2 · 속저 1 · 난수', by: '니케초보', at: '2026-08-26T01:30:00.000Z', up: 7, down: 0, code: 'NK3-ccc' },
-  { id: 'a4', name: '캠페인 하드 32-15', auto: '180초 · 적 전격 · 코어 없음 · 파츠 · 난수', by: '', at: '2026-08-12T00:00:00.000Z', up: 4, down: 9, code: 'NK3-ddd' },
+  { id: 'a3', name: '심층전 12번 방', auto: '150초 · 적 Fire Code · 코어 52px · 족자 2 · 속저 1 · 난수', by: '니케초보', at: '2026-08-26T01:30:00.000Z', up: 7, down: 0, code: 'NK3-ccc' },
+  { id: 'a4', name: '캠페인 하드 32-15', auto: '180초 · 적  · 코어 없음 · 파츠 · 난수', by: '', at: '2026-08-12T00:00:00.000Z', up: 4, down: 9, code: 'NK3-ddd' },
 ];
 
 const mine: Record<string, 1 | -1> = { a2: 1 };

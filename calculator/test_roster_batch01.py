@@ -30,7 +30,7 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         self.assertGreater(manager.get_buffs("에이드", "__enemy__", 0.0)["atk_flat"], 0.0)
 
     def test_each_squad_burst_cast_notifies_winter_rupee(self):
-        members = ["루피 : 윈터 쇼퍼", "리틀 머메이드", "크라운", "test_B3", "스노우 화이트 : 헤비암즈"]
+        members = ["루피 : 윈터 쇼퍼", "리틀 머메이드", "Crown", "test_B3", "스노우 화이트 : 헤비암즈"]
         squad = build_squad(members)
         config = build_config(squad, {"first_burst_time": 1.0, "duration": 12.0})
 
@@ -58,7 +58,7 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         self.assertNotIn("해변의 햇살", {ab.effect.get("name") for ab in manager._active})
 
     def test_vesti_burst_and_full_charge_damage_activate_without_partner_states(self):
-        members = ["리틀 머메이드", "크라운", "베스티 : 택티컬 업", "test_B3"]
+        members = ["리틀 머메이드", "Crown", "베스티 : 택티컬 업", "test_B3"]
         squad = build_squad(members)
         config = build_config(squad, {"first_burst_time": 1.0, "duration": 8.0})
         result = simulate(squad, config=config, verbose=True, seed=1)
@@ -115,13 +115,13 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         self.assertGreaterEqual(len(activations), 1)
 
     def test_non_full_charge_counter_activates_crust_mode_and_missing_buff_target(self):
-        squad = build_squad(["크러스트", "리타"])
+        squad = build_squad(["크러스트", "Liter"])
         manager = BuffManager(squad, {"enemy": {}})
 
         for t in (1.0, 2.0, 3.0):
             manager.notify("non_full_charge_hit", t, "크러스트")
 
-        liter = manager.get_buffs("리타", "__enemy__", 3.0)
+        liter = manager.get_buffs("Liter", "__enemy__", 3.0)
         self.assertTrue(manager._has_self_state("크러스트", "마이야르"))
         self.assertGreater(liter["def_caster_based_pct"], 0.0)
 
@@ -136,7 +136,7 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         self.assertTrue(manager._has_self_state("크러스트", "블렌칭"))
 
     def test_tia_cover_heal_dispatches_cover_healed_event(self):
-        members = ["티아", "리틀 머메이드", "크라운", "test_B3", "스노우 화이트 : 헤비암즈"]
+        members = ["티아", "리틀 머메이드", "Crown", "test_B3", "스노우 화이트 : 헤비암즈"]
         squad = build_squad(members)
         config = build_config(squad, {"first_burst_time": 1.0, "duration": 4.0})
 
@@ -150,9 +150,9 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         self.assertIn("파충류 애호가 2", names)
 
     def test_neon_bonus_damage_is_limited_to_fire_code_enemy(self):
-        members = ["리틀 머메이드", "크라운", "네온 : 블루 오션", "test_B3"]
+        members = ["리틀 머메이드", "Crown", "네온 : 블루 오션", "test_B3"]
         counts = []
-        for code in ("작열", "수냉"):
+        for code in ("Fire Code", "수냉"):
             squad = build_squad(members)
             config = build_config(squad, {"first_burst_time": 1.0, "duration": 8.0})
             result = simulate(squad, config=config, enemy={"code": code}, seed=1)
@@ -179,7 +179,7 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         ))
 
     def test_poli_favorite_chain_consumes_badge_and_starts_heal(self):
-        members = ["리틀 머메이드", "폴리", "크라운", "test_B3", "스노우 화이트 : 헤비암즈"]
+        members = ["리틀 머메이드", "폴리", "Crown", "test_B3", "스노우 화이트 : 헤비암즈"]
         squad = build_squad(members, {"폴리": {"favorite_stage": 3}})
         config = build_config(squad, {"first_burst_time": 1.0, "duration": 22.0})
         result = simulate(squad, config=config, verbose=True, seed=1)
@@ -193,9 +193,9 @@ class RosterBatch01MechanicsTest(unittest.TestCase):
         }
         self.assertIn("폴리스 뱃지", buff_names)
         self.assertIn("폴리스 라인 폴리스 뱃지 불굴", buff_names)
-        self.assertIn("도그 테라피", buff_names)
+        self.assertIn("도그 테Rapi", buff_names)
         self.assertIn("폴리스 뱃지 제거", instant_names)
-        self.assertIn("도그 테라피 3", instant_names)
+        self.assertIn("도그 테Rapi 3", instant_names)
 
 
 if __name__ == "__main__":

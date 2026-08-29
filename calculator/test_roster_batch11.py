@@ -30,15 +30,15 @@ class Batch11(unittest.TestCase):
         for name in B:
             with self.subTest(name=name):
                 stage = str(meta_all[name]['burst_stage'])
-                if stage == '1': squad_names = [name, '크라운', 'test_B3']
+                if stage == '1': squad_names = [name, 'Crown', 'test_B3']
                 elif stage == '2': squad_names = ['리틀 머메이드', name, 'test_B3']
-                else: squad_names = ['리틀 머메이드', '크라운', name]
+                else: squad_names = ['리틀 머메이드', 'Crown', name]
                 squad = build_squad(squad_names)
                 result = simulate(squad, config=build_config(squad, {'first_burst_time': 1, 'duration': 15}), seed=1)
                 self.assertTrue(any(h.caster == name for h in result.hits), name)
 
     def test_emilia_fixed_damage_is_emitted(self):
-        squad = build_squad(['리틀 머메이드', '크라운', '에밀리아'])
+        squad = build_squad(['리틀 머메이드', 'Crown', '에밀리아'])
         result = simulate(squad, config=build_config(squad, {'first_burst_time': 1, 'duration': 12}), seed=1)
         fixed = [h for h in result.hits if h.caster == '에밀리아' and h.hit_tag == 'fixed_damage_from_dealt_pct']
         self.assertTrue(fixed)

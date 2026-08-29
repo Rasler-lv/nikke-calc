@@ -13,7 +13,7 @@ import {
 import type { BattleSettings, DeckState, SimulationRequest, SimulationResult } from './types';
 
 const valid: SimulationRequest = {
-  squad: ['리타'],
+  squad: ['Liter'],
   duration: 180,
   enemyDef: 31_784,
   enemyCode: '',
@@ -57,7 +57,7 @@ describe('validateRequest', () => {
   });
 
   it('rejects duplicate squad members', () => {
-    const errors = validateRequest({ ...valid, squad: ['리타', '리타'] });
+    const errors = validateRequest({ ...valid, squad: ['Liter', 'Liter'] });
     expect(errors).toContain('같은 캐릭터를 두 번 편성할 수 없습니다.');
   });
 
@@ -79,14 +79,14 @@ describe('request normalization', () => {
   it('trims names and integer-valued inputs', () => {
     expect(normalizeRequest({
       ...valid,
-      squad: [' 리타 '],
+      squad: [' Liter '],
       duration: 10.9,
       enemyDef: 31_784.9,
       corePx: 4.8,
       seed: 42.7,
     })).toEqual({
       ...valid,
-      squad: ['리타'],
+      squad: ['Liter'],
       duration: 10,
       enemyDef: 31_784,
       corePx: 4,
@@ -97,7 +97,7 @@ describe('request normalization', () => {
   });
 
   it('creates a stable cache key from normalized input', () => {
-    const raw = { ...valid, squad: [' 리타 '], duration: 180.9 };
+    const raw = { ...valid, squad: [' Liter '], duration: 180.9 };
     expect(cacheKey(raw, 'v1')).toBe(cacheKey(normalizeRequest(raw), 'v1'));
     expect(cacheKey(raw, 'v1')).not.toBe(cacheKey(raw, 'v2'));
   });
@@ -106,7 +106,7 @@ describe('request normalization', () => {
     const base = {
       ...valid,
       characters: {
-        리타: {
+        Liter: {
           growthStage: 3,
           skillLevels: { '1': 10, '2': 10, '3': 10 },
           overload: { atk_pct: 22.22 },
@@ -119,17 +119,17 @@ describe('request normalization', () => {
     const growthChanged = {
       ...base,
       characters: {
-        리타: { ...base.characters.리타, growthStage: 10 },
+        Liter: { ...base.characters.Liter, growthStage: 10 },
       },
     };
-    expect(normalizeRequest(growthChanged).characters?.리타?.growthStage).toBe(10);
+    expect(normalizeRequest(growthChanged).characters?.Liter?.growthStage).toBe(10);
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey(growthChanged, 'v1'));
 
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey({
       ...base,
       characters: {
-        리타: {
-          ...base.characters.리타,
+        Liter: {
+          ...base.characters.Liter,
           skillLevels: { '1': 9, '2': 10, '3': 10 },
         },
       },
@@ -137,8 +137,8 @@ describe('request normalization', () => {
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey({
       ...base,
       characters: {
-        리타: {
-          ...base.characters.리타,
+        Liter: {
+          ...base.characters.Liter,
           cube: { name: '탄충', level: 15 },
         },
       },
@@ -146,8 +146,8 @@ describe('request normalization', () => {
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey({
       ...base,
       characters: {
-        리타: {
-          ...base.characters.리타,
+        Liter: {
+          ...base.characters.Liter,
           manualStats: { split_dmg_pct: 21 },
         },
       },
@@ -155,24 +155,24 @@ describe('request normalization', () => {
   });
 
   it('includes control, burst, and equip-level settings in the cache key', () => {
-    const base = { ...valid, characters: { 리타: { growthStage: 3 } } };
+    const base = { ...valid, characters: { Liter: { growthStage: 3 } } };
     // 컨트롤을 바꾸면 캐시 키가 달라져야 한다 (전에는 누락돼 stale 결과를 불러왔다)
     const withControl = {
       ...base,
-      characters: { 리타: { growthStage: 3, control: { tap_fire: { rate: 3.6 } } } },
+      characters: { Liter: { growthStage: 3, control: { tap_fire: { rate: 3.6 } } } },
     };
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey(withControl, 'v1'));
-    expect(normalizeRequest(withControl).characters?.리타?.control).toBeDefined();
+    expect(normalizeRequest(withControl).characters?.Liter?.control).toBeDefined();
 
     const burstChanged = {
       ...base,
-      characters: { 리타: { growthStage: 3, burst: { mode: 'priority' as const, every: 2 } } },
+      characters: { Liter: { growthStage: 3, burst: { mode: 'priority' as const, every: 2 } } },
     };
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey(burstChanged, 'v1'));
 
     const equipChanged = {
       ...base,
-      characters: { 리타: { growthStage: 3, equipLevels: { 머리: 3 } } },
+      characters: { Liter: { growthStage: 3, equipLevels: { 머리: 3 } } },
     };
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey(equipChanged, 'v1'));
 
@@ -192,71 +192,71 @@ describe('난수 모드는 언제나 실린다', () => {
   // 기대값으로 둔 사람들이 내내 난수 모드로 계산하고 있었다. 경계를 넘는 값은
   // 양쪽이 같은 기본값을 안다고 믿지 않는다.
   it('기대값도 요청에 적어 보낸다', () => {
-    const request = requestForDeck(deck(1, ['리타']), { ...battle, rngMode: 'expected' }, {});
+    const request = requestForDeck(deck(1, ['Liter']), { ...battle, rngMode: 'expected' }, {});
     expect(normalizeRequest(request).rngMode).toBe('expected');
   });
 
   it('난수도 그대로 실린다', () => {
-    const request = requestForDeck(deck(1, ['리타']), { ...battle, rngMode: 'random' }, {});
+    const request = requestForDeck(deck(1, ['Liter']), { ...battle, rngMode: 'random' }, {});
     expect(normalizeRequest(request).rngMode).toBe('random');
   });
 
   it('없으면 화면 기본값(기대값)으로 채운다 — 브리지와 같은 값이다', () => {
-    const request = requestForDeck(deck(1, ['리타']), { ...battle }, {});
+    const request = requestForDeck(deck(1, ['Liter']), { ...battle }, {});
     delete (request as { rngMode?: string }).rngMode;
     expect(normalizeRequest(request).rngMode).toBe('expected');
   });
 
   it('기대값과 난수는 캐시 키가 갈린다 — 서로의 결과를 물려받으면 안 된다', () => {
     const expectedKey = cacheKey(
-      requestForDeck(deck(1, ['리타']), { ...battle, rngMode: 'expected' }, {}), 'v1');
+      requestForDeck(deck(1, ['Liter']), { ...battle, rngMode: 'expected' }, {}), 'v1');
     const randomKey = cacheKey(
-      requestForDeck(deck(1, ['리타']), { ...battle, rngMode: 'random' }, {}), 'v1');
+      requestForDeck(deck(1, ['Liter']), { ...battle, rngMode: 'random' }, {}), 'v1');
     expect(expectedKey).not.toBe(randomKey);
   });
 });
 
 describe('multi-deck model', () => {
   it('allows the same character in separate decks', () => {
-    expect(validateDecks([deck(1, ['리타']), deck(2, ['리타'])])).toEqual([]);
+    expect(validateDecks([deck(1, ['Liter']), deck(2, ['Liter'])])).toEqual([]);
   });
 
   it('rejects a duplicate only within its own deck', () => {
-    expect(validateDecks([deck(1, ['리타', '리타']), deck(2, ['리타'])]))
+    expect(validateDecks([deck(1, ['Liter', 'Liter']), deck(2, ['Liter'])]))
       .toContain('덱 1: 같은 캐릭터를 두 번 편성할 수 없습니다.');
   });
 
   it('skips empty decks but rejects an all-empty batch', () => {
-    expect(validateDecks([deck(1, []), deck(2, ['리타'])])).toEqual([]);
+    expect(validateDecks([deck(1, []), deck(2, ['Liter'])])).toEqual([]);
     expect(validateDecks([deck(1, []), deck(2, [])]))
       .toContain('캐릭터가 편성된 덱이 하나 이상 필요합니다.');
   });
 
   it('keeps a 52px core reference while sending zero when core is disabled', () => {
-    expect(requestForDeck(deck(1, ['리타']), battle)).toMatchObject({
-      squad: ['리타'],
+    expect(requestForDeck(deck(1, ['Liter']), battle)).toMatchObject({
+      squad: ['Liter'],
       corePx: 0,
     });
-    expect(requestForDeck(deck(1, ['리타']), { ...battle, coreEnabled: true })).toMatchObject({
+    expect(requestForDeck(deck(1, ['Liter']), { ...battle, coreEnabled: true })).toMatchObject({
       corePx: 52,
     });
   });
 
   it('sends the synchro level only when it differs from the engine default', () => {
     // 기본값(400)은 싣지 않는다 — 엔진이 같은 값을 쓰므로 옛 캐시 키와 갈리면 손해다.
-    expect(requestForDeck(deck(1, ['리타']), battle)).not.toHaveProperty('synchroLevel');
-    expect(requestForDeck(deck(1, ['리타']), { ...battle, synchroLevel: 250 }))
+    expect(requestForDeck(deck(1, ['Liter']), battle)).not.toHaveProperty('synchroLevel');
+    expect(requestForDeck(deck(1, ['Liter']), { ...battle, synchroLevel: 250 }))
       .toMatchObject({ synchroLevel: 250 });
     // 값이 다르면 캐시 키도 갈려야 한다 — 레벨이 다른 결과가 섞이면 안 된다.
-    expect(cacheKey(requestForDeck(deck(1, ['리타']), { ...battle, synchroLevel: 250 }), 'v1'))
-      .not.toBe(cacheKey(requestForDeck(deck(1, ['리타']), battle), 'v1'));
+    expect(cacheKey(requestForDeck(deck(1, ['Liter']), { ...battle, synchroLevel: 250 }), 'v1'))
+      .not.toBe(cacheKey(requestForDeck(deck(1, ['Liter']), battle), 'v1'));
   });
 
   it('keeps an overload-0 equipment level in the request', () => {
     // 0은 흔히 falsy로 걸러진다 — 요청까지 살아 오는지 못 박는다.
-    const withZero = deck(1, ['리타']);
-    withZero.characters.리타 = { equipLevels: { 머리: 0, 몸통: 0, 팔: 0, 다리: 0 } };
-    expect(requestForDeck(withZero, battle).characters?.리타?.equipLevels)
+    const withZero = deck(1, ['Liter']);
+    withZero.characters.Liter = { equipLevels: { 머리: 0, 몸통: 0, 팔: 0, 다리: 0 } };
+    expect(requestForDeck(withZero, battle).characters?.Liter?.equipLevels)
       .toEqual({ 머리: 0, 몸통: 0, 팔: 0, 다리: 0 });
   });
 
@@ -273,14 +273,14 @@ describe('multi-deck model', () => {
   });
 
   it('preserves independent character skill levels in each deck request', () => {
-    const first = deck(1, ['리타']);
-    first.characters.리타 = { skillLevels: { '1': 4, '2': 6, '3': 8 } };
-    const second = deck(2, ['리타']);
-    second.characters.리타 = { skillLevels: { '1': 7, '2': 9, '3': 10 } };
+    const first = deck(1, ['Liter']);
+    first.characters.Liter = { skillLevels: { '1': 4, '2': 6, '3': 8 } };
+    const second = deck(2, ['Liter']);
+    second.characters.Liter = { skillLevels: { '1': 7, '2': 9, '3': 10 } };
 
-    expect(requestForDeck(first, battle).characters?.리타?.skillLevels)
+    expect(requestForDeck(first, battle).characters?.Liter?.skillLevels)
       .toEqual({ '1': 4, '2': 6, '3': 8 });
-    expect(requestForDeck(second, battle).characters?.리타?.skillLevels)
+    expect(requestForDeck(second, battle).characters?.Liter?.skillLevels)
       .toEqual({ '1': 7, '2': 9, '3': 10 });
   });
 
@@ -290,7 +290,7 @@ describe('multi-deck model', () => {
       duration: 60,
       seed: 99,
       enemyDef: 1,
-      enemyCode: '작열',
+      enemyCode: 'Fire Code',
       coreEnabled: true,
       corePx: 77,
       hasParts: true,
@@ -306,13 +306,13 @@ describe('multi-deck model', () => {
       squadTotal: value,
       duration: 10,
       hitCount: 1,
-      charTotals: { 리타: value },
+      charTotals: { Liter: value },
       previewNote: '',
       deviations: '',
     });
     const entries = [
-      { deckId: 1, request: { ...valid, squad: ['리타'] }, result: result(10) },
-      { deckId: 2, request: { ...valid, squad: ['리타'] }, result: result(20) },
+      { deckId: 1, request: { ...valid, squad: ['Liter'] }, result: result(10) },
+      { deckId: 2, request: { ...valid, squad: ['Liter'] }, result: result(20) },
     ];
 
     expect(aggregateDeckResults(entries)).toEqual({ total: 30, decks: entries });
@@ -334,19 +334,19 @@ describe('formatDamage', () => {
     const base = {
       ...valid,
       characters: {
-        리타: { collection: { stage: 'SR15', favorite: 0 } },
+        Liter: { collection: { stage: 'SR15', favorite: 0 } },
       },
     };
-    expect(normalizeRequest(base).characters?.리타?.collection)
+    expect(normalizeRequest(base).characters?.Liter?.collection)
       .toEqual({ stage: 'SR15', favorite: 0 });
 
     const owned = {
       ...valid,
       characters: {
-        리타: { collection: { stage: 'SR0', favorite: 0 } },
+        Liter: { collection: { stage: 'SR0', favorite: 0 } },
       },
     };
-    expect(normalizeRequest(owned).characters?.리타?.collection)
+    expect(normalizeRequest(owned).characters?.Liter?.collection)
       .toEqual({ stage: 'SR0', favorite: 0 });
     // 소장품이 다르면 결과도 달라지므로 캐시가 섞이면 안 된다.
     expect(cacheKey(base, 'v1')).not.toBe(cacheKey(owned, 'v1'));

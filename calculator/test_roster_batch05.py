@@ -8,7 +8,7 @@ from context.spec import build_config, build_squad
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCH = ["율하", "애드미", "길로틴", "메이든", "길로틴 : 윈터 슬레이어",
-         "루드밀라", "네베", "앨리스 : 원더랜드 바니", "루피", "얀"]
+         "루드밀라", "네베", "Alice : 원더랜드 바니", "루피", "얀"]
 
 def _skills(): return json.loads((ROOT / "data" / "parsed_skills.json").read_text(encoding="utf-8"))
 def _find(name, stat=None, effect_name=None):
@@ -36,18 +36,18 @@ class RosterBatch05Test(unittest.TestCase):
         self.assertEqual(["received_hit_count:20"],_find("메이든",effect_name="언령 : 기교의 언")[0]["trigger"]["timing"])
 
     def test_bunny_alice_reentry_and_party_stack_are_preserved(self):
-        self.assertTrue(_find("앨리스 : 원더랜드 바니",stat="burst_reentry"))
-        party=_find("앨리스 : 원더랜드 바니",effect_name="당근 파티")[0]
+        self.assertTrue(_find("Alice : 원더랜드 바니",stat="burst_reentry"))
+        party=_find("Alice : 원더랜드 바니",effect_name="당근 파티")[0]
         self.assertEqual(5,party["max_stack"])
         self.assertEqual(["hit_count:60"],party["trigger"]["timing"])
 
     def test_all_ten_simulate(self):
-        cases=[("율하",["리틀 머메이드","크라운","율하"]),("애드미",["리틀 머메이드","애드미","test_B3"]),
-          ("길로틴",["리틀 머메이드","크라운","길로틴"]),("메이든",["리틀 머메이드","크라운","메이든"]),
-          ("길로틴 : 윈터 슬레이어",["리틀 머메이드","크라운","길로틴 : 윈터 슬레이어"]),
-          ("루드밀라",["루드밀라","크라운","test_B3"]),("네베",["리틀 머메이드","크라운","네베"]),
-          ("앨리스 : 원더랜드 바니",["앨리스 : 원더랜드 바니","크라운","test_B3"]),
-          ("루피",["리틀 머메이드","루피","test_B3"]),("얀",["얀","크라운","test_B3"])]
+        cases=[("율하",["리틀 머메이드","Crown","율하"]),("애드미",["리틀 머메이드","애드미","test_B3"]),
+          ("길로틴",["리틀 머메이드","Crown","길로틴"]),("메이든",["리틀 머메이드","Crown","메이든"]),
+          ("길로틴 : 윈터 슬레이어",["리틀 머메이드","Crown","길로틴 : 윈터 슬레이어"]),
+          ("루드밀라",["루드밀라","Crown","test_B3"]),("네베",["리틀 머메이드","Crown","네베"]),
+          ("Alice : 원더랜드 바니",["Alice : 원더랜드 바니","Crown","test_B3"]),
+          ("루피",["리틀 머메이드","루피","test_B3"]),("얀",["얀","Crown","test_B3"])]
         for n,m in cases:
             with self.subTest(name=n):
                 squad=build_squad(m);res=simulate(squad,config=build_config(squad,{"first_burst_time":1,"duration":8}),seed=1)

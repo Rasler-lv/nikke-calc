@@ -95,7 +95,7 @@ CUBE_STAT_MAP = {
 }
 
 # 상시 버프가 아니라 **트리거 시 1회 발동**하는 큐브 스킬. 스킬명 → 발동 타이밍.
-# 여기 있는 스킬은 `type: instant`로 나가고 timing이 `battle_start`가 아니게 된다.
+# 여기 있는 스킬은 `type: instant`로 Naga고 timing이 `battle_start`가 아니게 된다.
 # instant 핸들러는 타임라인이 런타임에 등록하므로(`register_instant_handler`) 정적으로
 # 지원 여부를 판정할 수 없다 — 여기 넣는 사람이 핸들러 존재를 확인한다.
 CUBE_INSTANT = {

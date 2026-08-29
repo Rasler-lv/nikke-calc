@@ -55,7 +55,7 @@ class StackingDotContractTest(unittest.TestCase):
         풀차지 명중마다 한 중첩씩 붙으므로, 한 탄창 안에서 뒤쪽 틱이 앞쪽 틱보다
         커야 한다. 중첩이 대미지에 반영되지 않으면 모든 틱이 같은 값이다.
         """
-        squad = build_squad(["레이븐", "크라운", "test_B3"])
+        squad = build_squad(["레이븐", "Crown", "test_B3"])
         result = simulate(
             squad,
             config=build_config(squad, {"first_burst_time": 1, "duration": 20}),

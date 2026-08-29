@@ -32,8 +32,8 @@
 
 ```ts
 expect(root.querySelectorAll('[data-character-filter]')).toHaveLength(5);
-filterCharacterSlot(root, 0, '앨리스');
-expect([...first.options].map((option) => option.value)).toEqual(['', '리타', '앨리스']);
+filterCharacterSlot(root, 0, 'Alice');
+expect([...first.options].map((option) => option.value)).toEqual(['', 'Liter', 'Alice']);
 expect([...second.options].map((option) => option.value)).toEqual(['', ...names]);
 ```
 

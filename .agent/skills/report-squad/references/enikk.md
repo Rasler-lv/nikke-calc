@@ -33,10 +33,10 @@
 여기 **속성은 보스 자신의 속성이 아니라 약점**이다 (목록 카드 기준). 시즌 페이지 `Boss` 탭에서
 `Element`(보스 속성)와 `Weakness`(약점)를 따로 확인해 **어느 쪽이 랩쳐 코드인지 확정한다.**
 
-> 랩쳐 코드에는 **보스 속성**을 넣는다. `enemy.code=풍압`이면 작열 캐릭터에 특효가 붙는다
+> 랩쳐 코드에는 **보스 속성**을 넣는다. `enemy.code=풍압`이면 Fire Code 캐릭터에 특효가 붙는다
 > (`format.md §랩쳐 설정`). 약점 속성을 코드에 넣으면 특효가 반대로 걸린다.
 
-유저가 "작열 약점 레이드"라고 하면 **Weakness가 작열**인 시즌이다.
+유저가 "Fire Code 약점 레이드"라고 하면 **Weakness가 Fire Code**인 시즌이다.
 
 ## 2. Teams 탭 긁기
 
@@ -70,7 +70,7 @@
 
 썸네일 URL의 `si_c{id}_`가 `scraper/nikke_scraped.json`의 `id`와 같은 체계다.
 **이름 매칭은 반드시 틀린다** — 한국 서버가 영문명을 음차하지 않는 캐릭터가 있다
-(`Liter`=리타, `Moran`=목단, `Rouge`=루주). 부제 구분자도 우리는 ` : `, enikk은 `: `다.
+(`Liter`=Liter, `Moran`=목단, `Rouge`=루주). 부제 구분자도 우리는 ` : `, enikk은 `: `다.
 
 ## 3. 스펙 + 기준값 만들기
 
@@ -78,7 +78,7 @@
 python .agent/skills/report-squad/scripts/enikk_spec.py <덤프.txt> \
     --slug sr35-enikk-teams --min-uses 3 \
     --title "솔로레이드 S35 Crystal Chamber — enikk 실사용 조합 딜량" \
-    --note  "enikk.app 시즌 35(작열 약점) Teams 데이터에서 3회 이상 사용된 조합 중 스킬 파싱이 끝난 것. 스쿼드 순서는 enikk 표기 그대로." \
+    --note  "enikk.app 시즌 35(Fire Code 약점) Teams 데이터에서 3회 이상 사용된 조합 중 스킬 파싱이 끝난 것. 스쿼드 순서는 enikk 표기 그대로." \
     --code 풍압 --core-px 0 --runs 5
 ```
 

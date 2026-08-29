@@ -399,7 +399,7 @@ export function mountSharePanel(hosts: SharePanelHosts, deps: SharePanelDeps): S
 
     form.append(
       nameField, autoField, byField, warn, submit,
-      el('p', 'share-hint', '올리기를 누를 때만 서버로 전송됩니다. 그 전에는 아무것도 나가지 않습니다.'),
+      el('p', 'share-hint', '올리기를 누를 때만 서버로 전송됩니다. 그 전에는 아무것도 Naga지 않습니다.'),
     );
     hosts.upload.append(form);
   }

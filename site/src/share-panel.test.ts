@@ -246,7 +246,7 @@ describe('share panel', () => {
       items: [
         item({ id: 'a1', name: '솔레 3페', by: '모리스', auto: '90초 · 적 수냉' }),
         item({ id: 'a2', name: '유니온 레이드', by: '', auto: '60초 · 무속성' }),
-        item({ id: 'a3', name: '심층전', by: '니케초보', auto: '150초 · 적 작열' }),
+        item({ id: 'a3', name: '심층전', by: '니케초보', auto: '150초 · 적 Fire Code' }),
       ],
       mine: {},
       applied: {},
@@ -357,21 +357,21 @@ describe('share panel', () => {
 
 describe('squad preview', () => {
   it('draws one row per deck, labelled only when there is more than one', () => {
-    const image = (name: string) => (name === '나가' ? undefined : `img/${name}.webp`);
-    const one = squadPreview([['리타', '크라운']], image);
+    const image = (name: string) => (name === 'Naga' ? undefined : `img/${name}.webp`);
+    const one = squadPreview([['Liter', 'Crown']], image);
     expect(one.querySelectorAll('[data-share-deck]')).toHaveLength(1);
     // 덱이 하나면 «1덱» 딱지는 붙이지 않는다 — 셀 것이 없다.
     expect(one.querySelector('.share-deck-label')).toBeNull();
     expect([...one.querySelectorAll('img')].map((node) => node.getAttribute('alt')))
-      .toEqual(['리타', '크라운']);
+      .toEqual(['Liter', 'Crown']);
 
-    const many = squadPreview([['리타'], ['앨리스', '나가']], image);
+    const many = squadPreview([['Liter'], ['Alice', 'Naga']], image);
     expect([...many.querySelectorAll('.share-deck-label')].map((node) => node.textContent))
       .toEqual(['1덱', '2덱']);
     // 초상화가 없는 니케는 이름 조각으로 자리를 지킨다.
     const chip = many.querySelector('.share-portrait-empty')!;
-    expect(chip.textContent).toBe('나가');
-    expect(chip.getAttribute('title')).toBe('나가');
+    expect(chip.textContent).toBe('Naga');
+    expect(chip.getAttribute('title')).toBe('Naga');
   });
 
   it('replaces the summary line in the list when a preview is given', async () => {

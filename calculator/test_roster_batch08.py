@@ -39,7 +39,7 @@ class RosterBatch08Test(unittest.TestCase):
 
     def test_chime_buffs_crown_only(self):
         for effect_name in ("일등 신하", "왕의 비서", "왕을 위해 3"):
-            self.assertEqual("크라운", _find("차임", effect_name=effect_name)[0]["target"])
+            self.assertEqual("Crown", _find("차임", effect_name=effect_name)[0]["target"])
 
     def test_mast_and_kilo_special_contracts(self):
         sea = _find("마스트", effect_name="해풍")[0]
@@ -61,16 +61,16 @@ class RosterBatch08Test(unittest.TestCase):
 
     def test_all_ten_simulate_in_valid_squads(self):
         cases = [
-            ("솔져 O.W.", ["솔져 O.W.", "크라운", "test_B3"]),
+            ("솔져 O.W.", ["솔져 O.W.", "Crown", "test_B3"]),
             ("프로덕트 23", ["리틀 머메이드", "프로덕트 23", "test_B3"]),
-            ("iDoll 썬", ["리틀 머메이드", "크라운", "iDoll 썬"]),
-            ("코코아", ["코코아", "크라운", "test_B3"]),
-            ("소다", ["소다", "크라운", "test_B3"]),
+            ("iDoll 썬", ["리틀 머메이드", "Crown", "iDoll 썬"]),
+            ("코코아", ["코코아", "Crown", "test_B3"]),
+            ("소다", ["소다", "Crown", "test_B3"]),
             ("마르차나", ["리틀 머메이드", "마르차나", "test_B3"]),
-            ("차임", ["리틀 머메이드", "차임", "test_B3", "크라운"]),
+            ("차임", ["리틀 머메이드", "차임", "test_B3", "Crown"]),
             ("마스트", ["리틀 머메이드", "마스트", "test_B3"]),
-            ("앵커", ["앵커", "크라운", "test_B3"]),
-            ("킬로", ["리틀 머메이드", "크라운", "킬로"]),
+            ("앵커", ["앵커", "Crown", "test_B3"]),
+            ("킬로", ["리틀 머메이드", "Crown", "킬로"]),
         ]
         for name, members in cases:
             with self.subTest(name=name):

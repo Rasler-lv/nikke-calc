@@ -99,31 +99,31 @@ describe('generated browser runtime', () => {
     });
     expect(settings.characters['미하라 : 본딩 체인']!.overload.atk_pct).toBe(23.22);
     expect(settings.characters['미하라 : 본딩 체인']!.cube).toEqual({ name: '렐릭 베어 큐브', level: 15 });
-    expect(settings.characters['리타']).toMatchObject({
+    expect(settings.characters['Liter']).toMatchObject({
       skillLevels: { '1': 10, '2': 10, '3': 10 },
       skillLevelsLocked: false,
       growthStage: 3,
       rarity: 'SSR',
       maxGrowthStage: 10,
     });
-    expect(settings.characters['리타']!.growthOptions).toHaveLength(11);
-    expect(settings.characters['리타']!.growthOptions[0]).toEqual({
+    expect(settings.characters['Liter']!.growthOptions).toHaveLength(11);
+    expect(settings.characters['Liter']!.growthOptions[0]).toEqual({
       value: 0,
       label: '명함',
       affinity: 10,
     });
-    expect(settings.characters['리타']!.growthOptions[3]).toEqual({
+    expect(settings.characters['Liter']!.growthOptions[3]).toEqual({
       value: 3,
       label: '3돌',
       affinity: 30,
     });
-    expect(settings.characters['리타']!.growthOptions[10]).toEqual({
+    expect(settings.characters['Liter']!.growthOptions[10]).toEqual({
       value: 10,
       label: '코강 7',
       affinity: 30,
     });
-    expect(settings.characters['크라운']!.growthOptions[3]!.affinity).toBe(40);
-    for (const name of ['라피 : 레드 후드', '아니스 : 스타', '네온 : 비전 아이']) {
+    expect(settings.characters['Crown']!.growthOptions[3]!.affinity).toBe(40);
+    for (const name of ['Rapi : Red Hood', '아니스 : 스타', '네온 : 비전 아이']) {
       expect(settings.characters[name]!.growthOptions[3]!.affinity).toBe(40);
     }
     // `skillLevelsLocked`는 프리뷰(출시 전 카드) 캐릭터 전용이다 — 레벨 10 계수만

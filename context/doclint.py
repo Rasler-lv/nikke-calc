@@ -395,7 +395,7 @@ def check_aliases() -> bool:
     skills = set(json.loads(SKILLS.read_text(encoding="utf-8")))
 
     def col0(anchor: str) -> set[str]:
-        """앵커 이후 첫 표의 1열. §주의는 백틱(`레드 후드`), 별칭 표는 맨몸 이름."""
+        """앵커 이후 첫 표의 1열. §주의는 백틱(`Red Hood`), 별칭 표는 맨몸 이름."""
         return {r[0].strip("`*").strip() for r in _table_after(ALIASES, anchor) if r and r[0]}
 
     # 누락 검사는 §주의 표만 본다 — 별칭 표에도 있다고 넘어가면 검사가 무력해진다

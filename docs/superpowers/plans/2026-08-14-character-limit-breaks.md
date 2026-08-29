@@ -13,7 +13,7 @@
 - The selector uses one integer `growthStage`: 0=명함, 1~3=돌파, 4~10=코강 1~7.
 - R permits stage 0, SR permits stages 0~2, and SSR permits stages 0~10.
 - Bond is always the selected stage's maximum: R=1(no bonus), 명함=10, 1돌=20, 2돌=30, ordinary SSR 3돌+=30, Pilgrim/Over-Spec 3돌+=40.
-- The current Over-Spec canonical list is exactly `라피 : 레드 후드`, `아니스 : 스타`, and `네온 : 비전 아이`.
+- The current Over-Spec canonical list is exactly `Rapi : Red Hood`, `아니스 : 스타`, and `네온 : 비전 아이`.
 - The direct limit-break and core formulas in `calculator/base_stat.py` remain unchanged.
 - Existing direct Python overrides of `breakthrough`, `core_enhancement`, or `affinity` remain authoritative research inputs.
 - No new dependency, backend, account, login, or remote persistence.
@@ -53,7 +53,7 @@ cases = [
 ]
 ```
 
-Assert stage overflow, booleans, fractions, and unknown rarity fail. Assert `크라운` and all three Over-Spec names resolve stage 3 to affinity 40, while `리타` resolves to 30. In `context/test_growth.py`, assert default characters use the profile maximum and direct legacy fields remain unchanged.
+Assert stage overflow, booleans, fractions, and unknown rarity fail. Assert `Crown` and all three Over-Spec names resolve stage 3 to affinity 40, while `Liter` resolves to 30. In `context/test_growth.py`, assert default characters use the profile maximum and direct legacy fields remain unchanged.
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
@@ -71,7 +71,7 @@ Define:
 
 ```python
 OVER_SPEC_NAMES = frozenset({
-    "라피 : 레드 후드",
+    "Rapi : Red Hood",
     "아니스 : 스타",
     "네온 : 비전 아이",
 })
@@ -122,12 +122,12 @@ git commit -m "feat: model character growth stages"
 Add assertions equivalent to:
 
 ```python
-normalize_character_overrides({"growthStage": 6}, character_name="리타") == {
+normalize_character_overrides({"growthStage": 6}, character_name="Liter") == {
     "breakthrough": 3,
     "core_enhancement": 3,
     "affinity": 30,
 }
-normalize_character_overrides({"growthStage": 3}, character_name="크라운")["affinity"] == 40
+normalize_character_overrides({"growthStage": 3}, character_name="Crown")["affinity"] == 40
 ```
 
 Reject missing character context for a growth request, booleans, fractions, negative values, SSR stage 11, SR stage 3, and R stage 1. Bridge tests must prove the selected fields reach `build_squad()` and a forged stage fails before simulation.
@@ -178,7 +178,7 @@ git commit -m "feat: accept character growth stages"
 
 - [ ] **Step 1: Write a failing runtime asset test**
 
-Expect an ordinary SSR to export stage 3/bond 30, `크라운` and all three Over-Spec names to export stage 3/bond 40, an SSR to expose exactly values 0~10, and the manifest to include `context/growth.py`. Assert a preview character exports canonical SSR growth metadata.
+Expect an ordinary SSR to export stage 3/bond 30, `Crown` and all three Over-Spec names to export stage 3/bond 40, an SSR to expose exactly values 0~10, and the manifest to include `context/growth.py`. Assert a preview character exports canonical SSR growth metadata.
 
 - [ ] **Step 2: Run the focused asset test and verify RED**
 

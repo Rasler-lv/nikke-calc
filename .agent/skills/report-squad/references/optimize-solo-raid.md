@@ -24,7 +24,7 @@
 
 ```json
 {
-  "title": "작열 솔로레이드 5스쿼드 총딜 최적화",
+  "title": "Fire Code 솔로레이드 5스쿼드 총딜 최적화",
   "sources": ["../fire-solo-decks/result.data.json"],
   "target": {
     "enemy": {"code": "풍압", "core_px": 0, "has_parts": false},

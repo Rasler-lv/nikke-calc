@@ -31,7 +31,7 @@ class ReloadDelayScalesWithSpeedTest(unittest.TestCase):
         from calculator.buff_manager import BuffManager
         from calculator.timeline import CharState
 
-        squad = build_squad(['드레이크', '크라운', 'test_B3'])
+        squad = build_squad(['드레이크', 'Crown', 'test_B3'])
         drake = next(c for c in squad if c['name'] == '드레이크')
         state = CharState(drake, 100000.0, '')
         bm = BuffManager(squad)

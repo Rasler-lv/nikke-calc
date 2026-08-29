@@ -65,12 +65,12 @@ class CombatPowerTest(unittest.TestCase):
 
     def test_investment_raises_combat_power(self):
         """더 굴린 캐릭터가 더 높은 전투력을 낸다 — 정렬이 뒤집히면 안 된다."""
-        plain = build_squad(["라피"], {"라피": {
+        plain = build_squad(["Rapi"], {"Rapi": {
             "level": 200, "skill_levels": {"1": 1, "2": 1, "3": 1},
             "cube": {"name": "렐릭 베어 큐브", "level": 1},
             "collection_stage": "없음", "favorite_stage": 0,
         }})[0]
-        invested = build_squad(["라피"])[0]   # 기본 스펙(만렙·풀강)
+        invested = build_squad(["Rapi"])[0]   # 기본 스펙(만렙·풀강)
         self.assertGreater(combat_power(invested), combat_power(plain))
         self.assertGreater(combat_power(plain), 0)
 

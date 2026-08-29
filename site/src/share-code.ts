@@ -2,7 +2,7 @@ import type { BattleSettings, DeckState, ElementWindow, PhaseWindow } from './ty
 
 // 조합 공유 코드 — **누가 편성됐는지(캐릭터 이름)만** 한 줄 텍스트로 주고받는다.
 // 오버로드·공격력·돌파·스킬·큐브·소장품·컨트롤 같은 개인 스펙과 전투 조건은
-// 일부러 담지 않는다: 남의 계정 수치가 딸려 나가면 안 되고, 받는 쪽도 자기 스펙
+// 일부러 담지 않는다: 남의 계정 수치가 딸려 Naga면 안 되고, 받는 쪽도 자기 스펙
 // 그대로 조합만 얹어 보는 게 목적이기 때문이다.
 //
 // 형식(NK2): 이름을 그대로 실으면 한글 한 글자가 3바이트라 5덱이면 코드가 700자를
@@ -243,7 +243,7 @@ const BATTLE_PREFIX = 'NK3-';
  */
 export type BattleShare = Omit<BattleSettings, 'console' | 'synchroLevel'>;
 
-const CODES: BattleSettings['enemyCode'][] = ['', '풍압', '수냉', '작열', '전격', '철갑'];
+const CODES: BattleSettings['enemyCode'][] = ['', '풍압', '수냉', 'Fire Code', '', 'Iron Code'];
 
 /** 안 실으면 이 값으로 친다. 인코딩·디코딩이 같은 표를 본다. */
 const BATTLE_DEFAULTS: BattleShare = {

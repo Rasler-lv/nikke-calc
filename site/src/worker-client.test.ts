@@ -6,7 +6,7 @@ import {
 import type { SimulationRequest, SimulationResult, WorkerResponse } from './types';
 
 const request: SimulationRequest = {
-  squad: ['리타'],
+  squad: ['Liter'],
   duration: 10,
   enemyDef: 31_784,
   enemyCode: '',
@@ -19,7 +19,7 @@ const result: SimulationResult = {
   squadTotal: 123_456,
   duration: 10,
   hitCount: 100,
-  charTotals: { 리타: 123_456 },
+  charTotals: { Liter: 123_456 },
   previewNote: '',
   deviations: '',
 };

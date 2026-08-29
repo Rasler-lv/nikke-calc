@@ -8,7 +8,7 @@ from typing import Any
 
 
 OVER_SPEC_NAMES = frozenset({
-    "라피 : 레드 후드",
+    "Rapi : Red Hood",
     "아니스 : 스타",
     "네온 : 비전 아이",
 })

@@ -11,7 +11,7 @@ import {
 const validJson = JSON.stringify({
   name: '테스트 : 신캐',
   nikke: {
-    rarity: 'SSR', element_code: '전격', class: '화력형', manufacturer: '테트라',
+    rarity: 'SSR', element_code: '', class: '화력형', manufacturer: '테트라',
     weapon_type: 'AR', burst_stage: 3, burst_cooldown: 40, max_ammo: 60,
     reload_time: 1.0, fire_rate: 12.0, damage_coeff: 13.65,
   },
@@ -62,7 +62,7 @@ describe('customToMeta / customToSettings', () => {
     const custom = parseCustomInput(validJson);
     const meta = customToMeta(custom);
     expect(meta).toMatchObject({
-      name: '테스트 : 신캐', burstStage: '3', elementCode: '전격',
+      name: '테스트 : 신캐', burstStage: '3', elementCode: '',
       weaponType: 'AR', className: '화력형', preview: false,
     });
     const settings = customToSettings(custom);
@@ -83,7 +83,7 @@ describe('unsupportedEffects', () => {
   it('flags effects with stat/timing/target the engine does not recognize', () => {
     const flagged = unsupportedEffects([
       { name: 'ok', type: 'buff', stat: 'atk_pct', trigger: { timing: ['full_burst_start'] }, target: 'self' },
-      { name: 'ok-suffix', type: 'buff', stat: 'atk_pct', trigger: { timing: ['hit_count:5'] }, target: 'allies_code:전격' },
+      { name: 'ok-suffix', type: 'buff', stat: 'atk_pct', trigger: { timing: ['hit_count:5'] }, target: 'allies_code:' },
       { name: 'bad-stat', type: 'buff', stat: 'received_dmg_pct', trigger: { timing: ['burst_cast'] }, target: 'self' },
       { name: 'bad-timing', type: 'buff', stat: 'atk_pct', trigger: { timing: ['full_charge_attack'] }, target: 'self' },
       { name: 'bad-target', type: 'buff', stat: 'atk_pct', trigger: { timing: ['burst_cast'] }, target: 'all_enemies_in_range' },

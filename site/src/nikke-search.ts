@@ -1,7 +1,7 @@
 import type { CharacterMeta } from './types';
 
 // 니케 이름 검색. 고르는 판이 늘 펼쳐져 있으므로 «친 이름이 맨 앞에 오는가»가
-// 곧 검색의 품질이다. 걸러 내기만 하고 순서를 두지 않으면 「ㅋㄹㅇ」에 크라운이
+// 곧 검색의 품질이다. 걸러 내기만 하고 순서를 두지 않으면 「ㅋㄹㅇ」에 Crown이
 // 아니라 아크레인저 블랙이 먼저 나온다 — 거른 보람이 없다.
 
 const CHO = [
@@ -25,7 +25,7 @@ export function initials(text: string): string {
 }
 
 /**
- * 공백과 구분자를 지운다. 「라피레드」로 «라피 : 레드 후드»를 잡기 위한 것으로,
+ * 공백과 구분자를 지운다. 「Rapi레드」로 «Rapi : Red Hood»를 잡기 위한 것으로,
  * 지금은 콜론과 공백까지 정확히 맞춰야 걸린다.
  */
 export const squash = (text: string): string =>

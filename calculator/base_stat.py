@@ -8,7 +8,7 @@ Phase 2: 기본 스탯 계산기
 
 캐릭터 인스턴스 구조:
   {
-    "name": "라피",
+    "name": "Rapi",
     "level": 200,
     "breakthrough": 3,          # 0~3
     "core_enhancement": 7,      # 0~7 (돌파 3 이후 해금)
@@ -333,7 +333,7 @@ if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
 
     sample = {
-        "name": "라피",
+        "name": "Rapi",
         "level": 200,
         "breakthrough": 0,
         "core_enhancement": 0,
@@ -350,4 +350,4 @@ if __name__ == "__main__":
     }
 
     result = calc_base_stats(sample)
-    print("라피 lv200 bt0 최소 조건:", result)
+    print("Rapi lv200 bt0 최소 조건:", result)

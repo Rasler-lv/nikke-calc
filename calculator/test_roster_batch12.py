@@ -27,14 +27,14 @@ class Batch12(unittest.TestCase):
         skills = data()
         payload = next(e for e in skills['쿠루미'] if e['name'] == '페이로드 확산')
         self.assertEqual(['conditional_hit_count:페이로드 확산:36'], payload['trigger']['timing'])
-        squad = build_squad(['쿠루미', '크라운', 'test_B3'])
+        squad = build_squad(['쿠루미', 'Crown', 'test_B3'])
         result = simulate(squad, config=build_config(squad, {'first_burst_time': 1, 'duration': 12}), seed=1)
         self.assertTrue(any(h.skill_name == '페이로드 확산' for h in result.hits))
 
     def test_all_simulate(self):
         for name, names in [
             ('릴리', ['리틀 머메이드', '릴리', 'test_B3']),
-            ('쿠루미', ['쿠루미', '크라운', 'test_B3']),
+            ('쿠루미', ['쿠루미', 'Crown', 'test_B3']),
             ('아이기스', ['리틀 머메이드', '아이기스', 'test_B3']),
         ]:
             with self.subTest(name=name):

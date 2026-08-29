@@ -8,7 +8,7 @@ import type {
 export const CUSTOM_KEY = 'nikke-custom-v1';
 
 const WEAPONS = ['AR', 'SMG', 'MG', 'SR', 'RL', 'SG'];
-const CODES = ['전격', '작열', '수냉', '풍압', '철갑'];
+const CODES = ['', 'Fire Code', '수냉', '풍압', 'Iron Code'];
 const CLASSES = ['화력형', '방어형', '지원형'];
 
 // 다른 LLM에 붙여넣을 프롬프트. 우리 엔진이 요구하는 JSON 스키마 + 실제 예시.
@@ -19,7 +19,7 @@ export function buildAddPrompt(): string {
 ## nikke(스탯) 필드
 공통(모든 무기):
   "rarity": "SSR | SR | R",
-  "element_code": "전격 | 작열 | 수냉 | 풍압 | 철갑",
+  "element_code": " | Fire Code | 수냉 | 풍압 | Iron Code",
   "class": "화력형 | 방어형 | 지원형",
   "manufacturer": "엘리시온 | 미실리스 | 테트라 | 필그림 | 어브노멀",
   "weapon_type": "AR | SMG | MG | SR | RL | SG",
@@ -33,7 +33,7 @@ export function buildAddPrompt(): string {
   "damage_coeff": 1발 대미지 계수(%표기 그대로 숫자)
 무기 유형별 추가 필드(중요):
   · 연사형(AR·SMG·MG·SG): "core_dmg_mult": 코어 대미지 배율(%, 예 200)
-  · 차지형(SR·RL): "charge_time": 풀차지까지 걸리는 초(예 앨리스 1.5, 대부분 RL 1.0),
+  · 차지형(SR·RL): "charge_time": 풀차지까지 걸리는 초(예 Alice 1.5, 대부분 RL 1.0),
                    "full_charge_mult": 풀차지 대미지 배율(%, 예 250·350)
     (차지형은 charge_time·full_charge_mult가 반드시 필요하다.)
 
@@ -67,8 +67,8 @@ damage stat(type "damage", values는 대미지 계수 %): bonus_damage, burst_da
 {"source":"스킬1","type":"buff","name":"EX 매거진","trigger":{"timing":["full_burst_start"],"condition":[]},"target":"all_allies","stat":"atk_pct","polarity":"beneficial","max_stack":1,"values":{"1":18.77,"10":23.61},"duration":10.0},
 {"source":"버스트스킬","type":"damage","name":"AK 미사일","trigger":{"timing":["burst_cast"],"condition":[]},"target":"all_enemies","stat":"burst_damage","values":{"1":831.79,"10":1407.64}}
 ]}
-차지형(앨리스, SR):
-{"name":"앨리스 예시","nikke":{"rarity":"SSR","element_code":"작열","class":"화력형","manufacturer":"테트라","weapon_type":"SR","burst_stage":3,"burst_cooldown":40,"max_ammo":6,"reload_time":2.0,"fire_rate":1.0,"pellets":1,"muzzles":1,"damage_coeff":41.36,"charge_time":1.5,"full_charge_mult":350.0},"skills":[
+차지형(Alice, SR):
+{"name":"Alice 예시","nikke":{"rarity":"SSR","element_code":"Fire Code","class":"화력형","manufacturer":"테트라","weapon_type":"SR","burst_stage":3,"burst_cooldown":40,"max_ammo":6,"reload_time":2.0,"fire_rate":1.0,"pellets":1,"muzzles":1,"damage_coeff":41.36,"charge_time":1.5,"full_charge_mult":350.0},"skills":[
 {"source":"버스트스킬","type":"buff","name":"공격 버프","trigger":{"timing":["burst_cast"],"condition":[]},"target":"self","stat":"atk_pct","polarity":"beneficial","max_stack":1,"values":{"1":50.0,"10":90.0},"duration":10.0}
 ]}
 

@@ -15,26 +15,26 @@ from context.spec import build_squad
 
 class RuntimeConditionTargetTest(unittest.TestCase):
     def setUp(self):
-        self.squad = build_squad(["리타", "크라운", "test_B3"])
+        self.squad = build_squad(["Liter", "Crown", "test_B3"])
         self.bm = BuffManager(self.squad)
-        self.bm.state["hp_pct"] = {"리타": 100.0, "크라운": 30.0}
+        self.bm.state["hp_pct"] = {"Liter": 100.0, "Crown": 30.0}
 
     def test_ally_hp_below_reads_the_recipient_not_the_enemy_sentinel(self):
         cond = ["ally_hp_below:50"]
         # 수령자를 넘기면 그 아군의 실제 체력을 본다.
         self.assertTrue(
-            self.bm._runtime_condition_ok(cond, "리타", "리타", "크라운", 0.0),
+            self.bm._runtime_condition_ok(cond, "Liter", "Liter", "Crown", 0.0),
             "체력 30%인 아군을 넘겼는데 조건이 거짓이다",
         )
         self.assertFalse(
-            self.bm._runtime_condition_ok(cond, "리타", "리타", "리타", 0.0),
+            self.bm._runtime_condition_ok(cond, "Liter", "Liter", "Liter", 0.0),
             "체력 100%인 아군을 넘겼는데 조건이 참이다",
         )
 
     def test_enemy_sentinel_is_never_what_the_condition_should_see(self):
         # 센티널은 hp_pct에 없어 기본 100%로 읽힌다 — 이걸 넘기던 것이 버그였다.
         self.assertFalse(
-            self.bm._runtime_condition_ok(["ally_hp_below:50"], "리타", "리타", "__enemy__", 0.0)
+            self.bm._runtime_condition_ok(["ally_hp_below:50"], "Liter", "Liter", "__enemy__", 0.0)
         )
 
 

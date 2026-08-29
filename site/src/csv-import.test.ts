@@ -21,7 +21,7 @@ const charDefaults = (over: Partial<CharacterSettingsDefaults> = {}): CharacterS
 
 const settings = {
   characters: {
-    앨리스: charDefaults(),
+    Alice: charDefaults(),
     프리바티: charDefaults({ maxGrowthStage: 0 }),
   },
 } as unknown as SettingsCatalog;
@@ -61,15 +61,15 @@ describe('parseRosterCsv', () => {
   it('maps aggregate overload, growth, skills, and equip levels for known names', () => {
     const csv = [
       header,
-      '"앨리스","3","7","10","5","10","85.80","43.03","0.00","109.10","0.00","0.00","9.00","0.00","0.00","5","5","5","2"',
+      '"Alice","3","7","10","5","10","85.80","43.03","0.00","109.10","0.00","0.00","9.00","0.00","0.00","5","5","5","2"',
       '"모르는캐릭","3","7","10","10","10","1","1","1","1","1","1","1","1","1","5","5","5","5"',
     ].join('\n');
 
     const { overrides, matched, unmatched } = parseRosterCsv(csv, settings);
-    expect(matched).toEqual(['앨리스']);
+    expect(matched).toEqual(['Alice']);
     expect(unmatched).toEqual(['모르는캐릭']);
 
-    const alice = overrides['앨리스']!;
+    const alice = overrides['Alice']!;
     expect(alice.overload).toEqual({
       element_bonus: 85.8, atk_pct: 43.03, def_pct: 0, max_ammo_pct: 109.1,
       crit_rate: 0, crit_dmg: 0, charge_speed_pct: 9, charge_dmg_pct: 0, accuracy_pct: 0,
@@ -82,10 +82,10 @@ describe('parseRosterCsv', () => {
   it('handles a UTF-8 BOM at the start of the file', () => {
     const csv = `﻿${[
       header,
-      '"앨리스","3","7","10","10","10","1","1","1","1","1","1","1","1","1","5","5","5","5"',
+      '"Alice","3","7","10","10","10","1","1","1","1","1","1","1","1","1","5","5","5","5"',
     ].join('\n')}`;
     const { matched } = parseRosterCsv(csv, settings);
-    expect(matched).toEqual(['앨리스']);
+    expect(matched).toEqual(['Alice']);
   });
 
   it('clamps growth to the character maximum and skips locked skills', () => {

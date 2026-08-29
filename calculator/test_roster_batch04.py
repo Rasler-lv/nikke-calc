@@ -8,7 +8,7 @@ from context.spec import build_config, build_squad
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BATCH = ["라피", "네온", "아니스", "델타", "벨로타", "미카", "N102", "프림", "유니", "미하라"]
+BATCH = ["Rapi", "네온", "아니스", "델타", "벨로타", "미카", "N102", "프림", "유니", "미하라"]
 
 
 def _skills():
@@ -30,7 +30,7 @@ class RosterBatch04Test(unittest.TestCase):
 
     def test_hidden_active_cooldowns_are_explicit(self):
         expected = {
-            ("라피", "미사일"): "every:20s",
+            ("Rapi", "미사일"): "every:20s",
             ("아니스", "포메이션 C.H"): "every:10s",
             ("미카", "용감한 별님"): "every:20s",
             ("N102", "부상하는 기억"): "every:10s",
@@ -77,16 +77,16 @@ class RosterBatch04Test(unittest.TestCase):
 
     def test_all_ten_run_in_valid_squads(self):
         cases = [
-            ("라피", ["리틀 머메이드", "크라운", "라피"]),
-            ("네온", ["네온", "크라운", "test_B3"]),
+            ("Rapi", ["리틀 머메이드", "Crown", "Rapi"]),
+            ("네온", ["네온", "Crown", "test_B3"]),
             ("아니스", ["리틀 머메이드", "아니스", "test_B3"]),
             ("델타", ["리틀 머메이드", "델타", "test_B3"]),
             ("벨로타", ["리틀 머메이드", "벨로타", "test_B3"]),
-            ("미카", ["미카", "크라운", "test_B3"]),
-            ("N102", ["N102", "크라운", "test_B3"]),
-            ("프림", ["프림", "크라운", "test_B3"]),
+            ("미카", ["미카", "Crown", "test_B3"]),
+            ("N102", ["N102", "Crown", "test_B3"]),
+            ("프림", ["프림", "Crown", "test_B3"]),
             ("유니", ["리틀 머메이드", "유니", "test_B3"]),
-            ("미하라", ["리틀 머메이드", "크라운", "미하라"]),
+            ("미하라", ["리틀 머메이드", "Crown", "미하라"]),
         ]
         for name, members in cases:
             with self.subTest(name=name):

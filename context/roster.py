@@ -29,19 +29,19 @@ OUT = ROOT / "roster.html"
 TEST_KEYS = ("test_B1", "test_B2", "test_B3")
 
 ELEMENT_ICON = {
-    "작열": "icn_element_fire.webp",
+    "Fire Code": "icn_element_fire.webp",
     "수냉": "icn_element_water.webp",
     "풍압": "icn_element_wind.webp",
-    "전격": "icn_element_elect.webp",
-    "철갑": "icn_element_iron.webp",
+    "": "icn_element_elect.webp",
+    "Iron Code": "icn_element_iron.webp",
 }
-ELEMENT_ORDER = ["작열", "수냉", "풍압", "전격", "철갑"]
+ELEMENT_ORDER = ["Fire Code", "수냉", "풍압", "", "Iron Code"]
 ELEMENT_COLOR = {
-    "작열": "#ff6b4a",
+    "Fire Code": "#ff6b4a",
     "수냉": "#4aa8ff",
     "풍압": "#4ad991",
-    "전격": "#c77dff",
-    "철갑": "#f2c14e",
+    "": "#c77dff",
+    "Iron Code": "#f2c14e",
 }
 CLASS_ICON = {
     "화력형": "icn_class_attacker.webp",

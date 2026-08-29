@@ -12,7 +12,7 @@ from scraper import parse_nikke
 def _fixture(rarity: str) -> dict:
     return {
         "레어도": rarity,
-        "속성": "철갑",
+        "속성": "Iron Code",
         "클래스": "화력형",
         "기업": "엘리시온",
         "스쿼드": "Test",

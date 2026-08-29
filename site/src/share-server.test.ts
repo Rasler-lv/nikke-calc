@@ -77,26 +77,26 @@ describe('auto summaries', () => {
       hasParts: true,
       optimalRangeWeapons: ['AR', 'SMG'],
       immuneWindows: [{ from: 10, to: 20 }],
-      elementWindows: [{ from: 30, to: 40, code: '작열' }],
+      elementWindows: [{ from: 30, to: 40, code: 'Fire Code' }],
       rngMode: 'expected',
     })).toBe('90초 · 적 수냉 · 코어 60px · 파츠 · 적정 AR·SMG · 족자 1 · 속저 1 · 기대값');
   });
 
   it('names the squad, and counts decks in five-deck mode', () => {
     const decks = [
-      { squad: ['리타', '크라운', '', '', ''] },
-      { squad: ['앨리스', '나가', '', '', ''] },
+      { squad: ['Liter', 'Crown', '', '', ''] },
+      { squad: ['Alice', 'Naga', '', '', ''] },
       { squad: ['', '', '', '', ''] },
     ];
-    expect(summarizeSquad(decks, false)).toBe('리타/크라운');
+    expect(summarizeSquad(decks, false)).toBe('Liter/Crown');
     expect(summarizeSquad(decks, true)).toBe('2덱 · 4명');
     // 5덱 모드라도 실제로 한 덱만 찼으면 이름이 더 쓸모 있다.
-    expect(summarizeSquad([decks[0]!], true)).toBe('리타/크라운');
+    expect(summarizeSquad([decks[0]!], true)).toBe('Liter/Crown');
 
     // 이름 안에 «:»가 든 캐릭터가 섞여도 한 명씩 끊어 읽힌다.
     expect(summarizeSquad(
-      [{ squad: ['크라운', '아니스 : 스타', '라피 : 레드 후드', '미하라 : 본딩 체인', '마스트 : 로망틱 메이드'] }],
+      [{ squad: ['Crown', '아니스 : 스타', 'Rapi : Red Hood', '미하라 : 본딩 체인', '마스트 : 로망틱 메이드'] }],
       false,
-    )).toBe('크라운/아니스 : 스타/라피 : 레드 후드/미하라 : 본딩 체인/마스트 : 로망틱 메이드');
+    )).toBe('Crown/아니스 : 스타/Rapi : Red Hood/미하라 : 본딩 체인/마스트 : 로망틱 메이드');
   });
 });

@@ -16,7 +16,7 @@ from context.spec import _nikke as parsed_nikke
 class BrowserBridgeTest(unittest.TestCase):
     def test_growth_stage_changes_the_engine_result(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -26,19 +26,19 @@ class BrowserBridgeTest(unittest.TestCase):
         }
         card = json.loads(run_request(json.dumps({
             **payload,
-            "characters": {"리타": {"growthStage": 0}},
+            "characters": {"Liter": {"growthStage": 0}},
         }, ensure_ascii=False)))
         core_seven = json.loads(run_request(json.dumps({
             **payload,
-            "characters": {"리타": {"growthStage": 10}},
+            "characters": {"Liter": {"growthStage": 10}},
         }, ensure_ascii=False)))
 
         self.assertGreater(core_seven["squadTotal"], card["squadTotal"])
 
     def test_rejects_forged_growth_stage_for_character_rarity(self):
         payload = {
-            "squad": ["라피"],
-            "characters": {"라피": {"growthStage": 3}},
+            "squad": ["Rapi"],
+            "characters": {"Rapi": {"growthStage": 3}},
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -47,13 +47,13 @@ class BrowserBridgeTest(unittest.TestCase):
             "seed": 42,
         }
 
-        with self.assertRaisesRegex(ValueError, "라피: 돌파 단계는 0~2"):
+        with self.assertRaisesRegex(ValueError, "Rapi: 돌파 단계는 0~2"):
             run_request(json.dumps(payload, ensure_ascii=False))
 
     def test_rejects_null_growth_stage_in_forged_json(self):
         payload = {
-            "squad": ["리타"],
-            "characters": {"리타": {"growthStage": None}},
+            "squad": ["Liter"],
+            "characters": {"Liter": {"growthStage": None}},
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -67,9 +67,9 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_released_skill_levels_change_the_engine_result(self):
         payload = {
-            "squad": ["라피 : 레드 후드"],
+            "squad": ["Rapi : Red Hood"],
             "characters": {
-                "라피 : 레드 후드": {
+                "Rapi : Red Hood": {
                     "skillLevels": {"1": 10, "2": 1, "3": 10},
                 },
             },
@@ -83,7 +83,7 @@ class BrowserBridgeTest(unittest.TestCase):
         level_ten = json.loads(run_request(json.dumps({
             **payload,
             "characters": {
-                "라피 : 레드 후드": {
+                "Rapi : Red Hood": {
                     "skillLevels": {"1": 10, "2": 10, "3": 10},
                 },
             },
@@ -123,7 +123,7 @@ class BrowserBridgeTest(unittest.TestCase):
         out = []
         for seed in seeds:
             payload = {
-                "squad": ["리타", "크라운", "홍련"],
+                "squad": ["Liter", "Crown", "홍련"],
                 "duration": 20,
                 "enemyDef": 31_784,
                 "enemyCode": "",
@@ -157,7 +157,7 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_seeded_request_returns_compact_positive_result(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -171,12 +171,12 @@ class BrowserBridgeTest(unittest.TestCase):
         self.assertEqual(result["duration"], 10)
         self.assertGreater(result["squadTotal"], 0)
         self.assertGreater(result["hitCount"], 0)
-        self.assertEqual(list(result["charTotals"]), ["리타"])
+        self.assertEqual(list(result["charTotals"]), ["Liter"])
 
     def test_synchro_level_applies_to_everyone_and_changes_the_result(self):
         """싱크로 레벨은 계정 속성이라 스쿼드 전원에게 같은 값으로 얹힌다."""
         payload = {
-            "squad": ["리타", "크라운"],
+            "squad": ["Liter", "Crown"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -195,13 +195,13 @@ class BrowserBridgeTest(unittest.TestCase):
         self.assertEqual(same["squadTotal"], default["squadTotal"])
         self.assertLess(lower["squadTotal"], default["squadTotal"])
         # 한 명만이 아니라 전원이 낮아진다.
-        for name in ("리타", "크라운"):
+        for name in ("Liter", "Crown"):
             self.assertLess(lower["charTotals"][name], default["charTotals"][name])
 
     def test_endgame_burst_waits_for_the_last_seconds(self):
         """막바지 최우선 — 남은 시간이 N초 미만일 때 그 캐릭터가 먼저 나간다."""
         base = {
-            "squad": ["리타", "크라운", "라피 : 레드 후드", "앨리스", "나가"],
+            "squad": ["Liter", "Crown", "Rapi : Red Hood", "Alice", "Naga"],
             "duration": 60,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -212,9 +212,9 @@ class BrowserBridgeTest(unittest.TestCase):
         auto = json.loads(run_request(json.dumps(base, ensure_ascii=False)))
         endgame = json.loads(run_request(json.dumps({
             **base,
-            # 나가와 크라운이 같은 2단계 후보다 — 순서가 갈릴 자리가 있어야
+            # Naga와 Crown이 같은 2단계 후보다 — 순서가 갈릴 자리가 있어야
             # 이 설정이 뜻을 갖는다.
-            "characters": {"나가": {"burst": {"mode": "endgame", "seconds": 20}}},
+            "characters": {"Naga": {"burst": {"mode": "endgame", "seconds": 20}}},
         }, ensure_ascii=False)))
 
         # 순서가 실제로 달라져야 한다 — 안 달라지면 설정이 흘러가 버린 것이다.
@@ -223,7 +223,7 @@ class BrowserBridgeTest(unittest.TestCase):
     def test_burst_reaction_delays_every_burst(self):
         """반응속도는 버스트 하나하나마다 더해진다 — 느리게 잡으면 결과가 달라진다."""
         base = {
-            "squad": ["리타", "크라운", "라피 : 레드 후드", "앨리스", "나가"],
+            "squad": ["Liter", "Crown", "Rapi : Red Hood", "Alice", "Naga"],
             "duration": 60,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -248,7 +248,7 @@ class BrowserBridgeTest(unittest.TestCase):
     def test_skip_means_never_bursting_at_all(self):
         """「안 씀」은 뒤로 미는 게 아니라 후보에서 빼는 것이다."""
         base = {
-            "squad": ["리타", "크라운", "라피 : 레드 후드", "앨리스", "나가"],
+            "squad": ["Liter", "Crown", "Rapi : Red Hood", "Alice", "Naga"],
             "duration": 90,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -257,22 +257,22 @@ class BrowserBridgeTest(unittest.TestCase):
             "seed": 42,
         }
         auto = json.loads(run_request(json.dumps(base, ensure_ascii=False)))
-        # 크라운과 나가가 같은 2단계 후보다 — 크라운을 빼도 나가가 그 단계를 맡는다.
+        # Crown과 Naga가 같은 2단계 후보다 — Crown을 빼도 Naga가 그 단계를 맡는다.
         skipped = json.loads(run_request(json.dumps({
-            **base, "characters": {"크라운": {"burst": {"mode": "skip"}}},
+            **base, "characters": {"Crown": {"burst": {"mode": "skip"}}},
         }, ensure_ascii=False)))
 
         self.assertNotEqual(skipped["squadTotal"], auto["squadTotal"])
-        # 버스트를 아예 안 썼으므로 크라운의 버스트 시각이 하나도 없어야 한다.
-        self.assertTrue(auto["timeline"]["bursts"]["크라운"])
-        self.assertEqual(skipped["timeline"]["bursts"]["크라운"], [])
+        # 버스트를 아예 안 썼으므로 Crown의 버스트 시각이 하나도 없어야 한다.
+        self.assertTrue(auto["timeline"]["bursts"]["Crown"])
+        self.assertEqual(skipped["timeline"]["bursts"]["Crown"], [])
         # 그래도 전투는 돌아간다 — 다른 캐릭터는 계속 버스트를 쓴다.
-        self.assertTrue(skipped["timeline"]["bursts"]["나가"])
+        self.assertTrue(skipped["timeline"]["bursts"]["Naga"])
 
     def test_no_cube_drops_both_its_stats_and_its_effect(self):
         """「없음」은 큐브를 안 낀 상태다 — 스탯도, 우월 코드 효과도 붙지 않는다."""
         base = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 20,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -282,21 +282,21 @@ class BrowserBridgeTest(unittest.TestCase):
         }
         withCube = json.loads(run_request(json.dumps(base, ensure_ascii=False)))
         without = json.loads(run_request(json.dumps({
-            **base, "characters": {"리타": {"cube": {"name": "없음", "level": 0}}},
+            **base, "characters": {"Liter": {"cube": {"name": "없음", "level": 0}}},
         }, ensure_ascii=False)))
 
         self.assertLess(without["squadTotal"], withCube["squadTotal"])
 
     def test_rejects_an_unknown_cube_name(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
             "corePx": 0,
             "hasParts": False,
             "seed": 42,
-            "characters": {"리타": {"cube": {"name": "없는큐브", "level": 5}}},
+            "characters": {"Liter": {"cube": {"name": "없는큐브", "level": 5}}},
         }
 
         with self.assertRaisesRegex(ValueError, "큐브는"):
@@ -305,7 +305,7 @@ class BrowserBridgeTest(unittest.TestCase):
     def test_overload_zero_is_its_own_equipment_state(self):
         """오버로드 0강은 미장착도 T9도 아니다 — 셋이 서로 다른 값을 내야 한다."""
         base = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 20,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -315,7 +315,7 @@ class BrowserBridgeTest(unittest.TestCase):
         }
 
         def run(level):
-            payload = {**base, "characters": {"리타": {"equipLevels": {
+            payload = {**base, "characters": {"Liter": {"equipLevels": {
                 "머리": level, "몸통": level, "팔": level, "다리": level,
             }}}}
             return json.loads(run_request(json.dumps(payload, ensure_ascii=False)))["squadTotal"]
@@ -328,7 +328,7 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_rejects_a_bad_burst_reaction(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -343,14 +343,14 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_rejects_a_bad_endgame_burst_window(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",
             "corePx": 0,
             "hasParts": False,
             "seed": 42,
-            "characters": {"리타": {"burst": {"mode": "endgame", "seconds": 0}}},
+            "characters": {"Liter": {"burst": {"mode": "endgame", "seconds": 0}}},
         }
 
         with self.assertRaisesRegex(ValueError, "막바지 최우선"):
@@ -364,7 +364,7 @@ class BrowserBridgeTest(unittest.TestCase):
         """
         def payload(level):
             return {
-                "squad": ["리타"],
+                "squad": ["Liter"],
                 "duration": 10,
                 "enemyDef": 31_784,
                 "enemyCode": "",
@@ -382,9 +382,9 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_character_overrides_are_forwarded_to_the_engine(self):
         payload = {
-            "squad": ["리타"],
+            "squad": ["Liter"],
             "characters": {
-                "리타": {
+                "Liter": {
                     "overload": {"atk_pct": 100},
                     "cube": {"name": "렐릭 디스트로이 큐브", "level": 1},
                     "manualStats": {"normal_atk_dmg_pct": 20},
@@ -442,7 +442,7 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_burst_assignment_shifts_which_member_bursts(self):
         base = {
-            "squad": ["라피 : 레드 후드", "앨리스", "목단", "크라운", "마스트 : 로망틱 메이드"],
+            "squad": ["Rapi : Red Hood", "Alice", "목단", "Crown", "마스트 : 로망틱 메이드"],
             "duration": 90,
             "enemyDef": 31_784,
             "enemyCode": "",
@@ -476,26 +476,26 @@ class BrowserBridgeTest(unittest.TestCase):
         data = _Path(__file__).resolve().parent.parent.parent / "data"
         nikke = _json.loads((data / "parsed_nikke.json").read_text(encoding="utf-8"))
         skills = _json.loads((data / "parsed_skills.json").read_text(encoding="utf-8"))
-        # 크라운은 char_defaults 레이어가 없어, 복제 커스텀과 실제가 정확히 같아야 한다.
-        custom = {"커스텀크라운": {"nikke": nikke["크라운"], "skills": skills["크라운"]}}
+        # Crown은 char_defaults 레이어가 없어, 복제 커스텀과 실제가 정확히 같아야 한다.
+        custom = {"커스텀Crown": {"nikke": nikke["Crown"], "skills": skills["Crown"]}}
         base = {
             "duration": 40, "enemyDef": 31_784, "enemyCode": "",
             "corePx": 0, "hasParts": False, "seed": 42,
         }
         custom_run = json.loads(run_request(json.dumps({
             **base,
-            "squad": ["커스텀크라운", "목단", "라피 : 레드 후드", "앨리스", "나가"],
+            "squad": ["커스텀Crown", "목단", "Rapi : Red Hood", "Alice", "Naga"],
             "customCharacters": custom,
         }, ensure_ascii=False)))
         real_run = json.loads(run_request(json.dumps({
             **base,
-            "squad": ["크라운", "목단", "라피 : 레드 후드", "앨리스", "나가"],
+            "squad": ["Crown", "목단", "Rapi : Red Hood", "Alice", "Naga"],
         }, ensure_ascii=False)))
 
-        self.assertGreater(custom_run["charTotals"]["커스텀크라운"], 0)
+        self.assertGreater(custom_run["charTotals"]["커스텀Crown"], 0)
         self.assertEqual(
-            custom_run["charTotals"]["커스텀크라운"],
-            real_run["charTotals"]["크라운"],
+            custom_run["charTotals"]["커스텀Crown"],
+            real_run["charTotals"]["Crown"],
         )
 
     def test_custom_character_missing_stats_is_rejected(self):
@@ -560,7 +560,7 @@ class BrowserBridgeTest(unittest.TestCase):
     def test_buff_targets_left_out_for_squads_without_watched_casters(self):
         """감시 대상이 없는 편성이면 아무 것도 담기지 않는다."""
         payload = {
-            "squad": ["라피", "앨리스"], "duration": 20, "enemyDef": 31784,
+            "squad": ["Rapi", "Alice"], "duration": 20, "enemyDef": 31784,
             "enemyCode": "", "corePx": 0, "hasParts": False, "seed": 42,
         }
         got = json.loads(run_request(json.dumps(payload, ensure_ascii=False)))
@@ -568,8 +568,8 @@ class BrowserBridgeTest(unittest.TestCase):
 
     def test_rejects_character_settings_outside_the_squad(self):
         payload = {
-            "squad": ["리타"],
-            "characters": {"라피": {"cube": {"name": "렐릭 베어 큐브", "level": 15}}},
+            "squad": ["Liter"],
+            "characters": {"Rapi": {"cube": {"name": "렐릭 베어 큐브", "level": 15}}},
             "duration": 10,
             "enemyDef": 31_784,
             "enemyCode": "",

@@ -30,7 +30,7 @@
 
 ## 검증 스쿼드
 
-- **표준 (B3, 쿨 40s)**: `["리틀 머메이드", "크라운", "아스카 : WILLE", "test_B3"]` — 기본 사이클 동작 검증
+- **표준 (B3, 쿨 40s)**: `["리틀 머메이드", "Crown", "아스카 : WILLE", "test_B3"]` — 기본 사이클 동작 검증
   - 조건부 효과 스캔 (parsed_skills 기준): `self_state:섬멸 태세` 외 다른 condition·target 의존 없음. `no_burstN_ally`·`back_row`·`allies_weapon/class/code`·트리거 캐릭터 의존 모두 부재 → **표준 1개로 충분**.
   - 단일 보스 환경: `enemies_nearest:2`, `enemies_with_buff:안티 AT 필드` 모두 보스 1기로 수렴.
 

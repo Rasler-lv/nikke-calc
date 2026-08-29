@@ -46,8 +46,8 @@ FAVORITE_PATH = "/equip/{locale}/favorite_{fid}.json"
 ICON_RID_RE = re.compile(r"c(\d+)_")
 
 ELEMENT_MAP = {
-    "Fire": "작열", "Water": "수냉", "Wind": "풍압",
-    "Electronic": "전격", "Iron": "철갑",
+    "Fire": "Fire Code", "Water": "수냉", "Wind": "풍압",
+    "Electronic": "", "Iron": "Iron Code",
 }
 CLASS_MAP = {"Attacker": "화력형", "Supporter": "지원형", "Defender": "방어형"}
 CORP_MAP = {

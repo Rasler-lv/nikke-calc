@@ -286,7 +286,7 @@ def char_layer(name: str, members: list[str] | None = None) -> dict:
 
     `members`(스쿼드 전원)를 주면 **조합 조건부 컨트롤**(`_control_rules`)까지 얹은 모습을
     준다. 조건은 버스트 패턴과 같은 `_when_ok` 어휘를 쓰고, **맞는 규칙 전부**가 순서대로
-    `control`에 병합된다 (패턴은 값이 하나뿐이라 먼저 맞는 하나가 이기지만, 컨트롤은
+    `control`에 병합된다 (패턴은 값이 하나뿐이라 먼저 맞는 하Naga 이기지만, 컨트롤은
     톡톡이+홀드처럼 겹쳐 쓰는 게 정상이기 때문이다).
     """
     layer = CHAR_DEFAULTS.get(name, {})
@@ -364,7 +364,7 @@ def build_squad(names: list[str], chars: dict[str, dict] | None = None,
 # 이탈 보고에 그대로 잡힌다.
 #
 # 패턴은 **후보에서 빼는 게 아니라 뒤로 미는 것**이다(timeline `_pattern_rank`) —
-# 대신 쓸 사람이 없거나 쿨이면 그냥 예정대로 나가므로 단계가 막히지 않는다.
+# 대신 쓸 사람이 없거나 쿨이면 그냥 예정대로 Naga므로 단계가 막히지 않는다.
 #
 # 다만 "정석"이 조합에 달린 경우가 있다(마스트의 3의 배수는 20초 쿨 2버가 있어야 성립).
 # 그건 `_burst_pattern_when` 조건으로 표현하고, 조건이 안 맞으면 아예 걸지 않는다.

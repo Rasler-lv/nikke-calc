@@ -54,7 +54,7 @@ _NORMAL_HIT_COEFF: dict = _MECHANICS.get("normal_hit_coeff", {})
 
 
 def normal_hit_coeff(cfg: dict, weapon_type: str) -> float:
-    """평타에 곱할 계수. 실전에서 탄퍼짐으로 빗나가는 탄을 보정한다.
+    """평타에 곱할 계수. 실전에서 탄퍼짐으로 빗Naga는 탄을 보정한다.
 
     시뮬은 쏜 탄이 전부 맞는다고 보지만 인게임은 그렇지 않다. 무기군마다 탄퍼짐이
     달라 무기군 단위로 잡고, `config["normal_hit_coeff"]`로 전투마다 덮을 수 있다.
@@ -133,7 +133,7 @@ DEFAULT_CHAR: dict = {
 DEFAULT_CONFIG: dict = {
     "duration":           180.0,  # 시뮬레이션 시간(초) — 실제 니케 전투 3분
     "burst_switch_delay":  0.1,   # 버스트 단계 전환 딜레이(초)
-    # 사람이 버스트를 누르는 데 걸리는 시간. 조건이 갖춰져도 곧바로 나가지 않고
+    # 사람이 버스트를 누르는 데 걸리는 시간. 조건이 갖춰져도 곧바로 Naga지 않고
     # **버스트 하나하나마다** 이만큼 늦게 나간다(3단계까지면 세 번 더해진다).
     "burst_reaction":      0.05,
     "burst_reenter_delay": 0.5,   # reenter 딜레이(초)
@@ -146,7 +146,7 @@ DEFAULT_CONFIG: dict = {
     #   "expected" — 확률 대신 기대값을 태워 결과를 결정론적으로 만든다.
     #                시드·반복 평균 없이 1회 실행으로 기대딜이 나온다.
     "rng_mode":           "random",
-    # 족자(`enemy["immune_windows"]`) 중에는 평타가 빗나가므로 버스트 게이지도
+    # 족자(`enemy["immune_windows"]`) 중에는 평타가 빗Naga므로 버스트 게이지도
     # 안 찬다고 본다. 끄면 족자 중에도 충전이 이어진다.
     # 족자를 안 쓰면 어느 쪽이든 결과가 같다.
     "immune_blocks_burst": True,
@@ -161,7 +161,7 @@ DEFAULT_ENEMY: dict = {
     # 보스 페이즈 구간. 둘 다 `[시작초, 끝초)` 반개구간이고 여러 개를 넣을 수 있다.
     #   immune_windows  — 족자: 그 구간 동안 평타가 적중하지 않는다
     #   element_windows — 속저: 그 구간 동안 **그 코드에 우월한** 캐릭터의 딜만 들어간다
-    #                     e.g. {"from":100,"to":102,"code":"풍압"} → 작열 캐릭터만
+    #                     e.g. {"from":100,"to":102,"code":"풍압"} → Fire Code 캐릭터만
     "immune_windows":       [],
     "element_windows":      [],
 }
@@ -298,7 +298,7 @@ class CharState:
         else:
             self.warmup_bullets = float(mech.get("warmup_bullets", 1.0))
 
-        # 총구 수: 1회 발사에 동시에 나가는 탄 묶음 수. 실제 히트 수 = pellets × muzzles.
+        # 총구 수: 1회 발사에 동시에 Naga는 탄 묶음 수. 실제 히트 수 = pellets × muzzles.
         # CDN damage(= 스킬 텍스트의 대미지 표기)는 총구당 값이라 총량이 총구 수만큼 늘어난다.
         self.muzzles: int = int(_pick("muzzles", _delay_exc, weapon_data, mech, default=1))
 
@@ -339,7 +339,7 @@ class CharState:
         self._wc_first_coeff: float | None = None
         self._wc_normal_coeff: float | None = None  # 같은 세션의 `일반 대미지` 계수
         # 연사 무기 모드는 진입 시 self.ammo를 모드 장탄으로 덮어쓴다(원래 장탄은 버린다).
-        # 모드가 끝날 때 되돌려 놓아야 그 값이 원래 무기로 새어 나가지 않는다.
+        # 모드가 끝날 때 되돌려 놓아야 그 값이 원래 무기로 새어 Naga지 않는다.
         self._wc_ammo_borrowed: bool = False
 
         # 모드 지정 플래그: 수동 재장전으로 진입하는 weapon_change 모드를 쓰는가.
@@ -448,7 +448,7 @@ class CharState:
         """이 히트에 우월 코드(DealForm ⑦)가 붙는가.
 
         두 경로가 OR로 합쳐진다 — 로스터 코드 상성(고정)과 `element_code_override`
-        버프(라피 : 레드 후드 `부착형 유탄`: 전격 적에게도 우월). 후자는 버프라
+        버프(Rapi : Red Hood `부착형 유탄`:  적에게도 우월). 후자는 버프라
         조회 시점에 봐야 하므로 값을 캐싱하지 않는다.
         """
         return self.base_element_match or bm.element_override_match(
@@ -487,7 +487,7 @@ class CharState:
             if self._wc_ammo_borrowed:
                 # 시한부 연사 모드가 duration으로 끝났다. 진입 시 덮어쓴 모드 장탄
                 # (무한 장탄이면 센티널 999999)이 그대로 남아 원래 무기의 탄창으로
-                # 새어 나가면 모드가 끝난 뒤에도 재장전이 사라진다.
+                # 새어 Naga면 모드가 끝난 뒤에도 재장전이 사라진다.
                 # 모드 종료 = 재장전 완료 상태로 본다 (유저 확인). 모더니아 `섬멸 모드`.
                 self.ammo = self._full_ammo(bm, t)
                 self._wc_ammo_borrowed = False
@@ -656,7 +656,7 @@ class CharState:
         )
 
         # 실효 펠릿 수: pellet_count_fixed > 0이면 절대값 고정, 아니면 기본값 + 증가량.
-        # 펠릿은 **계수를 나누는 단위**이고, 총구 수는 그 묶음이 몇 벌 나가는지다.
+        # 펠릿은 **계수를 나누는 단위**이고, 총구 수는 그 묶음이 몇 벌 Naga는지다.
         # 대미지 표기(damage_coeff)가 총구당 값이라 총구가 2개면 총량도 2배가 된다.
         # (버프는 "펠릿 개수"를 말하므로 총구가 아니라 펠릿 쪽에 더한다)
         pellet_fixed = buffs.get("pellet_count_fixed", 0.0)
@@ -803,7 +803,7 @@ class CharState:
                 # 판정하지 않으므로, 버스트 중에 홀드를 시작하면 버스트가 끝나도 발동하지 않는다.
                 _phase_before, _reload_before = self._charge_phase, self.reloading_until
                 self._notify_charge_hold(t, bm)
-                # **이 프레임의 판정이** 강제 재장전·탄환 제거를 걸었으면 이 발은 나가지 않는다
+                # **이 프레임의 판정이** 강제 재장전·탄환 제거를 걸었으면 이 발은 Naga지 않는다
                 # (밀크 부끄러움 — 유저 확인: 들고 있던 풀차지 샷이 취소된다).
                 # 판정과 무관하게 이미 재장전 중이던 경우는 종전 동작을 그대로 둔다.
                 if (self._charge_phase != _phase_before
@@ -985,7 +985,7 @@ class CharState:
         기본은 아니다 — 모드 사격도 일반 공격이라는 게 일반 규칙이고
         (`context/GAMEPLAY.md` §무기 변경), 예외만 효과에 `skill_damage`로 적는다.
         스킬 대미지인 모드는 **발수로 소모되는 버프를 먹지 않는다** — 실제 사격이
-        아니라 스킬이 나가는 것이기 때문이다(유저 인게임 확인, 나유타 `기억 연소`).
+        아니라 스킬이 Naga는 것이기 때문이다(유저 인게임 확인, 나유타 `기억 연소`).
         """
         return self._in_weapon_change and self._wc_skill_damage
 
@@ -1618,7 +1618,7 @@ def charge_end(start: float, regen: float,
                 windows: list[tuple[float, float]]) -> float:
     """`start`부터 게이지를 채워 `regen`초어치가 차는 시각.
 
-    족자 구간에서는 평타가 빗나가니 게이지도 안 찬다 — 그 구간만큼 뒤로
+    족자 구간에서는 평타가 빗Naga니 게이지도 안 찬다 — 그 구간만큼 뒤로
     밀린다. 구간이 없으면 그냥 `start + regen`이다.
     """
     if not windows:
@@ -1652,7 +1652,7 @@ class BurstController:
         enemy: dict,
     ):
         self.config = config
-        # 족자 중에는 평타가 빗나가니 버스트 게이지도 안 찬다 — 옵션이다.
+        # 족자 중에는 평타가 빗Naga니 버스트 게이지도 안 찬다 — 옵션이다.
         # 기본은 켬이며, 옵션을 끄면 족자 중에도 충전이 이어진다.
         self._gauge_blocked = (
             [(float(a), float(b)) for a, b in (enemy.get("immune_windows") or [])]
@@ -1675,12 +1675,12 @@ class BurstController:
         self._burst_count: int = 0
         self._no_burst_char: str | None = config.get("no_burst_char")
         # 버스트를 아예 안 쓰는 캐릭터들. 「가급적 안 씀」(맨 뒤로 미는 패턴)과 달리
-        # **후보에서 통째로 빠진다** — 앞사람이 전부 쿨이어도 나가지 않는다.
+        # **후보에서 통째로 빠진다** — 앞사람이 전부 쿨이어도 Naga지 않는다.
         self._no_burst_names: set[str] = set(config.get("no_burst_chars") or ())
 
         # 캐릭터별 버스트 사용 패턴 — {이름: "every:3" | [1, 3, 5, ...]}.
         # **후보에서 빼는 게 아니라 그 단계의 맨 뒤로 미는 것**이다. 그래서 대신 쓸 사람이
-        # 쿨이면 여전히 나가고(막히지 않는다), 대신 쓸 사람이 준비돼 있으면 그쪽이 먼저 나간다.
+        # 쿨이면 여전히 Naga고(막히지 않는다), 대신 쓸 사람이 준비돼 있으면 그쪽이 먼저 나간다.
         # 예: 마스트 : 로망틱 메이드 `every:3` + B2 20초 동료 → 3의 배수 사이클에만 실제 사용.
         # `burst_sequence`(명시 순서)를 준 경우에는 그쪽이 전부 결정하므로 무시된다.
         self._burst_pattern: dict = config.get("burst_pattern") or {}
@@ -2075,7 +2075,7 @@ class BurstController:
 
         # 개별 버스트 쿨타임 갱신 (burst_cooldown buff 차감 반영)
         # burst_cast notify 전에 설정해야 burst_cooldown_reduce instant가
-        # 새 쿨타임에 정확히 적용됨 (예: 라피 레드 후드 계승되는 힘 -20s)
+        # 새 쿨타임에 정확히 적용됨 (예: Rapi Red Hood 계승되는 힘 -20s)
         cd = self._burst_cd.get(name, 40.0)
         buffs = bm.get_buffs(name, "__enemy__", t)
         cd_buff = buffs.get("burst_cooldown", 0.0)
@@ -2676,7 +2676,7 @@ def simulate(
     _next_part_break = _part_break_interval if _part_break_interval > 0 else math.inf
 
     # ── 보스 페이즈 관문 (족자 · 속저) ────────────────────────────────────
-    # 족자는 그 구간의 평타만 빗나가고, 속저는 코드 상성이 맞는 캐릭터만 통과시킨다.
+    # 족자는 그 구간의 평타만 빗Naga고, 속저는 코드 상성이 맞는 캐릭터만 통과시킨다.
     # 평타 판정은 트리거가 처리된 뒤 결과 HitEvent에서만 뺀다 — 발사로 파생된 스킬
     # 공격과 이미 걸린 지속 대미지는 족자 중에도 정상적으로 적중한다.
     _immune_windows = [(float(a), float(b)) for a, b in enm.get("immune_windows") or []]
@@ -2687,7 +2687,7 @@ def simulate(
     # 속저 판정은 인게임과 같이 **우월 코드 버프까지 인정한다** (유저 확인) —
     # 로스터 코드 상성이거나, `element_code_override` 버프로 그 코드에 우월해졌거나
     # 둘 중 하나면 통과한다. 후자는 버프라 매 프레임 조회해야 한다
-    # (라피 : 레드 후드 `부착형 유탄` — 전격 적에게도 우월).
+    # (Rapi : Red Hood `부착형 유탄` —  적에게도 우월).
     _roster_code = {c["name"]: _NIKKE.get(c["name"], {}).get("element_code", "")
                     for c in squad}
 
@@ -2786,7 +2786,7 @@ if __name__ == "__main__":
         }
 
     squad = [make_char(n) for n in
-            ["아니스 : 스타", "리틀 머메이드", "크라운", "라피 : 레드 후드", "리버렐리오"]]
+            ["아니스 : 스타", "리틀 머메이드", "Crown", "Rapi : Red Hood", "리버렐리오"]]
 
     result = simulate(squad, verbose=True)
     print(result.summary())

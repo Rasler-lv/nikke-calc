@@ -137,15 +137,15 @@ class RosterBatch02Test(unittest.TestCase):
 
     def test_all_ten_run_in_valid_squads(self):
         cases = [
-            ("키리", ["리틀 머메이드", "크라운", "키리", "test_B3"]),
-            ("D", ["리틀 머메이드", "크라운", "D", "test_B3"]),
-            ("K", ["리틀 머메이드", "크라운", "K", "test_B3"]),
-            ("미카 : 스노우 버디", ["미카 : 스노우 버디", "크라운", "test_B3"]),
-            ("브리드", ["리틀 머메이드", "크라운", "브리드", "test_B3"]),
-            ("솔린", ["리틀 머메이드", "크라운", "솔린", "test_B3"]),
+            ("키리", ["리틀 머메이드", "Crown", "키리", "test_B3"]),
+            ("D", ["리틀 머메이드", "Crown", "D", "test_B3"]),
+            ("K", ["리틀 머메이드", "Crown", "K", "test_B3"]),
+            ("미카 : 스노우 버디", ["미카 : 스노우 버디", "Crown", "test_B3"]),
+            ("브리드", ["리틀 머메이드", "Crown", "브리드", "test_B3"]),
+            ("솔린", ["리틀 머메이드", "Crown", "솔린", "test_B3"]),
             ("디젤", ["리틀 머메이드", "디젤", "test_B3"]),
-            ("엠마", ["엠마", "크라운", "test_B3"]),
-            ("베스티", ["리틀 머메이드", "크라운", "베스티", "test_B3"]),
+            ("엠마", ["엠마", "Crown", "test_B3"]),
+            ("베스티", ["리틀 머메이드", "Crown", "베스티", "test_B3"]),
             ("은화", ["리틀 머메이드", "은화", "test_B3"]),
         ]
         for name, members in cases:
@@ -165,11 +165,11 @@ class RosterBatch02Test(unittest.TestCase):
         self.assertEqual(manager.get_buffs("K", "__enemy__", 2.0)["atk_dmg_pct"], 0.0)
 
     def test_brid_hidden_ten_second_skill_and_vesti_container_deal_damage(self):
-        brid_squad = build_squad(["리틀 머메이드", "크라운", "브리드", "test_B3"])
+        brid_squad = build_squad(["리틀 머메이드", "Crown", "브리드", "test_B3"])
         brid_result = simulate(brid_squad, config=build_config(brid_squad, {"duration": 12.0}), seed=1)
         self.assertTrue(any(hit.caster == "브리드" and hit.skill_name == "리크" for hit in brid_result.hits))
 
-        vesti_squad = build_squad(["리틀 머메이드", "크라운", "베스티", "test_B3"])
+        vesti_squad = build_squad(["리틀 머메이드", "Crown", "베스티", "test_B3"])
         vesti_result = simulate(
             vesti_squad,
             config=build_config(vesti_squad, {"first_burst_time": 1.0, "duration": 8.0}),

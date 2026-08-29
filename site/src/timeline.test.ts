@@ -9,12 +9,12 @@ const timeline: BattleTimeline = {
   bucket: 1,
   buckets: 4,
   damage: {
-    라피: [0, 100, 200, 50],
-    크라운: [0, 0, 0, 0],
+    Rapi: [0, 100, 200, 50],
+    Crown: [0, 0, 0, 0],
   },
   bursts: {
-    라피: [{ t: 1.5, stage: '1' }],
-    크라운: [],
+    Rapi: [{ t: 1.5, stage: '1' }],
+    Crown: [],
   },
   fullBurst: [[1, 3]],
 };
@@ -22,7 +22,7 @@ const timeline: BattleTimeline = {
 const entry: DeckResultEntry = {
   deckId: 1,
   request: {
-    squad: ['라피', '크라운'],
+    squad: ['Rapi', 'Crown'],
     duration: 4,
     enemyDef: 0,
     enemyCode: '',
@@ -34,7 +34,7 @@ const entry: DeckResultEntry = {
     squadTotal: 350,
     duration: 4,
     hitCount: 4,
-    charTotals: { 라피: 350, 크라운: 0 },
+    charTotals: { Rapi: 350, Crown: 0 },
     previewNote: '',
     deviations: '',
     timeline,
@@ -147,35 +147,35 @@ describe('버프 막대', () => {
   const withBuffs = (buffs: Array<Record<string, unknown>>) => buildSeries(
     {
       bucket: 1, buckets: 3,
-      damage: { 리타: [1, 2, 3], 크라운: [1, 1, 1] },
-      bursts: { 리타: [], 크라운: [] }, fullBurst: [],
+      damage: { Liter: [1, 2, 3], Crown: [1, 1, 1] },
+      bursts: { Liter: [], Crown: [] }, fullBurst: [],
       buffs: buffs as never,
     } as never,
-    ['리타', '크라운'], 3,
+    ['Liter', 'Crown'], 3,
   );
 
   it('덱에 없는 사람이 건 버프는 뺀다 — 색을 줄 수 없다', () => {
     const series = withBuffs([
-      { name: '있는버프', caster: '리타', targets: ['리타'], maxStack: 1, spans: [[0, 2, 1]] },
-      { name: '없는사람', caster: '앨리스', targets: ['리타'], maxStack: 1, spans: [[0, 2, 1]] },
+      { name: '있는버프', caster: 'Liter', targets: ['Liter'], maxStack: 1, spans: [[0, 2, 1]] },
+      { name: '없는사람', caster: 'Alice', targets: ['Liter'], maxStack: 1, spans: [[0, 2, 1]] },
     ])!;
     expect(series.buffs.map((track) => track.name)).toEqual(['있는버프']);
   });
 
   it('한 줄에 여러 구간이 들어오고, 구간마다 중첩이 따로 적힌다', () => {
     const series = withBuffs([
-      { name: '스택버프', caster: '크라운', targets: ['크라운', '리타'], maxStack: 20,
+      { name: '스택버프', caster: 'Crown', targets: ['Crown', 'Liter'], maxStack: 20,
         spans: [[0, 1, 1], [1, 2, 2], [2, 3, 3]] },
     ])!;
     expect(series.buffs).toHaveLength(1);
     expect(series.buffs[0]!.spans.map((span) => span[2])).toEqual([1, 2, 3]);
-    expect(series.buffs[0]!.targets).toEqual(['크라운', '리타']);
+    expect(series.buffs[0]!.targets).toEqual(['Crown', 'Liter']);
   });
 
   it('옛 결과(버프 목록이 없는 것)도 그대로 읽는다', () => {
     const series = buildSeries(
-      { bucket: 1, buckets: 2, damage: { 리타: [1, 2] }, bursts: { 리타: [] }, fullBurst: [] } as never,
-      ['리타'], 2,
+      { bucket: 1, buckets: 2, damage: { Liter: [1, 2] }, bursts: { Liter: [] }, fullBurst: [] } as never,
+      ['Liter'], 2,
     )!;
     expect(series.buffs).toEqual([]);
   });
@@ -184,19 +184,19 @@ describe('버프 막대', () => {
 
 describe('buildSeries', () => {
   it('collects per-character totals, colors, and the shared peak', () => {
-    const series = buildSeries(timeline, ['라피', '크라운'], 4);
+    const series = buildSeries(timeline, ['Rapi', 'Crown'], 4);
     expect(series).not.toBeNull();
-    expect(series?.names).toEqual(['라피', '크라운']);
-    expect(series?.totals).toEqual({ 라피: 350, 크라운: 0 });
+    expect(series?.names).toEqual(['Rapi', 'Crown']);
+    expect(series?.totals).toEqual({ Rapi: 350, Crown: 0 });
     expect(series?.peak).toBe(200);
-    expect(series?.colors['라피']).not.toEqual(series?.colors['크라운']);
+    expect(series?.colors['Rapi']).not.toEqual(series?.colors['Crown']);
   });
 
   it('carries the bucket size, and falls back to one second for older results', () => {
     // 화면이 «몇 번째 칸이 몇 초인지»를 이 값으로 환산한다.
-    expect(buildSeries({ ...timeline, bucket: 0.1 }, ['라피'], 4)?.bucket).toBe(0.1);
+    expect(buildSeries({ ...timeline, bucket: 0.1 }, ['Rapi'], 4)?.bucket).toBe(0.1);
     // 이 값이 없던 시절에 저장된 결과는 1초 버킷이었다.
-    expect(buildSeries({ ...timeline, bucket: 0 }, ['라피'], 4)?.bucket).toBe(1);
+    expect(buildSeries({ ...timeline, bucket: 0 }, ['Rapi'], 4)?.bucket).toBe(1);
   });
 
   it('writes the hovered span from the bucket size', () => {
@@ -207,7 +207,7 @@ describe('buildSeries', () => {
   });
 
   it('returns null when there are no buckets or no matching members', () => {
-    expect(buildSeries({ ...timeline, buckets: 0 }, ['라피'], 4)).toBeNull();
+    expect(buildSeries({ ...timeline, buckets: 0 }, ['Rapi'], 4)).toBeNull();
     expect(buildSeries(timeline, ['없는캐릭'], 4)).toBeNull();
   });
 });
@@ -256,20 +256,20 @@ describe('createTimelineBlock', () => {
   it('keeps three simultaneous burst portraits at least four pixels apart', () => {
     const crowded: DeckResultEntry = {
       ...entry,
-      request: { ...entry.request, squad: ['라피', '크라운', '앨리스'] },
+      request: { ...entry.request, squad: ['Rapi', 'Crown', 'Alice'] },
       result: {
         ...entry.result,
-        charTotals: { 라피: 350, 크라운: 0, 앨리스: 0 },
+        charTotals: { Rapi: 350, Crown: 0, Alice: 0 },
         timeline: {
           ...timeline,
           damage: {
             ...timeline.damage,
-            앨리스: [0, 0, 0, 0],
+            Alice: [0, 0, 0, 0],
           },
           bursts: {
-            라피: [{ t: 1.5, stage: '1' }],
-            크라운: [{ t: 1.5, stage: '2' }],
-            앨리스: [{ t: 1.5, stage: '3' }],
+            Rapi: [{ t: 1.5, stage: '1' }],
+            Crown: [{ t: 1.5, stage: '2' }],
+            Alice: [{ t: 1.5, stage: '3' }],
           },
         },
       },
@@ -294,10 +294,10 @@ describe('보스 페이즈 밴드', () => {
   it('족자·속저 구간을 시리즈에 싣는다', () => {
     const series = buildSeries({
       bucket: 1, buckets: 3,
-      damage: { 리타: [1, 2, 3] },
-      bursts: { 리타: [{ t: 1.5, stage: '1' }] },
+      damage: { Liter: [1, 2, 3] },
+      bursts: { Liter: [{ t: 1.5, stage: '1' }] },
       fullBurst: [[1, 2]] as [number, number][],
-    }, ['리타'], 3, {
+    }, ['Liter'], 3, {
       immuneWindows: [{ from: 0, to: 1 }],
       elementWindows: [{ from: 2, to: 3, code: '풍압' }],
     })!;
@@ -307,9 +307,9 @@ describe('보스 페이즈 밴드', () => {
 
   it('구간을 안 주면 빈 배열이다 — 옛 결과에도 안전하다', () => {
     const series = buildSeries({
-      bucket: 1, buckets: 2, damage: { 리타: [1, 2] },
+      bucket: 1, buckets: 2, damage: { Liter: [1, 2] },
       bursts: {}, fullBurst: [],
-    }, ['리타'], 2)!;
+    }, ['Liter'], 2)!;
     expect(series.immuneWindows).toEqual([]);
     expect(series.elementWindows).toEqual([]);
   });

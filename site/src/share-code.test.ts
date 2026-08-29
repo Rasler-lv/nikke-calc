@@ -13,11 +13,11 @@ const emptyDecks = (): DeckState[] =>
   Array.from({ length: 5 }, (_, i) => deck(i + 1, ['', '', '', '', '']));
 
 const FIVE_DECKS = [
-  ['리타', '크라운', '라피 : 레드 후드', '앨리스', '나가'],
-  ['리타 : 몸메이드', '마스트 : 로망틱 메이드', '로산나 : 시크 오션', '로산나', '라플라스 : 얼티밋 히어로'],
-  ['리타', '레드 후드', '로산나 : 시크 오션', '로산나', '라플라스'],
+  ['Liter', 'Crown', 'Rapi : Red Hood', 'Alice', 'Naga'],
+  ['Liter : 몸메이드', '마스트 : 로망틱 메이드', '로산나 : 시크 오션', '로산나', '라플라스 : 얼티밋 히어로'],
+  ['Liter', 'Red Hood', '로산나 : 시크 오션', '로산나', '라플라스'],
   ['레이 (가칭)', '맥스웰 : 오디너리 미케닉', '브래디', '레이븐', '홍련'],
-  ['나가', 'D : 킬러 와이프', '레이 (가칭)', '앨리스', '로산나 : 시크 오션'],
+  ['Naga', 'D : 킬러 와이프', '레이 (가칭)', 'Alice', '로산나 : 시크 오션'],
 ];
 
 const allNames = [...new Set(FIVE_DECKS.flat())];
@@ -25,17 +25,17 @@ const allNames = [...new Set(FIVE_DECKS.flat())];
 describe('share code round trip', () => {
   it('carries the squads of five decks', () => {
     const decks = emptyDecks();
-    decks[0]!.squad = ['리타', '크라운', '', '', ''];
-    decks[4]!.squad = ['앨리스', '', '', '', ''];
+    decks[0]!.squad = ['Liter', 'Crown', '', '', ''];
+    decks[4]!.squad = ['Alice', '', '', '', ''];
 
     const code = encodeShareCode(decks, true);
     expect(code.startsWith('NK2-')).toBe(true);
 
-    const payload = decodeShareCode(code, ['리타', '크라운', '앨리스']);
+    const payload = decodeShareCode(code, ['Liter', 'Crown', 'Alice']);
     expect(payload.fiveDeckMode).toBe(true);
     expect(payload.decks).toHaveLength(5);
-    expect(payload.decks[0]!.squad).toEqual(['리타', '크라운', '', '', '']);
-    expect(payload.decks[4]!.squad[0]).toBe('앨리스');
+    expect(payload.decks[0]!.squad).toEqual(['Liter', 'Crown', '', '', '']);
+    expect(payload.decks[4]!.squad[0]).toBe('Alice');
   });
 
   it('keeps a full five-deck code short enough to paste anywhere', () => {
@@ -49,9 +49,9 @@ describe('share code round trip', () => {
 
   it('never carries personal specs — only names', () => {
     const decks = emptyDecks();
-    decks[0]!.squad = ['리타', '', '', '', ''];
+    decks[0]!.squad = ['Liter', '', '', '', ''];
     decks[0]!.characters = {
-      리타: {
+      Liter: {
         growthStage: 10,
         overload: { atk_pct: 43.03, element_bonus: 88.6 },
         cube: { name: '재장', level: 15 },
@@ -60,33 +60,33 @@ describe('share code round trip', () => {
 
     const code = encodeShareCode(decks, false);
     // 바이너리라 이름조차 문자열로 남지 않는다 — 스펙은 더더욱 들어갈 자리가 없다.
-    expect(code).not.toContain('리타');
+    expect(code).not.toContain('Liter');
     expect(code.length).toBeLessThan(20);
-    expect(decodeShareCode(code, ['리타']).decks[0]!.squad[0]).toBe('리타');
+    expect(decodeShareCode(code, ['Liter']).decks[0]!.squad[0]).toBe('Liter');
   });
 
   it('survives new characters being added to the catalog (hash, not index)', () => {
-    const code = encodeShareCode([deck(1, ['앨리스', '', '', '', ''])], false);
+    const code = encodeShareCode([deck(1, ['Alice', '', '', '', ''])], false);
     // 목록 앞뒤에 신캐가 끼어들어도 해시는 이름에서만 나오므로 그대로 읽힌다.
-    const laterCatalog = ['가나다 신캐', '앨리스', '힣힣 신캐'];
-    expect(decodeShareCode(code, laterCatalog).decks[0]!.squad[0]).toBe('앨리스');
+    const laterCatalog = ['가나다 신캐', 'Alice', '힣힣 신캐'];
+    expect(decodeShareCode(code, laterCatalog).decks[0]!.squad[0]).toBe('Alice');
   });
 
   it('still reads the old NIKKE1 codes, names only', () => {
     const legacy = 'NIKKE1-' + btoa(unescape(encodeURIComponent(JSON.stringify({
       fiveDeckMode: false,
-      decks: [{ squad: ['리타', '', '', '', ''], characters: { 리타: { growthStage: 10 } } }],
+      decks: [{ squad: ['Liter', '', '', '', ''], characters: { Liter: { growthStage: 10 } } }],
     })))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
-    const payload = decodeShareCode(legacy, ['리타']);
-    expect(payload.decks[0]!.squad[0]).toBe('리타');
+    const payload = decodeShareCode(legacy, ['Liter']);
+    expect(payload.decks[0]!.squad[0]).toBe('Liter');
     expect((payload.decks[0] as { characters?: unknown }).characters).toBeUndefined();
   });
 
   it('trims trailing empty decks to keep the code short', () => {
     const decks = emptyDecks();
-    decks[0]!.squad = ['리타', '', '', '', ''];
-    expect(decodeShareCode(encodeShareCode(decks, false), ['리타']).decks).toHaveLength(1);
+    decks[0]!.squad = ['Liter', '', '', '', ''];
+    expect(decodeShareCode(encodeShareCode(decks, false), ['Liter']).decks).toHaveLength(1);
   });
 
   it('rejects malformed codes with a readable message', () => {
@@ -105,8 +105,8 @@ describe('share code round trip', () => {
 
 describe('nameHash', () => {
   it('is stable per name and collision-free across a realistic roster', () => {
-    expect(nameHash('앨리스')).toBe(nameHash('앨리스'));
-    expect(nameHash('앨리스')).not.toBe(nameHash('리타'));
+    expect(nameHash('Alice')).toBe(nameHash('Alice'));
+    expect(nameHash('Alice')).not.toBe(nameHash('Liter'));
     const names = [...allNames, '도로시 : 세렌디피티', '아니스 : 스파클링 서머', '헬름 : 아쿠아마린'];
     expect(new Set(names.map(nameHash)).size).toBe(names.length);
   });
@@ -115,13 +115,13 @@ describe('nameHash', () => {
 describe('applyShareToDecks', () => {
   it('applies the receiver own specs (CSV roster) to the shared squad', () => {
     const payload = decodeShareCode(
-      encodeShareCode([deck(1, ['리타', '크라운', '', '', ''])], false),
-      ['리타', '크라운'],
+      encodeShareCode([deck(1, ['Liter', 'Crown', '', '', ''])], false),
+      ['Liter', 'Crown'],
     );
     const decks = emptyDecks();
-    const known = new Set(['리타', '크라운']);
+    const known = new Set(['Liter', 'Crown']);
     const myRoster: Record<string, DeckState['characters'][string]> = {
-      리타: { growthStage: 7, overload: { atk_pct: 11.81 } },
+      Liter: { growthStage: 7, overload: { atk_pct: 11.81 } },
     };
 
     const { applied, skipped } = applyShareToDecks(
@@ -130,33 +130,33 @@ describe('applyShareToDecks', () => {
 
     expect(applied).toBe(1);
     expect(skipped).toEqual([]);
-    expect(decks[0]!.squad).toEqual(['리타', '크라운', '', '', '']);
-    expect(decks[0]!.characters['리타']?.growthStage).toBe(7);
-    expect(decks[0]!.characters['리타']?.overload?.['atk_pct']).toBe(11.81);
+    expect(decks[0]!.squad).toEqual(['Liter', 'Crown', '', '', '']);
+    expect(decks[0]!.characters['Liter']?.growthStage).toBe(7);
+    expect(decks[0]!.characters['Liter']?.overload?.['atk_pct']).toBe(11.81);
     // 로스터에 없는 캐릭터는 개별 설정 없이 기본값으로 돈다
-    expect(decks[0]!.characters['크라운']).toBeUndefined();
+    expect(decks[0]!.characters['Crown']).toBeUndefined();
   });
 
   it('drops characters the receiver catalog does not have', () => {
     // 보낸 쪽에는 있지만 받는 쪽 목록에 없는 니케(상대의 커스텀 등)
     const payload = decodeShareCode(
-      encodeShareCode([deck(1, ['리타', '남의커스텀', '', '', ''])], false),
-      ['리타'], // 받는 쪽 카탈로그에는 리타뿐
+      encodeShareCode([deck(1, ['Liter', '남의커스텀', '', '', ''])], false),
+      ['Liter'], // 받는 쪽 카탈로그에는 Liter뿐
     );
     const decks = emptyDecks();
-    const { applied, skipped } = applyShareToDecks(payload, decks, (n) => n === '리타');
+    const { applied, skipped } = applyShareToDecks(payload, decks, (n) => n === 'Liter');
 
     expect(applied).toBe(1);
     expect(skipped).toEqual(['알 수 없는 니케']);
-    expect(decks[0]!.squad).toEqual(['리타', '', '', '', '']);
+    expect(decks[0]!.squad).toEqual(['Liter', '', '', '', '']);
   });
 
   it('clears decks the code does not cover', () => {
     const decks = emptyDecks();
-    decks[4]!.squad = ['앨리스', '', '', '', ''];
+    decks[4]!.squad = ['Alice', '', '', '', ''];
     const payload = decodeShareCode(
-      encodeShareCode([deck(1, ['리타', '', '', '', ''])], false),
-      ['리타', '앨리스'],
+      encodeShareCode([deck(1, ['Liter', '', '', '', ''])], false),
+      ['Liter', 'Alice'],
     );
     applyShareToDecks(payload, decks, () => true);
     expect(decks[4]!.squad).toEqual(['', '', '', '', '']);
@@ -183,7 +183,7 @@ describe('전투 조건 공유 코드 (NK3)', () => {
 
   it('바꾼 것만 실어도 왕복이 성립한다', () => {
     const battle = {
-      ...base, duration: 120, enemyCode: '철갑' as const, coreEnabled: true,
+      ...base, duration: 120, enemyCode: 'Iron Code' as const, coreEnabled: true,
       optimalRangeWeapons: ['SG', 'SMG'], rngMode: 'random' as const,
       immuneBlocksBurst: false, burstRegenTime: 2.8,
       immuneWindows: [{ from: 10, to: 30 }, { from: 90.5, to: 95 }],
@@ -268,26 +268,26 @@ describe('전투 조건 공유 코드 (NK3)', () => {
 describe('덱 한 칸만 주고받기', () => {
   it('한 칸에 넣으면 나머지 덱은 그대로 남는다', () => {
     const decks = emptyDecks();
-    decks[0]!.squad = ['리타', '', '', '', ''];
-    decks[1]!.squad = ['앨리스', '', '', '', ''];
-    decks[4]!.squad = ['나가', '', '', '', ''];
+    decks[0]!.squad = ['Liter', '', '', '', ''];
+    decks[1]!.squad = ['Alice', '', '', '', ''];
+    decks[4]!.squad = ['Naga', '', '', '', ''];
 
-    const one = encodeShareCode([deck(1, ['크라운', '레이븐', '', '', ''])], false);
+    const one = encodeShareCode([deck(1, ['Crown', '레이븐', '', '', ''])], false);
     const result = applyShareToDecks(
       decodeShareCode(one, allNames), decks, () => true, undefined, 2,
     );
 
     expect(result.applied).toBe(1);
-    expect(decks[2]!.squad).toEqual(['크라운', '레이븐', '', '', '']);
+    expect(decks[2]!.squad).toEqual(['Crown', '레이븐', '', '', '']);
     // 예전에는 이 자리에서 2·5덱이 통째로 지워졌다.
-    expect(decks[0]!.squad[0]).toBe('리타');
-    expect(decks[1]!.squad[0]).toBe('앨리스');
-    expect(decks[4]!.squad[0]).toBe('나가');
+    expect(decks[0]!.squad[0]).toBe('Liter');
+    expect(decks[1]!.squad[0]).toBe('Alice');
+    expect(decks[4]!.squad[0]).toBe('Naga');
   });
 
   it('5덱짜리 코드를 한 칸에 떨어뜨리면 첫 덱만 들어간다', () => {
     const decks = emptyDecks();
-    decks[3]!.squad = ['나가', '', '', '', ''];
+    decks[3]!.squad = ['Naga', '', '', '', ''];
     const five = emptyDecks();
     FIVE_DECKS.forEach((squad, i) => { five[i]!.squad = [...squad]; });
 
@@ -297,29 +297,29 @@ describe('덱 한 칸만 주고받기', () => {
 
     expect(decks[0]!.squad).toEqual(FIVE_DECKS[0]);
     expect(decks[1]!.squad.every((n) => n === '')).toBe(true);
-    expect(decks[3]!.squad[0]).toBe('나가');   // 건드리지 않은 칸
+    expect(decks[3]!.squad[0]).toBe('Naga');   // 건드리지 않은 칸
   });
 
   it("'all'은 예전 그대로 판을 갈아 끼운다", () => {
     const decks = emptyDecks();
-    decks[2]!.squad = ['나가', '', '', '', ''];
+    decks[2]!.squad = ['Naga', '', '', '', ''];
     applyShareToDecks(
-      decodeShareCode(encodeShareCode([deck(1, ['리타', '', '', '', ''])], false), allNames),
+      decodeShareCode(encodeShareCode([deck(1, ['Liter', '', '', '', ''])], false), allNames),
       decks, () => true,
     );
-    expect(decks[0]!.squad[0]).toBe('리타');
+    expect(decks[0]!.squad[0]).toBe('Liter');
     expect(decks[2]!.squad.every((n) => n === '')).toBe(true);
   });
 
   it('없는 칸을 겨냥하면 아무 일도 일어나지 않는다', () => {
     const decks = emptyDecks();
-    decks[0]!.squad = ['리타', '', '', '', ''];
+    decks[0]!.squad = ['Liter', '', '', '', ''];
     const result = applyShareToDecks(
-      decodeShareCode(encodeShareCode([deck(1, ['크라운', '', '', '', ''])], false), allNames),
+      decodeShareCode(encodeShareCode([deck(1, ['Crown', '', '', '', ''])], false), allNames),
       decks, () => true, undefined, 9,
     );
     expect(result.applied).toBe(0);
-    expect(decks[0]!.squad[0]).toBe('리타');
+    expect(decks[0]!.squad[0]).toBe('Liter');
   });
 });
 
@@ -334,9 +334,9 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
   const sampleShare = () => ({
     bosses: [
       {
-        name: '작열 글러트니',
+        name: 'Fire Code 글러트니',
         enabled: true,
-        battleCode: battle(150, '작열'),
+        battleCode: battle(150, 'Fire Code'),
         deckCodes: [
           encodeShareCode([deck(1, FIVE_DECKS[0]!)], false),
           encodeShareCode([deck(1, FIVE_DECKS[1]!)], false),
@@ -358,7 +358,7 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
 
     const back = decodeUnionCode(code);
     expect(back.bosses).toHaveLength(2);
-    expect(back.bosses[0]!.name).toBe('작열 글러트니');
+    expect(back.bosses[0]!.name).toBe('Fire Code 글러트니');
     expect(back.bosses[0]!.enabled).toBe(true);
     expect(back.bosses[1]!.name).toBe('수냉 니힐');
     expect(back.bosses[1]!.enabled).toBe(false);
@@ -370,7 +370,7 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
 
     expect(back.bosses[0]!.battleCode).toBe(share.bosses[0]!.battleCode);
     expect(decodeBattleCode(back.bosses[0]!.battleCode).duration).toBe(150);
-    expect(decodeBattleCode(back.bosses[0]!.battleCode).enemyCode).toBe('작열');
+    expect(decodeBattleCode(back.bosses[0]!.battleCode).enemyCode).toBe('Fire Code');
 
     expect(back.bosses[0]!.deckCodes[0]).toBe(share.bosses[0]!.deckCodes[0]);
     expect(decodeShareCode(back.bosses[0]!.deckCodes[1]!, allNames).decks[0]!.squad)
@@ -380,9 +380,9 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
   it('빈 덱 칸은 자리를 지키고 뒤쪽 빈 것만 잘라 낸다', () => {
     const back = decodeUnionCode(encodeUnionCode({
       bosses: [{
-        name: '전격 기차',
+        name: ' 기차',
         enabled: true,
-        battleCode: battle(180, '전격'),
+        battleCode: battle(180, ''),
         deckCodes: ['', encodeShareCode([deck(1, FIVE_DECKS[0]!)], false), ''],
       }],
     }));
@@ -400,9 +400,9 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
 
   it('보스 다섯에 덱 셋을 꽉 채워도 붙여넣을 만한 길이다', () => {
     const full = { bosses: Array.from({ length: 5 }, (_, i) => ({
-      name: `${['작열', '수냉', '전격', '풍압', '철갑'][i]} 글러트니`,
+      name: `${['Fire Code', '수냉', '', '풍압', 'Iron Code'][i]} 글러트니`,
       enabled: true,
-      battleCode: battle(150 + i, '작열'),
+      battleCode: battle(150 + i, 'Fire Code'),
       deckCodes: FIVE_DECKS.slice(0, 3).map((squad) => encodeShareCode([deck(1, squad)], false)),
     })) };
     const code = encodeUnionCode(full);
@@ -413,7 +413,7 @@ describe('유니온 레이드 판 코드 (NK4)', () => {
   });
 
   it('다른 종류의 코드는 어느 칸에 넣을지 알려 주며 거절한다', () => {
-    expect(() => decodeUnionCode(battle(180, '작열'))).toThrow(/NK4/);
+    expect(() => decodeUnionCode(battle(180, 'Fire Code'))).toThrow(/NK4/);
     expect(() => decodeUnionCode('')).toThrow(/입력/);
   });
 

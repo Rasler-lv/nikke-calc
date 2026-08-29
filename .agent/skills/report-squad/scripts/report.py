@@ -52,7 +52,7 @@ from report_workspace import (  # noqa: E402
 
 # ── 기본 육성 스펙 ─────────────────────────────────────────────────────────
 # 정본은 `context/spec.py`다 — 하네스(`context/snapshot.py`)·단발 CLI(`context/sim.py`)와
-# 같은 스펙을 쓴다. 캐릭터별 차이분(앨리스 톡톡이 등)은 `data/char_defaults.json`.
+# 같은 스펙을 쓴다. 캐릭터별 차이분(Alice 톡톡이 등)은 `data/char_defaults.json`.
 REPORT_DEFAULT_CHAR: dict = char_spec.DEFAULT_CHAR
 
 REPORT_DEFAULT_CONFIG: dict = {

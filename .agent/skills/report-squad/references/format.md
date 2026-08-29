@@ -142,8 +142,8 @@ python .agent/skills/report-squad/scripts/report.py <스펙> --from-cache
 회귀 하네스(`context/snapshot.py`)·단발 CLI(`context/sim.py`)와 **같은 스펙**이라
 세 도구의 총딜을 그대로 견줄 수 있다. 항목별 근거는 `context/HARNESS.md §기본 스펙`.
 
-그 위에 **캐릭터별 기본 레이어**가 얹힌다 (`data/char_defaults.json`) — 앨리스·아인·밀크 :
-블루밍 바니는 컨트롤이 켜진 채로, 앨리스·리버렐리오·홍련 : 흑영·네온 : 비전 아이는 차지속도
+그 위에 **캐릭터별 기본 레이어**가 얹힌다 (`data/char_defaults.json`) — Alice·아인·밀크 :
+블루밍 바니는 컨트롤이 켜진 채로, Alice·리버렐리오·홍련 : 흑영·네온 : 비전 아이는 차지속도
 옵션이 붙은 채로, 프리바티·아니스 : 스파클링 서머·헬름은 장탄 옵션 없이 돈다.
 **값을 바꾸려면 `chars`·`defaults`에 명시한다** — 스펙이 이긴다.
 
@@ -155,13 +155,13 @@ python .agent/skills/report-squad/scripts/report.py <스펙> --from-cache
   { "name": "자동",        "no_layer": true },              // 전원 레이어 없이
   { "name": "기본 컨트롤" },                                  // 레이어 그대로
   { "name": "톡톡이 4.0",  "defaults": {"control": {"tap_fire": {"rate": 4.0}}} },
-  { "name": "앨리스만 자동", "no_layer": ["앨리스"] }
+  { "name": "Alice만 자동", "no_layer": ["Alice"] }
 ]
 ```
 
 `no_layer`는 전역·`variant`·`case` 어디에나 놓을 수 있고 합집합으로 적용된다.
 `true`면 그 케이스 전원. **레이어를 통째로 건너뛰므로 장비 옵션 차이분도 같이 사라진다**
-(앨리스 `no_layer` → 차지속도 9.26%도 0이 된다. 톡톡이만 끄고 옵션은 남기려면
+(Alice `no_layer` → 차지속도 9.26%도 0이 된다. 톡톡이만 끄고 옵션은 남기려면
 `no_layer` 대신 `chars`에 `equip_skills`를 다시 적어 준다).
 
 | 필드 | 기본값 |
@@ -207,13 +207,13 @@ python .agent/skills/report-squad/scripts/report.py <스펙> --from-cache
 | 키 | 기본값 | 의미 |
 |---|---|---|
 | `def` | 31784 | 방어력 |
-| `code` | 없음 | 랩쳐 코드. `전격`/`수냉`/`작열`/`풍압`/`철갑` |
+| `code` | 없음 | 랩쳐 코드. ``/`수냉`/`Fire Code`/`풍압`/`Iron Code` |
 | `core_px` | 0 | 코어 직경(px). 0이면 코어 없음 |
 | `has_parts` | false | 파괴 가능 파츠 보유 여부 |
 | `optimal_range_weapons` | `[]` | 적정거리 적용 무기군 e.g. `["SG","SMG"]` |
 
-**코드를 지정하면 속성 특효가 켜진다.** 코드별 약점은 `철갑←풍압`, `풍압←작열`,
-`작열←수냉`, `수냉←전격`, `전격←철갑`이며, 약점 속성 캐릭터에게만
+**코드를 지정하면 속성 특효가 켜진다.** 코드별 약점은 `Iron Code←풍압`, `풍압←Fire Code`,
+`Fire Code←수냉`, `수냉←`, `←Iron Code`이며, 약점 속성 캐릭터에게만
 `equip_skills.element_bonus`(기본 88.6%)가 붙는다. 코드를 비우면 스쿼드 전원이
 특효 없이 계산되므로 **총딜이 크게 달라진다** — 조합 비교 시 반드시 고정한다.
 
@@ -253,7 +253,7 @@ python .agent/skills/report-squad/scripts/report.py <스펙> --from-cache
       육성 레벨 400 · 3돌 · 호감도 30 · 스킬 10/10/10 · 장비 5/5/5/5 · 렐릭 베어 큐브 15 · SR15
 
 ⚠ 기준과 다른 설정 — 아래는 나온 케이스 전부에서 이렇게 계산됐다.
-   앨리스              [컨트롤] 톡톡이 3.6회/초  [옵션] 차지속도 9.26%
+   Alice              [컨트롤] 톡톡이 3.6회/초  [옵션] 차지속도 9.26%
    마스트 : 로망틱 메이드  [버스트순서] 3의 배수
 ```
 

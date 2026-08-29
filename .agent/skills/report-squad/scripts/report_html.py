@@ -299,7 +299,7 @@ _JS = """
 # ── 조각 렌더러 ───────────────────────────────────────────────────────────
 
 # 랩쳐 속성 → 그 속성이 약점으로 맞는 공격 속성 (ui/team_panel._CODE_LABELS와 같은 표)
-_CODE_WEAK = {"전격": "철갑", "수냉": "전격", "작열": "수냉", "풍압": "작열", "철갑": "풍압"}
+_CODE_WEAK = {"": "Iron Code", "수냉": "", "Fire Code": "수냉", "풍압": "Fire Code", "Iron Code": "풍압"}
 
 
 def _enemy_desc(enemy: dict | None) -> str:

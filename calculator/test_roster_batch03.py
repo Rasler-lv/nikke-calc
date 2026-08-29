@@ -43,12 +43,12 @@ class RosterBatch03Test(unittest.TestCase):
 
     def test_same_squad_target_selects_only_absolute_members(self):
         manager = BuffManager(
-            build_squad(["엠마 : 택티컬 업", "은화 : 택티컬 업", "라피"]),
+            build_squad(["엠마 : 택티컬 업", "은화 : 택티컬 업", "Rapi"]),
             {"enemy": {}},
         )
         manager.battle_start()
         self.assertGreater(manager.get_buffs("은화 : 택티컬 업", "__enemy__", 0)["crit_dmg"], 0)
-        self.assertEqual(0, manager.get_buffs("라피", "__enemy__", 0)["crit_dmg"])
+        self.assertEqual(0, manager.get_buffs("Rapi", "__enemy__", 0)["crit_dmg"])
 
         paired = BuffManager(
             build_squad(["엠마 : 택티컬 업", "은화 : 택티컬 업"]), {"enemy": {}},
@@ -78,7 +78,7 @@ class RosterBatch03Test(unittest.TestCase):
         self.assertEqual(4, weapon["max_ammo"])
 
     def test_eh_weapon_uses_current_magazine_count_as_ammo(self):
-        squad = build_squad(["리틀 머메이드", "크라운", "E.H."])
+        squad = build_squad(["리틀 머메이드", "Crown", "E.H."])
         result = simulate(
             squad,
             config=build_config(squad, {"first_burst_time": 1.0, "duration": 8.0}),
@@ -112,23 +112,23 @@ class RosterBatch03Test(unittest.TestCase):
         self.assertEqual(["every:20s"], milk["trigger"]["timing"])
         self.assertTrue(_find("밀크", stat="burst_cooldown", favorite=1))
 
-        manager = BuffManager(build_squad(["앤 : 미라클 페어리", "크로우", "라피"]), {"enemy": {}})
+        manager = BuffManager(build_squad(["앤 : 미라클 페어리", "크로우", "Rapi"]), {"enemy": {}})
         manager.notify("burst_cast", 1.0, "앤 : 미라클 페어리")
-        self.assertGreater(manager.get_buffs("라피", "__enemy__", 1.0)["atk_pct"], 0)
+        self.assertGreater(manager.get_buffs("Rapi", "__enemy__", 1.0)["atk_pct"], 0)
         self.assertEqual(manager.get_buffs("크로우", "__enemy__", 1.0)["atk_pct"], 0)
 
     def test_all_ten_run_in_valid_squads(self):
         cases = [
-            ("엠마 : 택티컬 업", ["엠마 : 택티컬 업", "크라운", "test_B3"]),
+            ("엠마 : 택티컬 업", ["엠마 : 택티컬 업", "Crown", "test_B3"]),
             ("은화 : 택티컬 업", ["리틀 머메이드", "은화 : 택티컬 업", "test_B3"]),
-            ("크로우", ["리틀 머메이드", "크라운", "크로우"]),
-            ("자칼", ["자칼", "크라운", "test_B3"]),
+            ("크로우", ["리틀 머메이드", "Crown", "크로우"]),
+            ("자칼", ["자칼", "Crown", "test_B3"]),
             ("바이퍼", ["리틀 머메이드", "바이퍼", "test_B3"]),
-            ("E.H.", ["리틀 머메이드", "크라운", "E.H."]),
-            ("앤 : 미라클 페어리", ["앤 : 미라클 페어리", "크라운", "test_B3"]),
-            ("메어리", ["메어리", "크라운", "test_B3"]),
-            ("페퍼", ["페퍼", "크라운", "test_B3"]),
-            ("밀크", ["밀크", "크라운", "test_B3"]),
+            ("E.H.", ["리틀 머메이드", "Crown", "E.H."]),
+            ("앤 : 미라클 페어리", ["앤 : 미라클 페어리", "Crown", "test_B3"]),
+            ("메어리", ["메어리", "Crown", "test_B3"]),
+            ("페퍼", ["페퍼", "Crown", "test_B3"]),
+            ("밀크", ["밀크", "Crown", "test_B3"]),
         ]
         for name, members in cases:
             with self.subTest(name=name):

@@ -31,7 +31,7 @@ export interface TimelineSeries {
   totals: Record<string, number>;
   bursts: Record<string, { t: number; stage: string }[]>;
   fullBurst: [number, number][];
-  /** 족자 — 평타가 빗나가는 구간. 타임라인에 붉은 밴드로 깐다. */
+  /** 족자 — 평타가 빗Naga는 구간. 타임라인에 붉은 밴드로 깐다. */
   immuneWindows: Array<{ from: number; to: number }>;
   /** 속저 — 우월 코드만 통과하는 구간. 푸른 밴드로 깐다. */
   elementWindows: Array<{ from: number; to: number; code: string }>;

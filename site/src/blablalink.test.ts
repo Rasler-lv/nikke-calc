@@ -10,23 +10,23 @@ import type { CharacterMeta, SettingsCatalog } from './types';
 
 const catalog: CharacterMeta[] = [
   {
-    name: '라피', burstStage: '1', elementCode: '작열', weaponType: 'AR',
+    name: 'Rapi', burstStage: '1', elementCode: 'Fire Code', weaponType: 'AR',
     className: '화력형', manufacturer: '엘리시온', preview: false, image: null, nameCode: 5001, resourceId: null, aliases: [],
   },
   {
-    name: '앨리스', burstStage: '3', elementCode: '수냉', weaponType: 'SR',
+    name: 'Alice', burstStage: '3', elementCode: '수냉', weaponType: 'SR',
     className: '화력형', manufacturer: '필그림', preview: false, image: null, nameCode: 5002, resourceId: null, aliases: [],
   },
   {
-    name: '미공개', burstStage: '3', elementCode: '전격', weaponType: 'AR',
+    name: '미공개', burstStage: '3', elementCode: '', weaponType: 'AR',
     className: '화력형', manufacturer: '테트라', preview: true, image: null, nameCode: 5003, resourceId: null, aliases: [],
   },
 ];
 
 const settings = {
   characters: {
-    라피: { maxGrowthStage: 11, skillLevelsLocked: false },
-    앨리스: { maxGrowthStage: 11, skillLevelsLocked: false },
+    Rapi: { maxGrowthStage: 11, skillLevelsLocked: false },
+    Alice: { maxGrowthStage: 11, skillLevelsLocked: false },
     미공개: { maxGrowthStage: 11, skillLevelsLocked: true },
   },
   cubes: {
@@ -72,9 +72,9 @@ describe('areaToOverrides', () => {
       details: [detailOf({ name_code: 5001, skill1_lv: 10, skill2_lv: 9, ulti_skill_lv: 8 })],
     }), settings, catalog);
 
-    expect(result.matched).toEqual(['라피']);
-    expect(result.overrides['라피']!.growthStage).toBe(7);
-    expect(result.overrides['라피']!.skillLevels).toEqual({ '1': 10, '2': 9, '3': 8 });
+    expect(result.matched).toEqual(['Rapi']);
+    expect(result.overrides['Rapi']!.growthStage).toBe(7);
+    expect(result.overrides['Rapi']!.skillLevels).toEqual({ '1': 10, '2': 9, '3': 8 });
   });
 
   it('육성 단계는 캐릭터 상한을 넘지 않는다', () => {
@@ -82,7 +82,7 @@ describe('areaToOverrides', () => {
       characters: [{ name_code: 5001, grade: 9, core: 9 }],
       details: [detailOf({ name_code: 5001 })],
     }), settings, catalog);
-    expect(result.overrides['라피']!.growthStage).toBe(11);
+    expect(result.overrides['Rapi']!.growthStage).toBe(11);
   });
 
   it('오버로드를 12슬롯에서 합산한다 — state_effects가 중복 제거돼 와도', () => {
@@ -101,7 +101,7 @@ describe('areaToOverrides', () => {
       ],
     }), settings, catalog);
 
-    const overload = result.overrides['라피']!.overload!;
+    const overload = result.overrides['Rapi']!.overload!;
     expect(overload.atk_pct).toBeCloseTo(36.04, 4);       // 18.02 × 2부위
     expect(overload.charge_speed_pct).toBeCloseTo(10.15, 4); // 음수로 오지만 양수 퍼센트로
     expect(overload.crit_rate).toBe(0);
@@ -121,7 +121,7 @@ describe('areaToOverrides', () => {
 
     // 예전에는 기업이 아니면 전부 0(=기업 강화0)으로 뭉갰다. 강화0에도 플랫 스탯이
     // 붙어서 미장착·일반 장비가 공격력을 그냥 얻었다 — 등급을 그대로 넘겨야 한다.
-    expect(result.overrides['라피']!.equipLevels).toEqual({
+    expect(result.overrides['Rapi']!.equipLevels).toEqual({
       머리: 5, 몸통: 'T9', 팔: '없음', 다리: 2,
     });
   });
@@ -135,8 +135,8 @@ describe('areaToOverrides', () => {
       ],
     }), settings, catalog);
 
-    expect(result.overrides['라피']!.collection).toEqual({ stage: 'SR15', favorite: 3 });
-    expect(result.overrides['앨리스']!.collection).toEqual({ stage: 'SR15', favorite: 0 });
+    expect(result.overrides['Rapi']!.collection).toEqual({ stage: 'SR15', favorite: 3 });
+    expect(result.overrides['Alice']!.collection).toEqual({ stage: 'SR15', favorite: 0 });
   });
 
   it('소장품 슬롯이 비면 미장착으로 적는다 — 기본값이 남으면 과대평가된다', () => {
@@ -144,7 +144,7 @@ describe('areaToOverrides', () => {
       characters: [{ name_code: 5001, grade: 0, core: 0 }],
       details: [detailOf({ name_code: 5001, favorite_item_tid: 0 })],
     }), settings, catalog);
-    expect(result.overrides['라피']!.collection).toEqual({ stage: '없음', favorite: 0 });
+    expect(result.overrides['Rapi']!.collection).toEqual({ stage: '없음', favorite: 0 });
   });
 
   it('낀 큐브를 이름으로 옮기고, 안 꼈으면 손대지 않는다', () => {
@@ -156,8 +156,8 @@ describe('areaToOverrides', () => {
       ],
     }), settings, catalog);
 
-    expect(result.overrides['라피']!.cube).toEqual({ name: '렐릭 디바이드 큐브', level: 15 });
-    expect(result.overrides['앨리스']!.cube).toBeUndefined();
+    expect(result.overrides['Rapi']!.cube).toEqual({ name: '렐릭 디바이드 큐브', level: 15 });
+    expect(result.overrides['Alice']!.cube).toBeUndefined();
     expect(result.notes.some((note) => note.includes('큐브를 끼지 않은'))).toBe(true);
   });
 

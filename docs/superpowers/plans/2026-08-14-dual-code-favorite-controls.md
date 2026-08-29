@@ -29,23 +29,23 @@
 - Modify: `scraper/test_parse_nikke.py`
 
 **Interfaces:**
-- Consumes: 효과 객체 `{ "stat": "element_code_override", "target_code": "전격" }`
+- Consumes: 효과 객체 `{ "stat": "element_code_override", "target_code": "" }`
 - Produces: 활성 추가 코드가 적 코드와 일치할 때 `get_buffs(...)["is_element_match"] == True`
 
 - [ ] **Step 1: 실패하는 듀얼 코드 테스트 작성**
 
 ```python
 def test_extra_element_advantage_does_not_replace_native_code(self):
-    rapi = build_char("라피 : 레드 후드")
+    rapi = build_char("Rapi : Red Hood")
     assert advantage_for(rapi, "풍압") is True
-    assert advantage_for(rapi, "전격") is True
-    assert advantage_for(rapi, "작열") is False
+    assert advantage_for(rapi, "") is True
+    assert advantage_for(rapi, "Fire Code") is False
 
 def test_extra_element_does_not_change_ally_code_targeting(self):
-    assert native_code("라피 : 레드 후드") == "작열"
+    assert native_code("Rapi : Red Hood") == "Fire Code"
 ```
 
-- [ ] **Step 2: 테스트가 추가 전격 우월 판정에서 실패하는지 실행**
+- [ ] **Step 2: 테스트가 추가  우월 판정에서 실패하는지 실행**
 
 Run: `python -m unittest calculator.test_timeline -v`
 Expected: FAIL because `element_code_override` is not applied to damage.
@@ -70,7 +70,7 @@ buffs["is_element_match"] = (
 
 ```python
 def test_every_extra_advantage_source_has_structured_target_code(self):
-    expected = {"라피 : 레드 후드": "전격", "슈가": "작열"}
+    expected = {"Rapi : Red Hood": "", "슈가": "Fire Code"}
     assert scan_extra_advantage_sources() == expected
 ```
 
@@ -106,9 +106,9 @@ git commit -m "feat: calculate extra elemental advantage"
 ```python
 def test_sugar_uses_favorite_item_stage_three(self):
     skills = parsed_skills()["슈가"]
-    assert find_effect(skills, "element_code_override")["target_code"] == "작열"
+    assert find_effect(skills, "element_code_override")["target_code"] == "Fire Code"
     assert find_effect(skills, "attack_speed_pct")
-    assert find_effect(skills, "allies_code_weapon:수냉,철갑:SG")
+    assert find_effect(skills, "allies_code_weapon:수냉,Iron Code:SG")
 ```
 
 - [ ] **Step 2: 테스트 실패 확인**
@@ -118,7 +118,7 @@ Expected: FAIL because Sugar still has pre-favorite skills.
 
 - [ ] **Step 3: 정본 원문에서 슈가 스킬 1·2·버스트를 애장품 3단계로 파싱**
 
-`context/spec.py` 이외에서 캐릭터 dict 생성 경로를 추가하지 않는다. 단계 1의 작열 추가 우월, 단계 2의 SG/코드 아군 효과, 단계 3의 버스트 개선을 모두 구조화한다.
+`context/spec.py` 이외에서 캐릭터 dict 생성 경로를 추가하지 않는다. 단계 1의 Fire Code 추가 우월, 단계 2의 SG/코드 아군 효과, 단계 3의 버스트 개선을 모두 구조화한다.
 
 - [ ] **Step 4: 애장품 메타데이터와 UI 실패 테스트 작성**
 
@@ -231,11 +231,11 @@ git commit -m "feat: expose every overload option"
 
 ```python
 def test_explicit_empty_control_clears_character_layer(self):
-    char = build_char("앨리스", {"control": {}})
+    char = build_char("Alice", {"control": {}})
     assert char["control"] == {}
 
 def test_missing_control_keeps_character_layer(self):
-    assert "tap_fire" in build_char("앨리스")["control"]
+    assert "tap_fire" in build_char("Alice")["control"]
 ```
 
 - [ ] **Step 2: 재귀 병합으로 첫 테스트가 실패하는지 확인**
@@ -379,7 +379,7 @@ Expected: PASS.
 
 - [ ] **Step 5: 브라우저 스모크 테스트**
 
-개발 서버에서 라피 : 레드 후드와 슈가를 선택해 애장품 안내, 오버로드 9종, 추천/직접 컨트롤을 확인한다. 전격/작열 적을 바꿔 듀얼 우월 결과 변화가 발생하고, 직접 컨트롤 없음이 추천 자동과 다른 결과를 낼 수 있음을 확인한다.
+개발 서버에서 Rapi : Red Hood와 슈가를 선택해 애장품 안내, 오버로드 9종, 추천/직접 컨트롤을 확인한다. /Fire Code 적을 바꿔 듀얼 우월 결과 변화가 발생하고, 직접 컨트롤 없음이 추천 자동과 다른 결과를 낼 수 있음을 확인한다.
 
 - [ ] **Step 6: 최종 변경 검토와 커밋**
 

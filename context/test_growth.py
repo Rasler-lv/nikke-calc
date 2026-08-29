@@ -56,9 +56,9 @@ class CharacterGrowthTest(unittest.TestCase):
     def test_pilgrim_and_over_spec_unlock_bond_forty(self):
         pilgrim = {"rarity": "SSR", "manufacturer": "필그림"}
         ordinary = {"rarity": "SSR", "manufacturer": "엘리시온"}
-        self.assertEqual(resolve_growth("크라운", pilgrim, 3)["affinity"], 40)
-        self.assertEqual(resolve_growth("리타", ordinary, 3)["affinity"], 30)
-        for name in ("라피 : 레드 후드", "아니스 : 스타", "네온 : 비전 아이"):
+        self.assertEqual(resolve_growth("Crown", pilgrim, 3)["affinity"], 40)
+        self.assertEqual(resolve_growth("Liter", ordinary, 3)["affinity"], 30)
+        for name in ("Rapi : Red Hood", "아니스 : 스타", "네온 : 비전 아이"):
             with self.subTest(name=name):
                 self.assertEqual(resolve_growth(name, ordinary, 3)["affinity"], 40)
 
@@ -68,15 +68,15 @@ class CharacterGrowthTest(unittest.TestCase):
             {"rarity": "SR", "max_stage": 2, "default_stage": 2, "bond_40": False},
         )
         self.assertEqual(
-            growth_profile("크라운", {"rarity": "SSR", "manufacturer": "필그림"}),
+            growth_profile("Crown", {"rarity": "SSR", "manufacturer": "필그림"}),
             {"rarity": "SSR", "max_stage": 10, "default_stage": 3, "bond_40": True},
         )
 
     def test_build_char_uses_profile_default_but_preserves_direct_overrides(self):
-        self.assertEqual(build_char("리타")["affinity"], 30)
-        self.assertEqual(build_char("크라운")["affinity"], 40)
+        self.assertEqual(build_char("Liter")["affinity"], 30)
+        self.assertEqual(build_char("Crown")["affinity"], 40)
 
-        direct = build_char("크라운", {"affinity": 12})
+        direct = build_char("Crown", {"affinity": 12})
         self.assertEqual(
             (direct["breakthrough"], direct["core_enhancement"], direct["affinity"]),
             (3, 0, 12),

@@ -396,7 +396,7 @@ def normalize_optimal_range(raw: Any) -> list[str]:
 def normalize_normal_hit_coeff(raw: Any) -> dict[str, float]:
     """무기군별 평타 계수 → 엔진 `config["normal_hit_coeff"]`.
 
-    실전에서 탄퍼짐으로 빗나가는 탄을 보정한다. **평타에만** 곱하며 스킬·버스트와
+    실전에서 탄퍼짐으로 빗Naga는 탄을 보정한다. **평타에만** 곱하며 스킬·버스트와
     변신 모드 사격은 조준 판정이라 손대지 않는다(`timeline._apply_hit_coeff`).
 
     기본값은 `data/weapon_mechanics.json`의 `normal_hit_coeff`이고, 여기서 넘긴
@@ -422,7 +422,7 @@ def normalize_normal_hit_coeff(raw: Any) -> dict[str, float]:
 
 # 보스 페이즈 구간의 상한. 전투 시간이 최대 180초라 그 위는 의미가 없다.
 PHASE_WINDOW_MAX = 180.0
-ELEMENT_CODES = ("작열", "수냉", "풍압", "전격", "철갑")
+ELEMENT_CODES = ("Fire Code", "수냉", "풍압", "", "Iron Code")
 
 
 def _window(raw: Any, label: str) -> tuple[float, float]:
@@ -454,7 +454,7 @@ def normalize_immune_windows(raw: Any) -> list[list[float]]:
 def normalize_element_windows(raw: Any) -> list[dict[str, Any]]:
     """속저 — 그 구간 동안 **그 코드에 우월한** 캐릭터의 딜만 들어간다.
 
-    코드는 보스가 두르는 속성이다. 풍압으로 두면 풍압에 우월한 작열만 통과한다.
+    코드는 보스가 두르는 속성이다. 풍압으로 두면 풍압에 우월한 Fire Code만 통과한다.
     """
     if raw is None:
         return []

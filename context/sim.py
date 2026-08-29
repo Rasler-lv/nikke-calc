@@ -4,14 +4,14 @@
 (context/test.py는 셀 상수를 매번 고쳐야 해서 "이 스쿼드 돌려봐"를 시킬 때마다
  파일이 더러워진다. 탐색적 디버깅은 test.py, 단발 조회는 이쪽.)
 
-    python -m context.sim "리틀 머메이드,크라운,라피 : 레드 후드,미하라,헬름"
+    python -m context.sim "리틀 머메이드,Crown,Rapi : Red Hood,미하라,헬름"
     python -m context.sim "..." --view breakdown
     python -m context.sim "..." --no-burst "리틀 머메이드" --seed 42
     python -m context.sim "..." --expected          # 크리·코어히트를 기대값으로 (1회로 결정론적)
-    python -m context.sim "..." --view buff --char "라피 : 레드 후드"
+    python -m context.sim "..." --view buff --char "Rapi : Red Hood"
     python -m context.sim "..." --profile me        # 고정 스펙 대신 내 계정의 실제 육성으로
 
-캐릭터 이름에 콤마는 없지만 콜론·공백은 있다 (`라피 : 레드 후드`).
+캐릭터 이름에 콤마는 없지만 콜론·공백은 있다 (`Rapi : Red Hood`).
 구분자는 콤마이며 앞뒤 공백은 자동으로 벗겨진다.
 
 **정식 명칭만 받는다.** 유저가 쓰는 별칭(`마스트`·`돌니스`)은 `context/ALIASES.md`로
@@ -70,7 +70,7 @@ def main() -> None:
              "(기본은 에러 — 별칭을 정식 명칭으로 못 바꾼 경우가 대부분이다)",
     )
     ap.add_argument("--enemy-def", type=int, help="적 방어력")
-    ap.add_argument("--enemy-code", choices=["풍압", "수냉", "작열", "전격", "철갑"],
+    ap.add_argument("--enemy-code", choices=["풍압", "수냉", "Fire Code", "", "Iron Code"],
                     help="적 속성 코드. 우월 코드(DealForm ⑦)·target_code 조건에 반영")
     ap.add_argument("--core-px", type=float, help="코어 직경(px). 0이면 코어 없음")
     ap.add_argument("--has-parts", action="store_true", help="파괴 가능 파츠 보유 보스로 설정")
@@ -89,7 +89,7 @@ def main() -> None:
         help="톡톡이를 시킬 차지형(SR/RL) 캐릭터. rate 기본 3.6발/s, release 기본 0.03초. "
              "풀차지간격(초)을 주면 그 간격마다 한 발은 풀차지로 쏜다 — `풀 차지 공격 시` "
              "버프 유지용(밀크 관통 특화 6초 → 5.5). "
-             "예: --tap \"앨리스:4.0\" / --tap \"밀크 : 블루밍 바니:4.0:0.03:5.5\" "
+             "예: --tap \"Alice:4.0\" / --tap \"밀크 : 블루밍 바니:4.0:0.03:5.5\" "
              "(context/CONTROL.md §톡톡이)",
     )
     ap.add_argument(
@@ -113,7 +113,7 @@ def main() -> None:
         "--auto", action="append", metavar="이름", nargs="?", const="__all__",
         help="캐릭터별 기본 레이어(data/char_defaults.json — 컨트롤·장비 옵션 차이분)를 "
              "통째로 건너뛴다. 이름 없이 주면 전원. 컨트롤 이득을 재는 대조군용. "
-             "예: --auto \"앨리스\" / --auto",
+             "예: --auto \"Alice\" / --auto",
     )
     ap.add_argument(
         "--favorite", action="append", metavar="이름:단계",
@@ -235,7 +235,7 @@ def main() -> None:
         controls.setdefault(parts[0], {})["hold"] = hd
 
     # 스펙 합성은 context/spec.py — 기본 육성 스펙 → 캐릭터별 기본 레이어
-    # (data/char_defaults.json: 앨리스 톡톡이 등) → 아래 CLI 인자.
+    # (data/char_defaults.json: Alice 톡톡이 등) → 아래 CLI 인자.
     # `--tap` 등을 주면 그 캐릭터의 기본 컨트롤 위에 얹힌다.
     over = {n: {"weapon_mode_swap": n in swap} for n in members}
 

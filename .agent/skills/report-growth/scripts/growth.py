@@ -81,7 +81,7 @@ ELEMENT_AXIS = ("우월코드 옵션", "element_bonus")
 ELEMENT_BASE_LINES = 4
 
 # 랩쳐 코드 → 그 코드에 강한(=우월코드가 붙는) 속성.
-CODE_WEAK = {"전격": "철갑", "수냉": "전격", "작열": "수냉", "풍압": "작열", "철갑": "풍압"}
+CODE_WEAK = {"": "Iron Code", "수냉": "", "Fire Code": "수냉", "풍압": "Fire Code", "Iron Code": "풍압"}
 
 # 케이스 이름 구분자. 케이스 이름은 `덱 ∥ 축 ∥ 단계`로 유일해야 한다
 # (report의 `_ops()`가 케이스 이름으로 설정 예외를 가른다).
@@ -567,7 +567,7 @@ def analyze(meta: dict, cases: list[dict], exact: bool = False) -> dict:
                 "gap_self": dl["self"]["pct"] - sum_self,
             })
 
-        # 모든 축의 모든 비-기준 단계를 덱 총딜 Δ 내림차순으로. 보고서에 표로 나가지는
+        # 모든 축의 모든 비-기준 단계를 덱 총딜 Δ 내림차순으로. 보고서에 표로 Naga지는
         # 않는다(축별 상세와 겹친다) — 덱 간 대조·막대 배율·콘솔 요약이 이걸 쓴다.
         rank = [{"axis": a["name"], "target": a["target"], "label": s["label"], **s}
                 for a in axes for s in a["steps"] if not s["base"] and s["delta"]]

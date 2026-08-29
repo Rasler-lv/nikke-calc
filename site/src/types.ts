@@ -1,4 +1,4 @@
-export type ElementCode = '' | '풍압' | '수냉' | '작열' | '전격' | '철갑';
+export type ElementCode = '' | '풍압' | '수냉' | 'Fire Code' | '' | 'Iron Code';
 // 큐브 종류의 정본은 `data/base_stat_tables/cube.json`이며 게임 업데이트로 계속
 // 늘어난다. 목록을 여기 박아두면 데이터가 앞서갈 때 조용히 어긋나므로, 이름은
 // 문자열로 두고 실제 선택지는 `SettingsCatalog.cubes`의 키에서 얻는다.
@@ -104,7 +104,7 @@ export interface SimulationRequest {
   rngMode?: RngMode;
   /** 족자 중에는 버스트 게이지도 안 찬다고 볼지. */
   immuneBlocksBurst?: boolean;
-  // 무기군별 평타 계수. 실전에서 탄퍼짐으로 빗나가는 탄을 보정한다 — 평타에만 붙고
+  // 무기군별 평타 계수. 실전에서 탄퍼짐으로 빗Naga는 탄을 보정한다 — 평타에만 붙고
   // 스킬·버스트와 변신 모드 사격에는 붙지 않는다. 안 주면 데이터 기본값을 쓴다.
   normalHitCoeff?: Record<string, number>;
   console?: ConsoleLevels;

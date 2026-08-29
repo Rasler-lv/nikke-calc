@@ -54,7 +54,7 @@ describe('설정 공유 서버', () => {
     const list = await (await call(kv, '/list?kind=boss')).json();
     expect(list.items.map((item) => item.name)).toEqual(['솔레 3페']);
     expect(list.mine).toEqual({});
-    // 누가 올렸는지(IP 해시)는 목록에 나가지 않는다.
+    // 누가 올렸는지(IP 해시)는 목록에 Naga지 않는다.
     expect(list.items[0].owner).toBeUndefined();
   });
 

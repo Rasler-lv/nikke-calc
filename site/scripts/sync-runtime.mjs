@@ -81,7 +81,7 @@ const skills = readJson(join(repoRoot, 'data', 'parsed_skills.json'));
 // `data/name_codes.json`이 정본이고(`scraper/blabla_ids_fetch.py`), 여기서 뒤집어
 // 카탈로그 항목에 붙인다 — 캐릭터 하나에 대한 메타데이터라 카탈로그가 제자리다.
 // enikk은 캐릭터를 resource_id로 부른다 — 우리 스크랩 데이터의 `id`와 같은 체계다.
-// 영문 표기(`Liter`=리타)로 맞추면 반드시 틀리므로 이 번호로 잇는다.
+// 영문 표기(`Liter`=Liter)로 맞추면 반드시 틀리므로 이 번호로 잇는다.
 const scrapedRaw = readJson(join(repoRoot, 'scraper', 'nikke_scraped.json'));
 const resourceByCharacter = new Map(
   Object.entries(scrapedRaw)

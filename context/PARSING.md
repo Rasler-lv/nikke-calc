@@ -140,7 +140,7 @@ print(json.dumps(data['캐릭터명'], ensure_ascii=False, indent=2))
 | `target_effect` | 선택 | buff, instant | 효과가 작용할 대상 효과의 `name`. `effect_interval`·`remove_named_buff` stat에서 필수 |
 | `trigger_values` | 선택 | 전체 | timing의 N이 레벨마다 다를 때 사용. `timing`에 `"hit_count:{0}"` 형태로 플레이스홀더 기입, `trigger_values: {"1": 65, "2": 62, ...}`로 레벨별 값 기입. `note` 필드로 상황 설명 추가 |
 | `event_scope` | 선택 | buff | `"recipients"`만 유효. 이 효과가 발생시키는 `event:{name}`을 **실제 수령자에게만** 통지한다(기본은 스쿼드 전체 브로드캐스트). 서로 다른 캐릭터가 같은 이름의 상태를 각자 보유해 남의 상태 변화로 트리거가 잘못 열릴 때 쓴다 (퀸(마코토)·유키코 `1more`·`추격`) |
-| `target_skill` | ✅* | instant | `force_skill_use` 전용 필수 필드. 강제로 발동시킬 **슬롯**(`"스킬1"`/`"스킬2"`/`"스킬3"`). 효과 하나가 아니라 슬롯 전체가 대상이라 `target_effect`를 쓰지 않는다 |
+| `target_skill` | ✅* | instant | `force_skill_use` 전용 필수 필드. 강제로 발동시킬 **슬롯**(`"스킬1"`/`"스킬2"`/`"스킬3"`). 효과 하Naga 아니라 슬롯 전체가 대상이라 `target_effect`를 쓰지 않는다 |
 | `duration_values` | 선택 | buff | `values`/`fixed_value` 없이 duration만 레벨별로 다를 때 사용. `duration` 대신 `duration_values: {"1": 2.57, ..., "10": 5.0}` 기입 |
 
 ---
@@ -331,7 +331,7 @@ template에 timing 키워드 없으면:
 | `자신이 [상태명] 상태라면` | `"self_state:상태명"` |
 | `자신이 [stat] 증가 상태라면` (버프 이름이 아니라 **수치 종류**로 서술) | `"self_stat_above:stat키:0"` — 예: `자신이 명중률 증가 상태라면` → `"self_stat_above:accuracy_pct:0"`. 누가 준 버프인지 무관하게 해당 stat 합이 양수면 참 |
 | `대상이 [상태명] 상태라면` | `"target_state:상태명"` |
-| `대상이 [코드] 코드라면` | `"target_code:[코드]"` (예: `"target_code:전격"`) |
+| `대상이 [코드] 코드라면` | `"target_code:[코드]"` (예: `"target_code:"`) |
 | `[코드] 코드 적이 있다면` / `[코드] 코드 적으로부터` | `"target_code:[코드]"` — 단일 보스 sim이라 "존재 여부"와 "대상의 코드"가 같은 판정이다 |
 | `동일 스쿼드 아군이 있다면` | `"squad_ally_exists"` |
 | `코어가 아니라면` | `"not_core"` |
@@ -412,10 +412,10 @@ template에 timing 키워드 없으면:
 | `화력형 아군 전체에게` | `"allies_class:공격"` |
 | `방어형 아군 전체에게` | `"allies_class:방어"` |
 | `지원형 아군 전체에게` | `"allies_class:지원"` |
-| `수냉/작열/전격 코드 아군 전체에게` | `"allies_code:수냉"` 등 |
-| `전격 코드 소총 아군 전체에게` (코드+무기 복합) | `"allies_code_weapon:전격:AR"` — `코드:무기유형` 순. **`소총` = AR**(SR은 `스나이퍼 라이플`, MG는 `머신건`, SMG는 `기관단총`, SG는 `샷건`, RL은 `로켓 런처`로 각각 별도 표기) |
-| `스쿼드에서 가장 왼쪽에 위치한 전격 코드 소총 아군 N기에게` | `"allies_code_weapon_leftmost:전격:AR:N"` — 스쿼드 입력 순서 기준 조건 만족 첫 N명. 매칭 아군 0명이면 무발동 |
-| `풍압/수냉/작열/전격 코드 적 전체에게` | `"enemies_code:풍압"` 등 |
+| `수냉/Fire Code/ 코드 아군 전체에게` | `"allies_code:수냉"` 등 |
+| ` 코드 소총 아군 전체에게` (코드+무기 복합) | `"allies_code_weapon::AR"` — `코드:무기유형` 순. **`소총` = AR**(SR은 `스나이퍼 라이플`, MG는 `머신건`, SMG는 `기관단총`, SG는 `샷건`, RL은 `로켓 런처`로 각각 별도 표기) |
+| `스쿼드에서 가장 왼쪽에 위치한  코드 소총 아군 N기에게` | `"allies_code_weapon_leftmost::AR:N"` — 스쿼드 입력 순서 기준 조건 만족 첫 N명. 매칭 아군 0명이면 무발동 |
+| `풍압/수냉/Fire Code/ 코드 적 전체에게` | `"enemies_code:풍압"` 등 |
 | `남은 체력 수치가 가장 낮은 풍압/수냉 코드 적 N기에게` | `"enemies_lowest_hp_code:풍압:N"` 등 |
 | `적 전체에게` | `"all_enemies"` |
 | `최종 공격력이 가장 높은 적 N기에게` | `"enemies_top_atk:N"` |
@@ -523,7 +523,7 @@ template에 timing 키워드 없으면:
 | `projectile_attachment_dmg_pct` | 발사체 부착 대미지 % ▲ |
 | `projectile_explosion_dmg_pct` | 발사체 폭발 대미지 % ▲ |
 | `burst_stage_override:N` | 자신의 버스트 단계를 N단계로 변경 (`values`/`fixed_value` 없음, `duration` 필수). 재진입이면 `burst_stage_override:reenterN` |
-| `element_code_override` | 특정 코드 적에게 우월 코드 대미지 적용. **`target_code`에 대상 코드**(`"전격"` 등)를 적는다 — 구현이 읽는 유일한 필드다. `note`는 원문 보존용이며 판정에 쓰지 않는다 (`values`/`fixed_value` 없음) |
+| `element_code_override` | 특정 코드 적에게 우월 코드 대미지 적용. **`target_code`에 대상 코드**(`""` 등)를 적는다 — 구현이 읽는 유일한 필드다. `note`는 원문 보존용이며 판정에 쓰지 않는다 (`values`/`fixed_value` 없음) |
 | `trigger_count_reduce` | 특정 효과의 발동 횟수 조건 N회 ▼ (`target_effect` 필수, `fixed_value`에 감소량) |
 | `shield_dmg_pct` | 보호막 대미지 % ▲ |
 | `cover_def_pct` | 엄폐물 방어력 % ▲ |

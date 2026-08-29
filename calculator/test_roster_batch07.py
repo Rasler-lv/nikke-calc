@@ -54,14 +54,14 @@ class RosterBatch07Test(unittest.TestCase):
         cases = [
             ("폴크방", ["리틀 머메이드", "폴크방", "test_B3"]),
             ("니힐리스타", ["리틀 머메이드", "니힐리스타", "test_B3"]),
-            ("사쿠라", ["사쿠라", "크라운", "test_B3"]),
-            ("에테르", ["에테르", "크라운", "test_B3"]),
-            ("솔져 E.G.", ["리틀 머메이드", "크라운", "솔져 E.G."]),
+            ("사쿠라", ["사쿠라", "Crown", "test_B3"]),
+            ("에테르", ["에테르", "Crown", "test_B3"]),
+            ("솔져 E.G.", ["리틀 머메이드", "Crown", "솔져 E.G."]),
             ("솔져 F.A.", ["리틀 머메이드", "솔져 F.A.", "test_B3"]),
-            ("프로덕트 08", ["프로덕트 08", "크라운", "test_B3"]),
-            ("프로덕트 12", ["리틀 머메이드", "크라운", "프로덕트 12"]),
-            ("iDoll 플라워", ["iDoll 플라워", "크라운", "test_B3"]),
-            ("iDoll 오션", ["iDoll 오션", "크라운", "test_B3"]),
+            ("프로덕트 08", ["프로덕트 08", "Crown", "test_B3"]),
+            ("프로덕트 12", ["리틀 머메이드", "Crown", "프로덕트 12"]),
+            ("iDoll 플라워", ["iDoll 플라워", "Crown", "test_B3"]),
+            ("iDoll 오션", ["iDoll 오션", "Crown", "test_B3"]),
         ]
         for name, members in cases:
             with self.subTest(name=name):

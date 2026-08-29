@@ -7,7 +7,7 @@ import type { BuffTargetRow, CharacterOverrides, SettingsCatalog } from './types
 
 const settings: SettingsCatalog = {
   characters: {
-    리타: {
+    Liter: {
       weaponType: 'SMG',
       recommendedControl: {},
       hasConditionalControl: false,
@@ -31,7 +31,7 @@ const settings: SettingsCatalog = {
       cube: { name: '재장', level: 15 },
       collection: { stage: 'SR15', favorite: 0 },
     },
-    라피: {
+    Rapi: {
       weaponType: 'RL',
       recommendedControl: { tap_fire: { rate: 3.6, release: 0.03 } },
       hasConditionalControl: true,
@@ -140,7 +140,7 @@ const settings: SettingsCatalog = {
 describe('character settings editor', () => {
   let root: HTMLElement;
   let value: CharacterOverrides | undefined;
-  let characterName: '리타' | '라피' | '아마기 유키코' | '신데렐라 : 크리스탈 웨이브';
+  let characterName: 'Liter' | 'Rapi' | '아마기 유키코' | '신데렐라 : 크리스탈 웨이브';
 
   const render = () => renderCharacterSettings(root, characterName, settings, value, (next) => {
     value = next;
@@ -156,7 +156,7 @@ describe('character settings editor', () => {
     root = document.createElement('div');
     document.body.append(root);
     value = undefined;
-    characterName = '리타';
+    characterName = 'Liter';
     render();
   });
 
@@ -174,7 +174,7 @@ describe('character settings editor', () => {
 
     expect(value?.skillLevels).toEqual({ '1': 10, '2': 10, '3': 10 });
     expect(value?.growthStage).toBe(3);
-    expect(value?.overload).toEqual(settings.characters.리타!.overload);
+    expect(value?.overload).toEqual(settings.characters.Liter!.overload);
     expect(root.querySelector<HTMLInputElement>('[data-overload-key="atk_pct"]')?.value).toBe('22.22');
   });
 
@@ -293,7 +293,7 @@ describe('character settings editor', () => {
   });
 
   it('constrains an SR character to card through limit break two', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
 
@@ -320,7 +320,7 @@ describe('character settings editor', () => {
   });
 
   it('lets a favorite-item character pick the stage actually owned', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
 
@@ -341,7 +341,7 @@ describe('character settings editor', () => {
   });
 
   it('offers only collection stages when the character has no favorite item', () => {
-    characterName = '리타';
+    characterName = 'Liter';
     render();
     setToggle('[data-custom-toggle]', true);
 
@@ -354,7 +354,7 @@ describe('character settings editor', () => {
   });
 
   it('keeps 컨트롤 beside the stat settings, both closed, not one inside the other', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
 
@@ -379,7 +379,7 @@ describe('character settings editor', () => {
   });
 
   it('컨트롤 칩은 열지 않아도 지금 상태를 적어 둔다', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
     const chipText = () => root.querySelector('.control-chip-text')!.textContent;
@@ -402,7 +402,7 @@ describe('character settings editor', () => {
 
   it('컨트롤 판 안의 긴 설명도 펴 둔 채로 남는다', () => {
     // 접이판 상태를 카드가 비워진 뒤에 찾으면 늘 «접힘»만 나온다.
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
     root.querySelector<HTMLButtonElement>('[data-control-open]')!.click();
@@ -417,7 +417,7 @@ describe('character settings editor', () => {
 
   it('컨트롤을 펴 둔 채로 값을 바꿔도 접히지 않는다', () => {
     // 체크 하나 누를 때마다 카드가 다시 그려진다 — 그때 접히면 둘째 항목을 못 켠다.
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
     root.querySelector<HTMLButtonElement>('[data-control-open]')!.click();
@@ -427,7 +427,7 @@ describe('character settings editor', () => {
   });
 
   it('switches from recommended controls to exact per-character controls', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
 
@@ -448,7 +448,7 @@ describe('character settings editor', () => {
   });
 
   it('lets the tap-fire rate be typed in and shows the 톡톡이 equivalent', () => {
-    characterName = '라피';
+    characterName = 'Rapi';
     render();
     setToggle('[data-custom-toggle]', true);
     setToggle('[data-control-mode="manual"]', true);
@@ -570,10 +570,10 @@ describe('character settings editor', () => {
     let opened: BuffTargetRow | undefined;
     const row: BuffTargetRow = {
       label: '차분한 수심 대상', buff: '차분한 수심 4', count: 4,
-      targets: ['앨리스', '홍련 : 흑영'],
+      targets: ['Alice', '홍련 : 흑영'],
       sequence: [
-        { t: 3.25, target: '앨리스' }, { t: 23.25, target: '홍련 : 흑영' },
-        { t: 43.25, target: '앨리스' }, { t: 63.25, target: '홍련 : 흑영' },
+        { t: 3.25, target: 'Alice' }, { t: 23.25, target: '홍련 : 흑영' },
+        { t: 43.25, target: 'Alice' }, { t: 63.25, target: '홍련 : 흑영' },
       ],
     };
     renderCharacterSettings(root, characterName, settings, value, (next) => { value = next; },
@@ -587,7 +587,7 @@ describe('character settings editor', () => {
     expect(button.textContent).toBe('순서보기');
     button.click();
     expect(opened?.sequence?.map((s) => s.target))
-      .toEqual(['앨리스', '홍련 : 흑영', '앨리스', '홍련 : 흑영']);
+      .toEqual(['Alice', '홍련 : 흑영', 'Alice', '홍련 : 흑영']);
   });
 
   it('shows just the name when the target never changes, with no order button', () => {

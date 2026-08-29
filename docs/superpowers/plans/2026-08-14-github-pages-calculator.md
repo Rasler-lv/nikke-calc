@@ -71,12 +71,12 @@ import { describe, expect, it } from 'vitest';
 import { cacheKey, formatDamage, normalizeRequest, validateRequest } from './model';
 
 const valid = {
-  squad: ['리타'], duration: 180, enemyDef: 31784,
+  squad: ['Liter'], duration: 180, enemyDef: 31784,
   enemyCode: '', corePx: 0, hasParts: false, seed: 42,
 };
 
 it('rejects duplicate and out-of-range input', () => {
-  expect(validateRequest({ ...valid, squad: ['리타', '리타'], duration: 181 }))
+  expect(validateRequest({ ...valid, squad: ['Liter', 'Liter'], duration: 181 }))
     .toEqual(expect.arrayContaining(['같은 캐릭터를 두 번 편성할 수 없습니다.', '전투 시간은 10~180초여야 합니다.']));
 });
 
@@ -100,7 +100,7 @@ Expected: FAIL because `src/model.ts` does not exist.
 Implement exact interfaces in `types.ts`:
 
 ```ts
-export type ElementCode = '' | '풍압' | '수냉' | '작열' | '전격' | '철갑';
+export type ElementCode = '' | '풍압' | '수냉' | 'Fire Code' | '' | 'Iron Code';
 export interface SimulationRequest {
   squad: string[]; duration: number; enemyDef: number; enemyCode: ElementCode;
   corePx: number; hasParts: boolean; seed: number;

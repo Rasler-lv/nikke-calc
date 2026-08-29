@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { formatEok, toPlayers, type EnikkRanking } from './enikk';
 
 const NAMES = new Map([
-  ['Liter', '리타'],
+  ['Liter', 'Liter'],
   ['Grave', '그레이브'],
-  ['Alice', '앨리스'],
+  ['Alice', 'Alice'],
   ['Rei', '레이'],
   ['Modernia', '모더니아'],
   ['Moran', '목단'],
@@ -41,7 +41,7 @@ describe('toPlayers', () => {
     expect(result.players).toHaveLength(1);
     const [p] = result.players;
     expect(p!.decks).toHaveLength(2);
-    expect(p!.decks[0]!.squad).toEqual(['리타', '그레이브', '앨리스', '레이', '모더니아']);
+    expect(p!.decks[0]!.squad).toEqual(['Liter', '그레이브', 'Alice', '레이', '모더니아']);
     expect(p!.decks[1]!.squad[1]).toBe('목단');
     expect(result.decks).toBe(2);
   });
@@ -74,7 +74,7 @@ describe('toPlayers', () => {
   it('계산기에 없는 니케도 못 쓰는 덱으로 센다', () => {
     const result = toPlayers([
       player({ damage: 1 }, [{ characters: A, damage: 1 }]),
-    ], NAMES, new Set(['리타', '그레이브', '앨리스', '레이']));   // 모더니아 빠짐
+    ], NAMES, new Set(['Liter', '그레이브', 'Alice', '레이']));   // 모더니아 빠짐
     expect(result.players[0]!.decks[0]!.usable).toBe(false);
     expect(result.unsupported).toBe(1);
   });

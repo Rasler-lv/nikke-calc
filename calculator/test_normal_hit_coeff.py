@@ -41,7 +41,7 @@ class NormalHitCoeffTest(unittest.TestCase):
     def test_coefficient_scales_shotgun_normal_attacks(self):
         """SG 평타는 계수만큼 줄어든다. 1.0으로 되돌리면 원래 값이다."""
         name = "드레이크"
-        squad = [name, "크라운", "test_B3"]
+        squad = [name, "Crown", "test_B3"]
         base = _totals(squad, {"normal_hit_coeff": {"SG": 1.0}})[name]
         halved = _totals(squad, {"normal_hit_coeff": {"SG": 0.5}})[name]
         self.assertLess(halved, base)
@@ -51,8 +51,8 @@ class NormalHitCoeffTest(unittest.TestCase):
         self.assertLess(halved / base, 1.0)
 
     def test_non_shotgun_is_untouched_by_a_shotgun_coefficient(self):
-        name = "리타"        # SMG — SG 계수와 무관해야 한다
-        squad = [name, "크라운", "test_B3"]
+        name = "Liter"        # SMG — SG 계수와 무관해야 한다
+        squad = [name, "Crown", "test_B3"]
         a = _totals(squad, {"normal_hit_coeff": {"SG": 1.0}})[name]
         b = _totals(squad, {"normal_hit_coeff": {"SG": 0.2}})[name]
         self.assertEqual(a, b)

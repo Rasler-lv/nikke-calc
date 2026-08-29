@@ -50,7 +50,7 @@ class RosterBatch06Test(unittest.TestCase):
         self.assertEqual(20, reduce["fixed_value"])
         self.assertTrue(_find("스노우 화이트 : 이노센트 데이즈", stat="max_ammo_infinite"))
 
-        squad = build_squad(["리틀 머메이드", "크라운", "스노우 화이트 : 이노센트 데이즈"])
+        squad = build_squad(["리틀 머메이드", "Crown", "스노우 화이트 : 이노센트 데이즈"])
         result = simulate(squad, config=build_config(squad, {"first_burst_time": 1, "duration": 8}),
                           verbose=True, seed=1)
         cast_t = next(e.t for e in result.log.burst_log
@@ -67,7 +67,7 @@ class RosterBatch06Test(unittest.TestCase):
         self.assertEqual(10.0, brand["duration"])
 
     def test_dorothy_brand_releases_accumulated_damage_at_expiry(self):
-        squad = build_squad(["도로시", "크라운", "test_B3"])
+        squad = build_squad(["도로시", "Crown", "test_B3"])
         result = simulate(squad, config=build_config(squad, {"first_burst_time": 1, "duration": 14}), seed=1)
         releases = [h for h in result.hits if h.caster == "도로시" and h.skill_name == "낙인"]
         self.assertEqual(1, len(releases))
@@ -76,16 +76,16 @@ class RosterBatch06Test(unittest.TestCase):
 
     def test_all_ten_simulate_in_valid_squads(self):
         cases = [
-            ("엑시아", ["엑시아", "크라운", "test_B3"]),
+            ("엑시아", ["엑시아", "Crown", "test_B3"]),
             ("노벨", ["리틀 머메이드", "노벨", "test_B3"]),
-            ("라푼젤", ["라푼젤", "크라운", "test_B3"]),
-            ("스노우 화이트 : 이노센트 데이즈", ["리틀 머메이드", "크라운", "스노우 화이트 : 이노센트 데이즈"]),
-            ("라푼젤 : 퓨어 그레이스", ["라푼젤 : 퓨어 그레이스", "크라운", "test_B3"]),
-            ("하란", ["리틀 머메이드", "크라운", "하란"]),
+            ("라푼젤", ["라푼젤", "Crown", "test_B3"]),
+            ("스노우 화이트 : 이노센트 데이즈", ["리틀 머메이드", "Crown", "스노우 화이트 : 이노센트 데이즈"]),
+            ("라푼젤 : 퓨어 그레이스", ["라푼젤 : 퓨어 그레이스", "Crown", "test_B3"]),
+            ("하란", ["리틀 머메이드", "Crown", "하란"]),
             ("노아", ["리틀 머메이드", "노아", "test_B3"]),
-            ("도로시", ["도로시", "크라운", "test_B3"]),
-            ("루마니", ["루마니", "크라운", "test_B3"]),
-            ("에피넬", ["리틀 머메이드", "크라운", "에피넬"]),
+            ("도로시", ["도로시", "Crown", "test_B3"]),
+            ("루마니", ["루마니", "Crown", "test_B3"]),
+            ("에피넬", ["리틀 머메이드", "Crown", "에피넬"]),
         ]
         for name, members in cases:
             with self.subTest(name=name):

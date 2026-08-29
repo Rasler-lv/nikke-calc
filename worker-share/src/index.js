@@ -64,7 +64,7 @@ const readJson = async (env, key, fallback) => {
   }
 };
 
-/** 목록에 나가는 모양. 코드까지 함께 준다 — 적용은 브라우저가 코드로 한다. */
+/** 목록에 Naga는 모양. 코드까지 함께 준다 — 적용은 브라우저가 코드로 한다. */
 const publicItem = (item) => ({
   id: item.id,
   name: item.name,

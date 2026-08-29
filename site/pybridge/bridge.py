@@ -27,7 +27,7 @@ from context import spec as char_spec
 
 
 # 타임라인 버킷 크기(초). 0.1초까지 쪼개 봤지만 선이 잘게 떨려 오히려 읽기 어려웠다 —
-# 1초로 되돌린다. 이 값은 응답에 실려 나가고 화면이 그것으로 «몇 번째 칸이 몇 초인지»를
+# 1초로 되돌린다. 이 값은 응답에 실려 Naga고 화면이 그것으로 «몇 번째 칸이 몇 초인지»를
 # 환산하므로, 여기만 바꾸면 그림·눈금·툴팁이 모두 따라온다.
 TIMELINE_BUCKET = 1
 
@@ -380,7 +380,7 @@ def run_request(raw: str) -> str:
             burst_pattern[name] = f"last:{float(assignment.get('seconds', 20.0))}"
         elif assignment.get("mode") == "skip":
             # 「안 씀」은 뒤로 미는 게 아니라 후보에서 빼는 것이다 — 앞사람이 전부
-            # 쿨이어도 나가지 않는다.
+            # 쿨이어도 Naga지 않는다.
             no_burst.append(name)
     if burst_pattern:
         config_in["burst_pattern"] = burst_pattern

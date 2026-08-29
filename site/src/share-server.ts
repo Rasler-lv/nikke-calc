@@ -143,7 +143,7 @@ export function summarizeBattle(battle: BattleShare): string {
 /**
  * 5덱이면 덱 수와 인원만, 한 덱이면 이름을 그대로 적는다.
  *
- * 이름 사이는 슬래시로 가른다 — «라피 : 레드 후드»처럼 이름 자체에 구분점이 들어가는
+ * 이름 사이는 슬래시로 가른다 — «Rapi : Red Hood»처럼 이름 자체에 구분점이 들어가는
  * 캐릭터가 많아, 가운뎃점으로 이으면 어디서 한 명이 끝나는지 읽히지 않는다.
  */
 export function summarizeSquad(
@@ -160,7 +160,7 @@ export function summarizeSquad(
 
 /**
  * 유니온 레이드 판 한 줄 설명. 보스 이름을 늘어놓는 것이 가장 빨리 읽힌다 —
- * 「작열 글러트니 / 수냉 니힐」만 보여도 이번 시즌 것인지 바로 안다.
+ * 「Fire Code 글러트니 / 수냉 니힐」만 보여도 이번 시즌 것인지 바로 안다.
  */
 export function summarizeUnion(
   bosses: Array<{ name: string; enabled: boolean; battleCode: string; deckCodes: string[] }>,

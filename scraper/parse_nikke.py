@@ -187,7 +187,7 @@ def run(skills_data: dict | None = None) -> None:
 
     _dummy_base = {
         "rarity": "SSR",
-        "element_code": "철갑",
+        "element_code": "Iron Code",
         "class": "화력형",
         "manufacturer": "어브노말",
         "weapon_type": "AR",

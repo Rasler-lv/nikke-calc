@@ -98,7 +98,7 @@ export async function fetchLatestSeason(): Promise<EnikkSeason> {
  * enikk 영문 표기 → 우리 캐릭명.
  *
  * **이름을 글자로 맞추면 반드시 틀린다** — 한국 서버가 음차하지 않는 캐릭터가 있다
- * (`Liter`=리타, `Moran`=목단, `Rouge`=루주). enikk의 `resource_id`가 우리
+ * (`Liter`=Liter, `Moran`=목단, `Rouge`=루주). enikk의 `resource_id`가 우리
  * `nikke_scraped.json`의 `id`와 같은 체계라 그걸로 잇는다.
  */
 export async function fetchNameMap(catalog: CharacterMeta[]): Promise<Map<string, string>> {
@@ -212,9 +212,9 @@ export function formatEok(value: number): string {
 /** enikk 약점 표기(영문) → 우리 속성 이름. 랩쳐 코드에는 **보스 속성**을 넣어야 하므로
  *  약점을 그대로 코드에 넣으면 특효가 반대로 걸린다 — 안내에만 쓴다. */
 export const WEAKNESS_KO: Record<string, string> = {
-  Fire: '작열',
+  Fire: 'Fire Code',
   Water: '수냉',
   Wind: '풍압',
-  Electronic: '전격',
-  Iron: '철갑',
+  Electronic: '',
+  Iron: 'Iron Code',
 };

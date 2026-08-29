@@ -18,7 +18,7 @@ class Batch09(unittest.TestCase):
   self.assertEqual('atk_copy',find('길티','빌려 갈게에….')['stat'])
   self.assertEqual('split_dmg_pct',find('일레그','붐 인스톨')['stat'])
  def test_simulate(self):
-  cases=[('네로',['리틀 머메이드','네로','test_B3']),('비스킷',['리틀 머메이드','비스킷','test_B3']),('라이',['라이','크라운','test_B3']),('길티',['리틀 머메이드','길티','test_B3']),('신',['리틀 머메이드','신','test_B3']),('퀀시',['리틀 머메이드','퀀시','test_B3']),('노이즈',['노이즈','크라운','test_B3']),('아리아',['리틀 머메이드','아리아','test_B3']),('아비스타',['아비스타','리틀 머메이드','test_B3','아니스 : 스타']),('일레그',['리틀 머메이드','일레그','test_B3'])]
+  cases=[('네로',['리틀 머메이드','네로','test_B3']),('비스킷',['리틀 머메이드','비스킷','test_B3']),('라이',['라이','Crown','test_B3']),('길티',['리틀 머메이드','길티','test_B3']),('신',['리틀 머메이드','신','test_B3']),('퀀시',['리틀 머메이드','퀀시','test_B3']),('노이즈',['노이즈','Crown','test_B3']),('아리아',['리틀 머메이드','아리아','test_B3']),('아비스타',['아비스타','리틀 머메이드','test_B3','아니스 : 스타']),('일레그',['리틀 머메이드','일레그','test_B3'])]
   for n,m in cases:
    with self.subTest(n=n):
     q=build_squad(m); r=simulate(q,config=build_config(q,{'first_burst_time':1,'duration':8}),seed=1); self.assertTrue(any(h.caster==n for h in r.hits))

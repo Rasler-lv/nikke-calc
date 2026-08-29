@@ -50,11 +50,11 @@ describe('report image', () => {
   it('keeps the squad slot order instead of ranking by damage', () => {
     // 니케는 배치 순서가 전투에 영향을 준다. 딜 순으로 재정렬하면 보고서가 실제
     // 편성과 다른 그림이 되므로, 좌→우 편성을 위→아래로 그대로 옮겨야 한다.
-    const squad = ['리타', '크라운', '라피 : 레드 후드', '앨리스', '나가'];
+    const squad = ['Liter', 'Crown', 'Rapi : Red Hood', 'Alice', 'Naga'];
     const deck: DeckResultEntry = {
       deckId: 1,
       request: request(squad),
-      result: result(1000, { 리타: 100, 크라운: 200, '라피 : 레드 후드': 500, 앨리스: 150, 나가: 50 }),
+      result: result(1000, { Liter: 100, Crown: 200, 'Rapi : Red Hood': 500, Alice: 150, Naga: 50 }),
     };
 
     expect(reportRows(deck, new Map()).map((row) => row.name)).toEqual(squad);
@@ -63,16 +63,16 @@ describe('report image', () => {
   it('drops empty slots from the report', () => {
     const deck: DeckResultEntry = {
       deckId: 1,
-      request: request(['리타', '', '크라운', '', '']),
-      result: result(300, { 리타: 100, 크라운: 200 }),
+      request: request(['Liter', '', 'Crown', '', '']),
+      result: result(300, { Liter: 100, Crown: 200 }),
     };
 
-    expect(reportRows(deck, new Map()).map((row) => row.name)).toEqual(['리타', '크라운']);
+    expect(reportRows(deck, new Map()).map((row) => row.name)).toEqual(['Liter', 'Crown']);
   });
 
   it('names the file by deck count so saved reports stay distinguishable', () => {
-    const single = batchOf([entry(1, ['리타'], 100)]);
-    const five = batchOf([1, 2, 3, 4, 5].map((id) => entry(id, ['리타'], 100)));
+    const single = batchOf([entry(1, ['Liter'], 100)]);
+    const five = batchOf([1, 2, 3, 4, 5].map((id) => entry(id, ['Liter'], 100)));
 
     expect(reportFilename(single)).toMatch(/^nikke-squad-\d{8}-\d{4}\.png$/);
     expect(reportFilename(five)).toMatch(/^nikke-5deck-\d{8}-\d{4}\.png$/);
@@ -80,7 +80,7 @@ describe('report image', () => {
 
   it('reports a readable error when the browser has no 2D canvas', () => {
     // jsdom은 getContext가 null이다 — 캔버스를 못 쓰는 브라우저와 같은 상황.
-    const batch = batchOf([entry(1, ['리타', '크라운'], 1000)]);
+    const batch = batchOf([entry(1, ['Liter', 'Crown'], 1000)]);
     expect(() => renderReport(batch, meta, new Map()))
       .toThrowError('캔버스를 사용할 수 없는 브라우저입니다.');
   });
@@ -89,8 +89,8 @@ describe('report image', () => {
     // jsdom은 이미지를 실제로 받지 않아 onload/onerror가 영영 오지 않는다 —
     // 느리거나 죽은 이미지와 같은 상황이다. 상한이 없으면 보고서가 영영 안 나온다.
     vi.useFakeTimers();
-    const catalog = new Map([['리타', { name: '리타', image: 'characters/1.webp' } as never]]);
-    const pending = loadPortraits(['리타'], catalog, '/base/', 50);
+    const catalog = new Map([['Liter', { name: 'Liter', image: 'characters/1.webp' } as never]]);
+    const pending = loadPortraits(['Liter'], catalog, '/base/', 50);
     await vi.advanceTimersByTimeAsync(60);
     await expect(pending).resolves.toEqual(new Map());
     vi.useRealTimers();

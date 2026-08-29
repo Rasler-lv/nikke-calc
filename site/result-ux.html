@@ -117,18 +117,18 @@
 <script type="module">
 const BASE = '/nikke-calc/';
 const SQUAD = [
-  { name: '리타', img: '050.webp', dmg: 402_551_180, normal: 62, skill: 38 },
-  { name: '크라운', img: '159.webp', dmg: 118_902_441, normal: 41, skill: 59 },
-  { name: '라피 : 레드 후드', img: '032.webp', dmg: 612_337_905, normal: 55, skill: 45 },
-  { name: '앨리스', img: '125.webp', dmg: 288_114_002, normal: 78, skill: 22 },
-  { name: '나가', img: '006.webp', dmg: 60_999_585, normal: 33, skill: 67 },
+  { name: 'Liter', img: '050.webp', dmg: 402_551_180, normal: 62, skill: 38 },
+  { name: 'Crown', img: '159.webp', dmg: 118_902_441, normal: 41, skill: 59 },
+  { name: 'Rapi : Red Hood', img: '032.webp', dmg: 612_337_905, normal: 55, skill: 45 },
+  { name: 'Alice', img: '125.webp', dmg: 288_114_002, normal: 78, skill: 22 },
+  { name: 'Naga', img: '006.webp', dmg: 60_999_585, normal: 33, skill: 67 },
 ];
 const DECKS = [
-  { id: 1, total: 1_482_905_113, squad: ['050.webp', '159.webp', '032.webp', '125.webp', '006.webp'], names: ['리타', '크라운', '라피 : 레드 후드', '앨리스', '나가'] },
-  { id: 2, total: 1_338_220_004, squad: ['188.webp', '014.webp', '021.webp', '180.webp', '159.webp'], names: ['홍련', '노아', '도로시', '프리바티', '크라운'] },
-  { id: 3, total: 1_201_776_910, squad: ['032.webp', '021.webp', '050.webp', '006.webp', '125.webp'], names: ['라피 : 레드 후드', '도로시', '리타', '나가', '앨리스'] },
-  { id: 4, total: 998_450_233, squad: ['180.webp', '188.webp', '014.webp', '050.webp', '159.webp'], names: ['프리바티', '홍련', '노아', '리타', '크라운'] },
-  { id: 5, total: 774_010_651, squad: ['006.webp', '125.webp', '021.webp', '188.webp', '014.webp'], names: ['나가', '앨리스', '도로시', '홍련', '노아'] },
+  { id: 1, total: 1_482_905_113, squad: ['050.webp', '159.webp', '032.webp', '125.webp', '006.webp'], names: ['Liter', 'Crown', 'Rapi : Red Hood', 'Alice', 'Naga'] },
+  { id: 2, total: 1_338_220_004, squad: ['188.webp', '014.webp', '021.webp', '180.webp', '159.webp'], names: ['홍련', '노아', '도로시', '프리바티', 'Crown'] },
+  { id: 3, total: 1_201_776_910, squad: ['032.webp', '021.webp', '050.webp', '006.webp', '125.webp'], names: ['Rapi : Red Hood', '도로시', 'Liter', 'Naga', 'Alice'] },
+  { id: 4, total: 998_450_233, squad: ['180.webp', '188.webp', '014.webp', '050.webp', '159.webp'], names: ['프리바티', '홍련', '노아', 'Liter', 'Crown'] },
+  { id: 5, total: 774_010_651, squad: ['006.webp', '125.webp', '021.webp', '188.webp', '014.webp'], names: ['Naga', 'Alice', '도로시', '홍련', '노아'] },
 ];
 const DURATION = 180;
 const TOTAL = SQUAD.reduce((sum, c) => sum + c.dmg, 0);

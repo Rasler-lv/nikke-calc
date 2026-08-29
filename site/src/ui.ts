@@ -77,7 +77,7 @@ import type {
   SimulationResult,
 } from './types';
 
-const DEFAULT_SQUAD = ['리타', '크라운', '라피 : 레드 후드', '앨리스', '나가'];
+const DEFAULT_SQUAD = ['Liter', 'Crown', 'Rapi : Red Hood', 'Alice', 'Naga'];
 
 export interface CalculatorClientLike {
   prepare(): Promise<void>;
@@ -120,7 +120,7 @@ const createText = (tag: keyof HTMLElementTagNameMap, value: string, className?:
 // 속성(코드) 아이콘 — 그림은 `image/icon/icon-code-*.png`가 정본이다.
 // 직접 추가한 니케가 목록에 없는 코드를 쓰면 조용히 아이콘을 생략한다.
 const ELEMENT_ICON: Record<string, string> = {
-  작열: 'fire', 수냉: 'water', 풍압: 'wind', 전격: 'electronic', 철갑: 'iron',
+  Fire Code: 'fire', 수냉: 'water', 풍압: 'wind', : 'electronic', Iron Code: 'iron',
 };
 
 const createElementIcon = (elementCode: string, className: string): HTMLElement | null => {
@@ -560,7 +560,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
 
         <div class="union-step" data-union-step="3" hidden>
           <h3>보스와 덱</h3>
-          <p class="field-note">보스는 <b>전투 조건 코드</b>(NK3-), 덱은 <b>조합 코드</b>(NK2-)로 채웁니다. 계산기에 잡아 둔 설정을 가져오거나, <b>공유 목록에서 골라</b> 넣을 수도 있습니다. 체크를 끈 보스는 계산하지 않습니다 — 풍압엔 강한데 전격엔 약한 사람이 있으니까요.</p>
+          <p class="field-note">보스는 <b>전투 조건 코드</b>(NK3-), 덱은 <b>조합 코드</b>(NK2-)로 채웁니다. 계산기에 잡아 둔 설정을 가져오거나, <b>공유 목록에서 골라</b> 넣을 수도 있습니다. 체크를 끈 보스는 계산하지 않습니다 — 풍압엔 강한데 엔 약한 사람이 있으니까요.</p>
           <div class="union-board-bar">
             <span class="union-board-label">판 전체</span>
             <button type="button" class="roster-import" data-union-set-share>공유에서 판 고르기</button>
@@ -675,7 +675,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
               <h3>니케 고르기 <span data-roster-count></span></h3>
               <p class="picker-target" data-roster-desc></p>
             </div>
-            <input type="search" class="roster-search" data-roster-search placeholder="이름 · 초성 · 속성으로 찾기 (ㄹㅍ, 라피레드, 전격)" autocomplete="off" aria-label="니케 이름 검색" />
+            <input type="search" class="roster-search" data-roster-search placeholder="이름 · 초성 · 속성으로 찾기 (ㄹㅍ, Rapi레드, )" autocomplete="off" aria-label="니케 이름 검색" />
             <!-- 정렬·필터는 판을 눌러 펼친다. 칩을 늘 깔아 두면 목록이 화면 밖으로
                  밀리고, 필터가 몇 개 걸렸는지도 한눈에 안 들어온다. -->
             <div class="picker-bar">
@@ -749,7 +749,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
           <div class="battle-body" data-battle-body>
           <div class="field-grid">
             <label><span>전투 시간</span><div class="input-unit"><input id="duration" type="number" min="10" max="180" step="1" value="180" /><em>초</em></div></label>
-            <label><span>적 코드</span><select id="enemy-code"><option value="">없음</option><option value="풍압">풍압(작열weak)</option><option value="수냉">수냉(전격weak)</option><option value="작열">작열(수냉weak)</option><option value="전격">전격(철갑weak)</option><option value="철갑">철갑(풍압weak)</option></select></label>
+            <label><span>적 코드</span><select id="enemy-code"><option value="">없음</option><option value="풍압">풍압(Fire Codeweak)</option><option value="수냉">수냉(weak)</option><option value="Fire Code">Fire Code(수냉weak)</option><option value="">(Iron Codeweak)</option><option value="Iron Code">Iron Code(풍압weak)</option></select></label>
             <label><span>싱크로 레벨</span><div class="input-unit"><input id="synchro-level" type="number" min="1" max="${SYNCHRO_MAX}" step="1" value="${DEFAULT_SYNCHRO_LEVEL}" title="싱크로 디바이스 소대에 넣은 니케는 전원이 이 레벨이 됩니다. 계정 육성 상태라 전투 조건 공유 코드에는 담기지 않습니다. ${SYNCHRO_MEASURED_MAX}레벨까지는 실측값이고, 그 위는 같은 성장 곡선을 이어 붙여 계산합니다" /><em>Lv</em></div></label>
             <label class="toggle-field"><input id="has-core" type="checkbox" /><span class="toggle"></span><span>코어 있음</span></label>
             <label data-core-size><span>코어 직경</span><div class="input-unit"><input id="core-px" type="number" min="0" max="1000" step="1" value="52" disabled /><em>px</em></div></label>
@@ -773,7 +773,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
               <label class="toggle-field deck-regen-toggle" title="버스트 쿨이 밀리는 덱만 다른 값으로 재고 싶을 때 켭니다"><input id="burst-regen-per-deck" type="checkbox" /><span class="toggle"></span><span>버스트 충전을 덱마다 따로</span></label>
               <label title="조건이 갖춰진 뒤 실제로 버스트를 누르기까지 걸리는 시간입니다. 버스트 하나하나마다 더해지므로 3단계까지 쓰면 그 세 배만큼 늦어집니다."><span>버스트 반응속도</span><div class="input-unit"><input id="burst-reaction" type="number" min="0" max="3" step="0.01" value="${DEFAULT_BURST_REACTION}" /><em>초</em></div></label>
               <label><span>난수 처리</span><select id="rng-mode"><option value="expected">기대값 (권장)</option><option value="random">난수</option></select></label>
-              <label class="toggle-field" title="족자 구간에는 평타가 빗나가므로 게이지도 차지 않는 것으로 계산합니다. 켜면 그만큼 버스트가 밀립니다."><input id="immune-blocks-burst" type="checkbox" checked /><span class="toggle"></span><span>족자 중 버스트 충전 정지</span></label>
+              <label class="toggle-field" title="족자 구간에는 평타가 빗Naga므로 게이지도 차지 않는 것으로 계산합니다. 켜면 그만큼 버스트가 밀립니다."><input id="immune-blocks-burst" type="checkbox" checked /><span class="toggle"></span><span>족자 중 버스트 충전 정지</span></label>
             </div>
             <div class="deck-regen-grid" data-deck-regen hidden></div>
             <p class="field-note">기대값은 확률 대신 기대치를 태워 <b>같은 설정이면 언제나 같은 값</b>이 나옵니다. 난수는 인게임과 같은 분산을 재현하며 시드에 따라 결과가 흔들립니다.</p>
@@ -781,7 +781,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
             <fieldset class="range-field">
               <legend>평타 계수</legend>
               <div class="coeff-options" data-hit-coeff></div>
-              <p class="field-note">실전에서 탄퍼짐으로 빗나가는 탄을 보정합니다. <b>평타에만</b> 곱하며 스킬·버스트와 변신 모드 사격은 조준 판정이라 손대지 않습니다. 기본값은 실측 대조로 뽑은 값이고(SG 0.90), 1.00이면 보정 없음입니다.</p>
+              <p class="field-note">실전에서 탄퍼짐으로 빗Naga는 탄을 보정합니다. <b>평타에만</b> 곱하며 스킬·버스트와 변신 모드 사격은 조준 판정이라 손대지 않습니다. 기본값은 실측 대조로 뽑은 값이고(SG 0.90), 1.00이면 보정 없음입니다.</p>
             </fieldset>
 
             <fieldset class="range-field phase-field">
@@ -791,7 +791,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
                 <button type="button" class="phase-add" data-phase-add="element">속저 추가 <b>+</b></button>
               </div>
               <div class="phase-list" data-phase-list></div>
-              <p class="field-note"><b>족자</b>는 평타만 빗나갑니다. 지속 대미지·스킬 대미지와 평타로 발동한 후속 공격은 계속 들어갑니다. <b>속저</b>는 고른 속성에 <b>우월한</b> 캐릭터의 딜만 통과시킵니다 — 풍압으로 두면 작열 캐릭터만 들어갑니다. 인게임처럼 <b>우월 코드 버프</b>로 우월해진 캐릭터도 통과합니다(라피 : 레드 후드 «부착형 유탄» 등).</p>
+              <p class="field-note"><b>족자</b>는 평타만 빗나갑니다. 지속 대미지·스킬 대미지와 평타로 발동한 후속 공격은 계속 들어갑니다. <b>속저</b>는 고른 속성에 <b>우월한</b> 캐릭터의 딜만 통과시킵니다 — 풍압으로 두면 Fire Code 캐릭터만 들어갑니다. 인게임처럼 <b>우월 코드 버프</b>로 우월해진 캐릭터도 통과합니다(Rapi : Red Hood «부착형 유탄» 등).</p>
             </fieldset>
           </div>
           <section class="console-editor">
@@ -996,7 +996,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
             <summary>직접 입력 도움말 (스키마 · 사람이 작성할 때)</summary>
             <div class="custom-help-body">
               <p><b>최상위</b>: <code>{ "name": "정식 명칭", "nikke": {…스탯}, "skills": [ …효과 ] }</code></p>
-              <p><b>nikke 공통</b>: rarity(SSR/SR/R) · element_code(전격/작열/수냉/풍압/철갑) · class(화력형/방어형/지원형) · manufacturer(엘리시온/미실리스/테트라/필그림/어브노멀) · weapon_type(AR/SMG/MG/SR/RL/SG) · burst_stage(1~3) · burst_cooldown(초) · max_ammo · reload_time(초) · fire_rate(초당 발사) · pellets(SG만 2↑) · muzzles(대개 1) · damage_coeff(1발 계수 %)</p>
+              <p><b>nikke 공통</b>: rarity(SSR/SR/R) · element_code(/Fire Code/수냉/풍압/Iron Code) · class(화력형/방어형/지원형) · manufacturer(엘리시온/미실리스/테트라/필그림/어브노멀) · weapon_type(AR/SMG/MG/SR/RL/SG) · burst_stage(1~3) · burst_cooldown(초) · max_ammo · reload_time(초) · fire_rate(초당 발사) · pellets(SG만 2↑) · muzzles(대개 1) · damage_coeff(1발 계수 %)</p>
               <p><b>무기별 추가</b>: 연사형(AR·SMG·MG·SG)은 <code>core_dmg_mult</code>(코어 %, 예 200). 차지형(SR·RL)은 <code>charge_time</code>(풀차지 초, 예 1.0~1.5)과 <code>full_charge_mult</code>(풀차지 %, 예 250·350). 차지형에 안 넣으면 각각 1.0·250으로 기본 적용됩니다.</p>
               <p><b>skills 각 원소</b>: source(스킬1/스킬2/버스트스킬) · type(buff 또는 damage) · name · trigger:{ timing:[…], condition:[…] } · target · stat · polarity(beneficial/harmful) · max_stack(대개 1) · values:{ "1":값, "10":값 } 또는 fixed_value:값 · duration(지속 초, 즉발/영구는 생략 또는 -1)</p>
               <p><b>인식되는 timing</b>: battle_start · full_burst_start · full_burst_start_count:N · full_burst_end · burst_cast · burst_cast_count:N · last_bullet · last_bullet_fire · hit_count:N · full_charge_hit · passive</p>
@@ -1255,7 +1255,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
   };
 
   // 「순서보기」 — 버프가 발동할 때마다 누가 받았는지 초상화로 죽 편다.
-  // 대상이 갈리는 편성에서는 이 순서 자체가 정보다(앨리스-홍련-앨리스-홍련…).
+  // 대상이 갈리는 편성에서는 이 순서 자체가 정보다(Alice-홍련-Alice-홍련…).
   const buffOrderModal = element<HTMLElement>(root, '[data-buff-order-modal]');
   const showBuffOrder = (caster: string, row: BuffTargetRow) => {
     element<HTMLElement>(root, '[data-buff-order-title]').textContent =
@@ -1878,7 +1878,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
       const box = row('element', index, w.from, w.to);
       const code = document.createElement('select');
       code.dataset.phaseCode = String(index);
-      for (const value of ['풍압', '수냉', '작열', '전격', '철갑']) {
+      for (const value of ['풍압', '수냉', 'Fire Code', '', 'Iron Code']) {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = value;
@@ -2342,7 +2342,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
 
   /**
    * 주고받을 범위. 「이 덱만」이 기본이다 — 덱 하나를 옮기는 일이 판 전체를 옮기는
-   * 일보다 훨씬 잦은데, 예전에는 그것도 5덱 코드로 나가고 받는 쪽에서는 판을 통째로
+   * 일보다 훨씬 잦은데, 예전에는 그것도 5덱 코드로 Naga고 받는 쪽에서는 판을 통째로
    * 덮었다(2~5덱이 조용히 지워졌다).
    *
    * 저장·복사·올리기와 **적용까지 같은 값을 본다** — 「이 덱만」으로 받으면 코드에 든
@@ -2983,7 +2983,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
   const FILTER_GROUPS: Array<{ key: FilterKey; title: string; values: string[] }> = [
     { key: 'rarity', title: '등급', values: ['SSR', 'SR', 'R'] },
     { key: 'class', title: '클래스', values: ['화력형', '방어형', '지원형'] },
-    { key: 'code', title: '코드', values: ['작열', '수냉', '풍압', '전격', '철갑'] },
+    { key: 'code', title: '코드', values: ['Fire Code', '수냉', '풍압', '', 'Iron Code'] },
     { key: 'weapon', title: '무기', values: ['AR', 'SMG', 'SG', 'SR', 'RL', 'MG'] },
     { key: 'corp', title: '기업', values: ['엘리시온', '미실리스', '테트라', '필그림', '어브노말'] },
   ];
@@ -3143,7 +3143,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
     });
     sortRoster(narrowed);
     // 칩으로 먼저 좁히고 검색어로 세운다. 검색은 초성과 구분자까지 받아
-    // 「ㅋㄹㅇ」·「라피레드」가 걸리고, 친 이름이 맨 앞에 온다.
+    // 「ㅋㄹㅇ」·「Rapi레드」가 걸리고, 친 이름이 맨 앞에 온다.
     const shown = filterByQuery(narrowed, rosterSearch.value, buildIndex);
     rosterCount.textContent = shown.length === all.length
       ? `${all.length}명` : `${shown.length} / ${all.length}명`;
@@ -3928,7 +3928,7 @@ export function mountCalculator(root: HTMLElement, deps: CalculatorDependencies)
   }
 
   // ── 화면 전환 ───────────────────────────────────────────────────────────
-  /** 위쪽 탭이 고를 수 있는 화면. 「외부고리」는 우리 것이 아닌 곳으로 나가는 판이다. */
+  /** 위쪽 탭이 고를 수 있는 화면. 「외부고리」는 우리 것이 아닌 곳으로 Naga는 판이다. */
   type ViewName = 'calc' | 'union' | 'enikk' | 'links';
 
   function switchView(view: ViewName) {

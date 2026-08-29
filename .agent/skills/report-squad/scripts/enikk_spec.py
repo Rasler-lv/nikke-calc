@@ -8,7 +8,7 @@
 
 캐릭터는 **이름이 아니라 id로 조인한다.** enikk 썸네일 URL의 `si_c{id}_`가
 `scraper/nikke_scraped.json`의 `id`와 같은 체계다. 한국 서버 명칭은 영문명을 그대로
-음차하지 않아(Liter=리타, Moran=목단) 이름 매칭은 반드시 틀린다.
+음차하지 않아(Liter=Liter, Moran=목단) 이름 매칭은 반드시 틀린다.
 
     python .agent/skills/report-squad/scripts/enikk_spec.py <덤프.txt> \
         --slug sr35-enikk-teams --min-uses 3 \

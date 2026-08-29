@@ -49,7 +49,7 @@ export interface MemberRow extends UnionMember {
   picked: boolean;
   /**
    * 이 사람에게 어느 보스를 맡길지. 보스 번호(0~4) → 켬/끔이고, 안 적힌 보스는 켠 것으로 친다.
-   * 풍압엔 강한데 전격엔 약한 사람이 있어서, 보스별로 사람을 갈라 맡길 수 있어야 한다.
+   * 풍압엔 강한데 엔 약한 사람이 있어서, 보스별로 사람을 갈라 맡길 수 있어야 한다.
    */
   bossPicks?: Record<number, boolean>;
 }
@@ -782,7 +782,7 @@ export function mountUnionRaid(hosts: UnionHosts, deps: UnionDeps): void {
 
   /**
    * 유니온원 줄 오른쪽의 보스 칩. **아래 보스 체크와 연동한다** — 꺼 둔 보스는 칩 자체가
-   * 안 나온다. 여기서 끄면 그 사람만 그 보스를 건너뛴다(풍압은 되는데 전격은 아닌 사람).
+   * 안 나온다. 여기서 끄면 그 사람만 그 보스를 건너뛴다(풍압은 되는데 은 아닌 사람).
    */
   const bossChips = (row: MemberRow): HTMLElement => {
     const wrap = el('div', 'union-boss-picks');
@@ -853,7 +853,7 @@ export function mountUnionRaid(hosts: UnionHosts, deps: UnionDeps): void {
     refreshRunGate();
   }
 
-  // 호출 간격을 벌리는 문지기. 한 사람을 여는 데 상류 호출이 예닐곱 번 나가서,
+  // 호출 간격을 벌리는 문지기. 한 사람을 여는 데 상류 호출이 예닐곱 번 Naga서,
   // 그냥 몰아치면 «212000 request too frequently»가 돌아온다(실측 2026-08-27).
   let nextStart = 0;
   const spaced = async (): Promise<void> => {

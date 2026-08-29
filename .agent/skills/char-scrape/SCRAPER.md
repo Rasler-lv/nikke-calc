@@ -165,7 +165,7 @@ roledata(영문 enum) → 기존 `nikke_scraped.json` 한국어 스키마:
 - **스쿼드**: `squad`(영문 코드) → `스쿼드`, `squad_detail.squad_name` → `스쿼드명`.
   `parse_nikke.py`가 `squad` / `squad_name`으로 넘긴다. **판정의 정본은 코드**다 —
   표시명은 `-`인 경우가 있어(777 = 블랑·누아르) 그때는 코드로 대체해 넣는다.
-  의상·복각 버전도 원본과 같은 스쿼드일 수 있다(라피 : 레드 후드 = `Counters`).
+  의상·복각 버전도 원본과 같은 스쿼드일 수 있다(Rapi : Red Hood = `Counters`).
   전 캐릭터가 스쿼드를 가지며(빈 값 없음) 현재 62종. 더미 `test_B*`에는 필드가 없다.
 - **발사 메카닉**: `shot_detail`의 `rate_of_fire` / `end_rate_of_fire` /
   `rate_of_fire_change_pershot` / `shot_count` / `muzzle_count`를 CDN 원값(rpm·개수)

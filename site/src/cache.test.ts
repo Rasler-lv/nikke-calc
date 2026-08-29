@@ -41,7 +41,7 @@ const result = (value: number): SimulationResult => ({
   squadTotal: value,
   duration: 10,
   hitCount: 1,
-  charTotals: { 리타: value },
+  charTotals: { Liter: value },
   previewNote: '',
   deviations: '',
 });

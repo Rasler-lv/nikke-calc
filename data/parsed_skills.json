@@ -237,7 +237,7 @@
       "duration": 10
     }
   ],
-  "라피 : 레드 후드": [
+  "Rapi : Red Hood": [
     {
       "source": "스킬1",
       "type": "buff",
@@ -399,10 +399,10 @@
       },
       "target": "self",
       "stat": "element_code_override",
-      "target_code": "전격",
+      "target_code": "",
       "polarity": "beneficial_irremovable",
       "duration": -1,
-      "note": "전격 코드 적에게 우월 코드 대미지 적용"
+      "note": " 코드 적에게 우월 코드 대미지 적용"
     },
     {
       "source": "스킬2",
@@ -1258,7 +1258,7 @@
       "duration": 10
     }
   ],
-  "크라운": [
+  "Crown": [
     {
       "source": "스킬1",
       "type": "buff",
@@ -1554,7 +1554,7 @@
       "duration": 15
     }
   ],
-  "나가": [
+  "Naga": [
     {
       "source": "스킬1",
       "type": "instant",
@@ -2765,7 +2765,7 @@
           "gauge_above:MP:1"
         ]
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "element_bonus_pct",
       "polarity": "beneficial",
       "values": {
@@ -2794,7 +2794,7 @@
           "gauge_above:MP:1"
         ]
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "atk_caster_based_pct",
       "polarity": "beneficial",
       "values": {
@@ -6403,7 +6403,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "atk_dmg_pct",
       "polarity": "beneficial",
       "values": {
@@ -10270,7 +10270,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "atk_caster_based_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -10298,7 +10298,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "reload_speed_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -11553,11 +11553,11 @@
       "duration": 10
     }
   ],
-  "리타": [
+  "Liter": [
     {
       "source": "스킬1",
       "type": "instant",
-      "name": "리타 부스트",
+      "name": "Liter 부스트",
       "trigger": {
         "timing": [
           "full_burst_start_count:1"
@@ -11571,7 +11571,7 @@
     {
       "source": "스킬1",
       "type": "instant",
-      "name": "리타 부스트 2",
+      "name": "Liter 부스트 2",
       "trigger": {
         "timing": [
           "full_burst_start_count:2"
@@ -11585,7 +11585,7 @@
     {
       "source": "스킬1",
       "type": "instant",
-      "name": "리타 부스트 3",
+      "name": "Liter 부스트 3",
       "trigger": {
         "timing": [
           "full_burst_start_count:3"
@@ -11599,7 +11599,7 @@
     {
       "source": "스킬1",
       "type": "buff",
-      "name": "리타 부스트 4",
+      "name": "Liter 부스트 4",
       "trigger": {
         "timing": [
           "burst_cast_count:1"
@@ -11626,7 +11626,7 @@
     {
       "source": "스킬1",
       "type": "buff",
-      "name": "리타 부스트 5",
+      "name": "Liter 부스트 5",
       "trigger": {
         "timing": [
           "burst_cast_count:2"
@@ -11653,7 +11653,7 @@
     {
       "source": "스킬1",
       "type": "buff",
-      "name": "리타 부스트 6",
+      "name": "Liter 부스트 6",
       "trigger": {
         "timing": [
           "burst_cast_count:3"
@@ -12370,7 +12370,7 @@
       "duration": 10
     }
   ],
-  "앨리스": [
+  "Alice": [
     {
       "source": "스킬1",
       "type": "buff",
@@ -13172,7 +13172,7 @@
         ],
         "condition": []
       },
-      "target": "enemies_code:전격",
+      "target": "enemies_code:",
       "stat": "received_dmg_pct",
       "polarity": "harmful",
       "max_stack": 1,
@@ -13255,7 +13255,7 @@
           "hit_count:10"
         ],
         "condition": [
-          "target_code:전격"
+          "target_code:"
         ]
       },
       "target": "self",
@@ -13908,7 +13908,7 @@
           "every:4.0s"
         ],
         "condition": [
-          "target_code:전격"
+          "target_code:"
         ]
       },
       "target": "same_target",
@@ -13963,7 +13963,7 @@
           "burst_cast"
         ],
         "condition": [
-          "target_code:전격"
+          "target_code:"
         ]
       },
       "target": "same_target",
@@ -13982,7 +13982,7 @@
       }
     }
   ],
-  "레드 후드": [
+  "Red Hood": [
     {
       "source": "스킬1",
       "type": "buff",
@@ -16113,10 +16113,10 @@
           "burst_cast"
         ],
         "condition": [
-          "target_code:전격"
+          "target_code:"
         ]
       },
-      "target": "enemies_code:전격",
+      "target": "enemies_code:",
       "stat": "def_pct",
       "polarity": "harmful",
       "max_stack": 1,
@@ -16133,7 +16133,7 @@
         "10": -10.56
       },
       "duration": 20,
-      "note": "전격 코드 적 전체 방어력▼ 20s. 이름이 고위험 대상 마커(target_state:고위험 대상 게이팅). def_pct 적용은 현재 timeline 미반영 — 추후 방깎 딜 반영 필요"
+      "note": " 코드 적 전체 방어력▼ 20s. 이름이 고위험 대상 마커(target_state:고위험 대상 게이팅). def_pct 적용은 현재 timeline 미반영 — 추후 방깎 딜 반영 필요"
     }
   ],
   "신데렐라 : 크리스탈 웨이브": [
@@ -17158,7 +17158,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon:전격:AR",
+      "target": "allies_code_weapon::AR",
       "stat": "hp_only_caster_based_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17186,7 +17186,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon_leftmost:전격:AR:1",
+      "target": "allies_code_weapon_leftmost::AR:1",
       "stat": "invincible",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17202,7 +17202,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon_leftmost:전격:AR:1",
+      "target": "allies_code_weapon_leftmost::AR:1",
       "stat": "atk_dmg_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17230,7 +17230,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon_leftmost:전격:AR:1",
+      "target": "allies_code_weapon_leftmost::AR:1",
       "stat": "reload_speed_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17376,7 +17376,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon:전격:AR",
+      "target": "allies_code_weapon::AR",
       "stat": "accuracy_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17404,7 +17404,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code_weapon:전격:AR",
+      "target": "allies_code_weapon::AR",
       "stat": "max_ammo_flat",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17807,7 +17807,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "buff_max_stack_add",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -17871,7 +17871,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "buff_max_stack_add",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -18376,10 +18376,10 @@
       },
       "target": "self",
       "stat": "element_code_override",
-      "target_code": "작열",
+      "target_code": "Fire Code",
       "polarity": "beneficial_irremovable",
       "duration": -1,
-      "note": "작열 코드 적에게 우월 코드 대미지 적용"
+      "note": "Fire Code 코드 적에게 우월 코드 대미지 적용"
     },
     {
       "source": "스킬2",
@@ -18537,7 +18537,7 @@
       },
       "target": [
         "allies_code_weapon:수냉:SG",
-        "allies_code_weapon:철갑:SG"
+        "allies_code_weapon:Iron Code:SG"
       ],
       "stat": "element_bonus_pct",
       "polarity": "beneficial",
@@ -18712,7 +18712,7 @@
       },
       "target": [
         "allies_code_weapon:수냉:SG",
-        "allies_code_weapon:철갑:SG"
+        "allies_code_weapon:Iron Code:SG"
       ],
       "stat": "element_bonus_pct",
       "polarity": "beneficial",
@@ -19329,7 +19329,7 @@
           "burst_cast"
         ],
         "condition": [
-          "target_code:작열"
+          "target_code:Fire Code"
         ]
       },
       "target": "same_target",
@@ -20582,7 +20582,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "atk_caster_based_pct",
       "polarity": "beneficial",
       "values": {
@@ -20609,7 +20609,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "shield_from_max_hp_pct",
       "polarity": "beneficial",
       "values": {
@@ -20636,7 +20636,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "atk_dmg_pct",
       "polarity": "beneficial",
       "values": {
@@ -24286,7 +24286,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:철갑",
+      "target": "allies_code:Iron Code",
       "stat": "element_bonus_pct",
       "polarity": "beneficial",
       "max_stack": 10,
@@ -25051,7 +25051,7 @@
     {
       "source": "스킬1",
       "type": "buff",
-      "name": "페리타",
+      "name": "페Liter",
       "trigger": {
         "timing": [
           "battle_start"
@@ -25079,7 +25079,7 @@
     {
       "source": "스킬1",
       "type": "buff",
-      "name": "페리타 2",
+      "name": "페Liter 2",
       "trigger": {
         "timing": [
           "event:part_destroy"
@@ -25816,7 +25816,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "core_dmg_pct",
       "polarity": "beneficial",
       "values": {
@@ -27639,7 +27639,7 @@
         ],
         "condition": [
           "self_state:풀 하이드로 샷",
-          "target_code:작열"
+          "target_code:Fire Code"
         ]
       },
       "target": "target",
@@ -27887,7 +27887,7 @@
     {
       "source": "스킬2",
       "type": "buff",
-      "name": "도그 테라피",
+      "name": "도그 테Rapi",
       "trigger": {
         "timing": [
           "every:20s"
@@ -27919,7 +27919,7 @@
     {
       "source": "스킬2",
       "type": "buff",
-      "name": "도그 테라피 2",
+      "name": "도그 테Rapi 2",
       "trigger": {
         "timing": [
           "every:20s"
@@ -27938,7 +27938,7 @@
     {
       "source": "스킬2",
       "type": "buff",
-      "name": "도그 테라피",
+      "name": "도그 테Rapi",
       "trigger": {
         "timing": [
           "every:20s"
@@ -27970,7 +27970,7 @@
     {
       "source": "스킬2",
       "type": "buff",
-      "name": "도그 테라피 2",
+      "name": "도그 테Rapi 2",
       "trigger": {
         "timing": [
           "every:20s"
@@ -27990,7 +27990,7 @@
     {
       "source": "스킬2",
       "type": "instant",
-      "name": "도그 테라피 3",
+      "name": "도그 테Rapi 3",
       "trigger": {
         "timing": [
           "event:state_end:폴리스 뱃지"
@@ -32248,7 +32248,7 @@
     {
       "source": "스킬3",
       "type": "damage",
-      "name": "페퍼 테라피",
+      "name": "페퍼 테Rapi",
       "trigger": {
         "timing": [
           "burst_cast"
@@ -32273,7 +32273,7 @@
     {
       "source": "스킬3",
       "type": "instant",
-      "name": "페퍼 테라피 2",
+      "name": "페퍼 테Rapi 2",
       "trigger": {
         "timing": [
           "burst_cast"
@@ -32287,7 +32287,7 @@
     {
       "source": "스킬3",
       "type": "instant",
-      "name": "페퍼 테라피 3",
+      "name": "페퍼 테Rapi 3",
       "trigger": {
         "timing": [
           "burst_cast"
@@ -32616,7 +32616,7 @@
       "duration": 10
     }
   ],
-  "라피": [
+  "Rapi": [
     {
       "source": "스킬1",
       "type": "buff",
@@ -35840,7 +35840,7 @@
       "max_stack": 1
     }
   ],
-  "앨리스 : 원더랜드 바니": [
+  "Alice : 원더랜드 바니": [
     {
       "source": "스킬1",
       "type": "instant",
@@ -36076,7 +36076,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:철갑",
+      "target": "allies_code:Iron Code",
       "stat": "buff_max_stack_add",
       "fixed_value": 1,
       "duration": -1,
@@ -36093,7 +36093,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:철갑",
+      "target": "allies_code:Iron Code",
       "stat": "crit_rate",
       "values": {
         "1": 1.23,
@@ -36533,7 +36533,7 @@
           "self_state:해킹 코드 수집"
         ]
       },
-      "target": "allies_code:전격",
+      "target": "allies_code:",
       "stat": "atk_caster_based_pct",
       "polarity": "beneficial",
       "max_stack": 5,
@@ -39367,7 +39367,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "max_ammo_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -39818,7 +39818,7 @@
         ],
         "condition": []
       },
-      "target": "allies_code:작열",
+      "target": "allies_code:Fire Code",
       "stat": "buff_max_stack_add",
       "fixed_value": 1
     }
@@ -39975,7 +39975,7 @@
         ],
         "condition": []
       },
-      "target": "크라운",
+      "target": "Crown",
       "stat": "atk_caster_based_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -40003,7 +40003,7 @@
         ],
         "condition": []
       },
-      "target": "크라운",
+      "target": "Crown",
       "stat": "normal_atk_dmg_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -40073,7 +40073,7 @@
         ],
         "condition": []
       },
-      "target": "크라운",
+      "target": "Crown",
       "stat": "atk_dmg_pct",
       "polarity": "beneficial",
       "max_stack": 1,
@@ -42924,7 +42924,7 @@
         "10": -70.4
       },
       "duration": 5,
-      "target_code": "전격"
+      "target_code": ""
     },
     {
       "source": "스킬2",
@@ -43015,7 +43015,7 @@
         "10": -70.4
       },
       "duration": -1,
-      "target_code": "전격"
+      "target_code": ""
     },
     {
       "source": "스킬2",

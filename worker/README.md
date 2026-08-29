@@ -64,7 +64,7 @@ curl -X POST https://<워커주소>/health   -H "Content-Type: application/json"
 `shape.hasGameOpenid`가 `false`면 3단계를 잘못 복사한 것이다.
 
 쿠키는 만료된다. 만료되면 사이트가 "프록시 세션이 만료됐습니다"를 띄우므로 2~4단계를
-다시 하면 된다. 이 계정 명의로 조회가 나가니 부계정을 쓰는 편이 낫다.
+다시 하면 된다. 이 계정 명의로 조회가 Naga니 부계정을 쓰는 편이 낫다.
 
 ## API
 
